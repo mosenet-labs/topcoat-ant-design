@@ -1,0 +1,386 @@
+@layer theme, components, utilities;
+
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css" layer(utilities) source(none);
+
+@source "./src/**/*.rs";
+
+@theme {
+  --font-mono: "JetBrains Mono", "Noto Sans SC", "PingFang SC", "Microsoft YaHei", ui-monospace, SFMono-Regular, monospace;
+}
+
+.gr-notification,
+.gr-notification *,
+.gr-popconfirm,
+.gr-popconfirm *,
+.gr-collapse,
+.gr-collapse *,
+.gr-dialog,
+.gr-dialog *,
+.gr-tabs,
+.gr-tabs *,
+.gr-drawer,
+.gr-drawer *,
+.gr-data-table,
+.gr-data-table *,
+.gr-table-pagination,
+.gr-table-pagination *,
+.gr-table-page-size,
+.gr-table-page-size * {
+  box-sizing: border-box;
+}
+
+.gr-dialog::backdrop {
+  background: rgb(0 0 0 / 45%);
+}
+
+.gr-dialog[open] {
+  display: flex;
+  flex-direction: column;
+  animation: gr-dialog-enter 180ms cubic-bezier(.2, 0, 0, 1);
+}
+
+.gr-dialog[open]::backdrop {
+  animation: gr-dialog-backdrop-enter 180ms ease-out;
+}
+
+.gr-data-table-scroll {
+  @apply w-full min-w-0 overflow-x-auto;
+}
+
+.gr-data-table {
+  @apply w-full border-collapse whitespace-nowrap bg-white text-left text-sm text-[#262626];
+}
+
+.gr-data-table th {
+  @apply h-12 border-b border-[#f0f0f0] bg-[#fafafa] px-4 py-3 text-[13px] font-semibold text-[#595959];
+}
+
+.gr-data-table td {
+  @apply h-14 border-b border-[#f0f0f0] px-4 py-3 align-middle text-sm leading-normal;
+}
+
+.gr-data-table tbody tr {
+  @apply transition-colors duration-150;
+}
+
+.gr-data-table tbody tr:hover {
+  @apply bg-[#fafafa];
+}
+
+.gr-data-table-compact th {
+  @apply h-10 px-3.5 py-2 text-[13px];
+}
+
+.gr-data-table-compact td {
+  @apply h-[42px] px-3.5 py-2 text-[13px] leading-[1.35];
+}
+
+.gr-table-pagination {
+  @apply flex items-center justify-between gap-4 px-5 py-4 text-sm text-[#595959];
+}
+
+.gr-table-pagination nav {
+  @apply flex items-center gap-2;
+}
+
+.gr-table-page-size {
+  @apply inline-flex items-center gap-2 whitespace-nowrap text-[13px] text-[#595959];
+}
+
+.gr-table-page-size-select {
+  @apply h-8 min-w-16 cursor-pointer rounded-[5px] border border-[#d9d9d9] bg-white px-2 text-[13px] text-[#262626] outline-none transition-colors duration-150 hover:border-[#4096ff] focus:border-[#1677ff] focus:ring-2 focus:ring-[#1677ff]/10;
+  font-family: inherit;
+}
+
+.gr-table-pagination nav > a,
+.gr-table-pagination nav > button,
+.gr-table-pagination nav > span {
+  @apply inline-flex min-h-8 min-w-8 items-center justify-center rounded-[5px] border border-[#d9d9d9] bg-white px-2.5 py-1 text-[13px] leading-5 text-[#262626] no-underline;
+  font-family: inherit;
+}
+
+.gr-table-pagination nav > a,
+.gr-table-pagination nav > button {
+  @apply cursor-pointer transition-colors duration-150 hover:border-[#1677ff] hover:text-[#1677ff] focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[#91caff];
+}
+
+.gr-table-pagination nav > [aria-current="page"] {
+  @apply border-[#91caff] text-[#1677ff];
+}
+
+.gr-table-pagination nav > [aria-disabled="true"],
+.gr-table-pagination nav > button:disabled {
+  @apply cursor-not-allowed border-[#d9d9d9] bg-[#fafafa] text-[#bfbfbf];
+}
+
+@media (max-width: 640px) {
+  .gr-table-pagination {
+    @apply flex-col items-start p-4;
+  }
+
+  .gr-table-pagination-summary {
+    @apply text-xs leading-5;
+  }
+}
+
+.gr-drawer {
+  visibility: hidden;
+  pointer-events: none;
+  transition: visibility 0s linear 220ms;
+}
+
+.gr-drawer[data-state="open"] {
+  visibility: visible;
+  pointer-events: auto;
+  transition-delay: 0s;
+}
+
+.gr-drawer-mask {
+  opacity: 0;
+  transition: opacity 200ms ease;
+}
+
+.gr-drawer-panel {
+  transform: translateX(100%);
+  transition: transform 220ms cubic-bezier(.2, 0, 0, 1);
+}
+
+.gr-drawer[data-state="open"] > .gr-drawer-mask {
+  opacity: 1;
+}
+
+.gr-drawer[data-state="open"] > .gr-drawer-panel {
+  transform: translateX(0);
+}
+
+/* 0fr/1fr 网格轨道支持未知内容高度，适合由 Topcoat signal 双向切换。 */
+.gr-collapse {
+  @apply grid grid-rows-[0fr] opacity-0;
+  visibility: hidden;
+  pointer-events: none;
+  transition:
+    grid-template-rows 200ms cubic-bezier(.2, 0, 0, 1),
+    opacity 160ms ease,
+    visibility 0s linear 200ms;
+}
+
+.gr-collapse[data-state="open"] {
+  @apply grid-rows-[1fr] opacity-100;
+  visibility: visible;
+  pointer-events: auto;
+  transition-delay: 0s;
+}
+
+.gr-collapse-inner {
+  @apply min-h-0 overflow-hidden;
+  transform: translateY(-4px);
+  transition: transform 200ms cubic-bezier(.2, 0, 0, 1);
+}
+
+.gr-collapse[data-state="open"] > .gr-collapse-inner {
+  transform: translateY(0);
+}
+
+/* 锚点定位和 fallback 状态查询暂时没有等价的稳定 Tailwind 工具类。 */
+.gr-popconfirm {
+  position-area: bottom;
+  position-try-fallbacks: flip-block;
+}
+
+.gr-popconfirm-arrow {
+  position: absolute;
+  top: -5px;
+  left: var(--gr-popconfirm-arrow-x, 50%);
+  width: 10px;
+  height: 10px;
+  pointer-events: none;
+  background: #fff;
+  border-top: 1px solid #f0f0f0;
+  border-left: 1px solid #f0f0f0;
+  transform: translateX(-50%) rotate(45deg);
+}
+
+.gr-popconfirm[data-placement="top"] .gr-popconfirm-arrow {
+  top: auto;
+  bottom: -5px;
+  border-top: 0;
+  border-right: 1px solid #f0f0f0;
+  border-bottom: 1px solid #f0f0f0;
+  border-left: 0;
+}
+
+.gr-popconfirm:popover-open {
+  animation: gr-popconfirm-enter 140ms ease-out;
+}
+
+.gr-date-range-panel {
+  position-area: bottom span-left;
+  position-try-fallbacks: flip-block, flip-inline;
+  @apply fixed inset-auto z-[1250] mt-2 w-[min(560px,calc(100vw_-_32px))] rounded-lg border border-[#f0f0f0] bg-white p-4 font-mono text-[#262626] shadow-lg;
+}
+
+.gr-date-range-panel:popover-open { animation: gr-popconfirm-enter 140ms ease-out; }
+.gr-date-range-trigger { @apply inline-flex h-10 max-w-[300px] items-center gap-2 rounded-md border border-[#d9d9d9] bg-white px-3 font-mono text-[13px] text-[#262626] hover:border-[#4096ff]; }
+.gr-date-range-trigger > span:last-child { @apply truncate; }
+.gr-date-range-calendar { @apply text-[#8c8c8c]; }
+.gr-date-range-fields { @apply grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-end gap-3; }
+.gr-date-range-fields label { @apply grid gap-1.5 text-xs text-[#595959]; }
+.gr-date-range-fields input { @apply h-10 min-w-0 rounded-md border border-[#d9d9d9] px-2 font-mono text-[13px] outline-none focus:border-[#1677ff] focus:shadow-[0_0_0_2px_rgba(22,119,255,0.12)]; }
+.gr-date-range-separator { @apply pb-2.5 text-[#8c8c8c]; }
+.gr-date-range-quick { @apply mt-3 flex flex-wrap gap-2 border-b border-[#f0f0f0] pb-3; }
+.gr-date-range-quick button { @apply cursor-pointer rounded border-0 bg-[#f5f5f5] px-2 py-1 font-mono text-xs text-[#1677ff] hover:bg-[#e6f4ff]; }
+.gr-date-range-actions { @apply mt-3 flex justify-end gap-2; }
+
+@media (max-width: 620px) {
+  .gr-date-range-fields { @apply grid-cols-1; }
+  .gr-date-range-separator { @apply hidden; }
+}
+
+/* 确认按钮由调用方作为 child 提供，公共类保证其与气泡样式一致。 */
+.gr-button {
+  @apply inline-flex h-7 min-w-[52px] cursor-pointer items-center justify-center rounded-[5px] border border-transparent px-2.5 text-center text-[13px] leading-[26px];
+  font: inherit;
+}
+
+.gr-button:disabled {
+  cursor: wait;
+  opacity: .55;
+}
+
+.gr-button-default {
+  @apply border-[#d9d9d9] bg-white text-[#262626];
+}
+
+.gr-button-primary {
+  @apply border-[#1677ff] bg-[#1677ff] text-white;
+}
+
+.gr-button-danger {
+  @apply border-[#ff4d4f] bg-[#ff4d4f] text-white;
+}
+
+.gr-button:hover:not(:disabled),
+.gr-button:focus-visible {
+  filter: brightness(.96);
+  outline: none;
+}
+
+@supports not (position-area: bottom) {
+  .gr-popconfirm {
+    top: 50%;
+    left: 50%;
+    margin: 0;
+    transform: translate(-50%, -50%);
+  }
+
+  .gr-popconfirm-arrow {
+    display: none;
+  }
+}
+
+@keyframes gr-notification-enter {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes gr-notification-timeout {
+  from {
+    transform: scaleX(1);
+  }
+
+  to {
+    transform: scaleX(0);
+  }
+}
+
+@keyframes gr-popconfirm-enter {
+  from {
+    opacity: 0;
+    transform: translateY(-4px) scale(.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes gr-dialog-enter {
+  from {
+    opacity: 0;
+    transform: scale(.96);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes gr-dialog-backdrop-enter {
+  from {
+    background: rgb(0 0 0 / 0%);
+  }
+
+  to {
+    background: rgb(0 0 0 / 45%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gr-notification,
+  .gr-popconfirm:popover-open,
+  .gr-dialog[open],
+  .gr-dialog[open]::backdrop {
+    animation-duration: 1ms;
+  }
+
+  .gr-collapse,
+  .gr-collapse-inner,
+  .gr-drawer,
+  .gr-drawer-mask,
+  .gr-drawer-panel {
+    transition: none;
+  }
+}
+
+.gr-tooltip-trigger { display: inline-block; max-width: 100%; }
+.gr-tooltip-trigger:focus-visible { outline: 2px solid #91caff; outline-offset: 3px; border-radius: 3px; }
+.gr-tooltip {
+  position: fixed;
+  inset: auto;
+  margin: 0;
+  box-sizing: border-box;
+  width: max-content;
+  max-width: min(420px, calc(100vw - 16px));
+  padding: 7px 10px;
+  border: 0;
+  border-radius: 6px;
+  background: #262626;
+  color: #fff;
+  font: 12px/1.6 var(--font-mono);
+  white-space: normal;
+  overflow: visible;
+  overflow-wrap: anywhere;
+  text-align: left;
+  box-shadow: 0 3px 10px #0003;
+}
+.gr-tooltip-arrow {
+  position: absolute;
+  left: var(--gr-tooltip-arrow-x, 50%);
+  top: -4px;
+  width: 8px;
+  height: 8px;
+  background: #262626;
+  transform: translateX(-50%) rotate(45deg);
+  pointer-events: none;
+}
+.gr-tooltip[data-placement="top"] .gr-tooltip-arrow { top: auto; bottom: -4px; }

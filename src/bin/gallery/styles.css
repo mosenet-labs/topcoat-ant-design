@@ -1,0 +1,78 @@
+@layer theme, utilities;
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css" layer(utilities) source(none);
+@source "./**/*.rs";
+
+@theme {
+  --font-mono: "JetBrains Mono", "Noto Sans SC", "PingFang SC", "Microsoft YaHei", ui-monospace, SFMono-Regular, monospace;
+}
+
+/* Markdown 来自仓库内的可信组件文档，由 Gallery 在服务端转换成 HTML。 */
+.gallery-markdown {
+  @apply overflow-hidden rounded-xl border border-[#e8eaee] bg-white px-7 py-6 text-sm leading-7 text-[#595959] shadow-sm;
+}
+
+.gallery-markdown > :first-child {
+  margin-top: 0;
+}
+
+.gallery-markdown > :last-child {
+  margin-bottom: 0;
+}
+
+.gallery-markdown h2 {
+  @apply mb-3 mt-8 border-b border-[#edf0f4] pb-3 text-xl font-semibold text-[#262626];
+}
+
+.gallery-markdown h3 {
+  @apply mb-2 mt-6 text-base font-semibold text-[#262626];
+}
+
+.gallery-markdown p,
+.gallery-markdown ul,
+.gallery-markdown ol,
+.gallery-markdown table,
+.gallery-markdown pre {
+  @apply my-4;
+}
+
+.gallery-markdown ul,
+.gallery-markdown ol {
+  @apply pl-6;
+}
+
+.gallery-markdown a {
+  @apply text-[#1677ff] no-underline hover:text-[#0958d9] hover:underline;
+}
+
+.gallery-markdown :not(pre) > code {
+  @apply rounded bg-[#f5f5f5] px-1.5 py-0.5 text-[13px] text-[#cf1322];
+}
+
+.gallery-markdown pre,
+.gallery-code-block {
+  @apply overflow-x-auto rounded-lg bg-[#0d1117] p-5 font-mono text-[13px] leading-6 text-[#d6deeb];
+  tab-size: 4;
+}
+
+.gallery-markdown pre code,
+.gallery-code-block code {
+  color: inherit;
+}
+
+.gallery-code-block {
+  @apply m-0 max-h-[520px] rounded-none border-t border-[#242b36];
+}
+
+.gallery-markdown table {
+  @apply w-full border-collapse overflow-hidden text-left text-[13px];
+}
+
+.gallery-markdown th,
+.gallery-markdown td {
+  @apply border border-[#edf0f4] px-3 py-2 align-top;
+}
+
+.gallery-markdown th {
+  @apply bg-[#fafafa] font-semibold text-[#262626];
+}

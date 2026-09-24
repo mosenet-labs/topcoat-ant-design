@@ -1,0 +1,91 @@
+use topcoat::{
+    Result,
+    context::Cx,
+    icon::icon,
+    runtime::Event,
+    view::{Attributes, Child, View, ViewExt, attributes, class, component, view},
+};
+
+use crate::icons::EXCLAMATION_CIRCLE_FILLED;
+
+/// 生成 Popconfirm 触发按钮所需属性，并把按钮声明为 CSS 定位锚点。
+///
+/// `id` 必须是由调用方生成的可信 DOM 标识，不能直接使用未经校验的用户输入。
+pub fn popconfirm_trigger_attributes(cx: &Cx, id: &str) -> Attributes {
+    let anchor = format!("anchor-name: --gr-{id}");
+    attributes! { cx =>
+        popovertarget=(id)
+        popovertargetaction="toggle"
+        aria-haspopup="dialog"
+        aria-controls=(id)
+        style=(anchor)
+    }
+}
+
+#[doc = include_str!(concat!(
+    env!("CARGO_MANIFEST_DIR"),
+    "/docs/components/popconfirm.md"
+))]
+#[component]
+pub async fn popconfirm(
+    cx: &Cx,
+    id: &str,
+    title: &str,
+    #[default] description: Option<&str>,
+    #[default] mut attrs: Attributes,
+    #[default] child: Child<'_>,
+) -> Result<impl View> {
+    let title_id = format!("{id}-title");
+    let description_id = format!("{id}-description");
+    let panel_anchor = format!("position-anchor: --gr-{id}");
+    let positioning_id = id.to_owned();
+    let closing_id = id.to_owned();
+    let caller_class = attrs.remove("class");
+    let panel_class = class!(
+        "gr-popconfirm fixed inset-auto mx-4 mb-0 mt-2.5 w-[min(300px,calc(100vw_-_32px))] overflow-visible rounded-lg border border-[#f0f0f0] bg-white px-4 pb-3 pt-3.5 font-mono text-[#262626] shadow-lg",
+        caller_class,
+    );
+    let semantics = attributes! { cx =>
+        id=(id)
+        class=(panel_class)
+        popover="auto"
+        role="alertdialog"
+        aria-labelledby=(title_id.as_str())
+        if description.is_some() {
+            aria-describedby=(description_id.as_str())
+        }
+        style=(panel_anchor)
+        @toggle=$(move |_e: Event| {
+            let _id = positioning_id.to_owned();
+            // 浏览器负责气泡的 shift/flip；这里只把最终几何位置传给箭头样式。
+            raw!("(() => { const panel = document.getElementById(${_id}.dehydrate()); if (!panel) return; if (!panel.matches(':popover-open')) { panel.style.removeProperty('--gr-popconfirm-arrow-x'); delete panel.dataset.placement; return; } const trigger = document.querySelector('[aria-controls=\"' + CSS.escape(panel.id) + '\"]'); if (!(trigger instanceof HTMLElement)) return; const panelRect = panel.getBoundingClientRect(); const triggerRect = trigger.getBoundingClientRect(); const arrowX = Math.min(panelRect.width - 16, Math.max(16, triggerRect.left + triggerRect.width / 2 - panelRect.left)); panel.style.setProperty('--gr-popconfirm-arrow-x', arrowX + 'px'); panel.dataset.placement = getComputedStyle(panel).positionArea.startsWith('top') ? 'top' : 'bottom'; })()", ());
+        })
+    };
+    attrs.extend(semantics);
+
+    // 缩小父级 ThenView 的状态，避免嵌套弹窗渲染时产生大型栈临时值。
+    Ok(view! {
+        <aside (attrs)>
+            <span class="gr-popconfirm-arrow" aria-hidden="true"></span>
+            <div class="flex items-start gap-2.5">
+                <span class="size-5 shrink-0 text-[#faad14]" aria-hidden="true">
+                    icon(data: EXCLAMATION_CIRCLE_FILLED, size: 20)
+                </span>
+                <div class="min-w-0">
+                    <strong class="block whitespace-normal break-words text-sm font-medium leading-6 [overflow-wrap:anywhere]" id=(title_id.as_str())>(title)</strong>
+                    if let Some(description) = description {
+                        <p class="mb-0 mt-1 whitespace-normal break-words text-[13px] leading-[1.5] text-[#595959] [overflow-wrap:anywhere]" id=(description_id.as_str())>(description)</p>
+                    }
+                </div>
+            </div>
+            <footer class="mt-3 flex justify-end gap-2">
+                <button class="gr-button gr-button-default" type="button" popovertarget=(id) popovertargetaction="hide">"取消"</button>
+                <span class="contents" @click=$(move |_e: Event| {
+                    let _id = closing_id.to_owned();
+                    // 组件先恢复隐藏状态，避免异步业务刷新锚点时气泡仍然可见。
+                    raw!("document.getElementById(${_id}.dehydrate())?.hidePopover()", ());
+                })>(child)</span>
+            </footer>
+        </aside>
+    }.boxed())
+}

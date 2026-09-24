@@ -1,0 +1,47 @@
+[package]
+name = "topcoat-ant-design"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.98"
+description = "Ant Design inspired components for Topcoat"
+documentation = "https://docs.rs/topcoat-ant-design"
+repository = "https://github.com/mosenet-labs/topcoat-ant-design"
+readme = "README.md"
+license = "MIT"
+
+[features]
+default = []
+router = ["topcoat/router"]
+gallery = [
+    "router",
+    "dep:pulldown-cmark",
+    "dep:tokio",
+    "dep:topcoat-asset",
+    "dep:topcoat-runtime",
+    "topcoat/discover",
+    "topcoat/serve",
+    "topcoat/tailwind",
+]
+
+[dependencies]
+pulldown-cmark = { version = "=0.13.4", default-features = false, features = ["html"], optional = true }
+tokio = { version = "=1.53.1", features = ["macros", "net", "rt-multi-thread", "signal", "sync", "time"], optional = true }
+topcoat = { version = "=0.8.1", default-features = false, features = ["asset", "font-fontsource", "icon-iconify", "runtime", "view"] }
+
+[build-dependencies]
+sha2 = "=0.10.9"
+topcoat = { version = "=0.8.1", default-features = false, features = ["asset", "icon-iconify", "tailwind"] }
+topcoat-asset = { version = "=0.8.1", optional = true }
+topcoat-runtime = { version = "=0.8.1", optional = true }
+
+[dev-dependencies]
+tokio = { version = "=1.53.1", features = ["macros", "net", "rt-multi-thread", "signal", "sync", "time"] }
+topcoat = { version = "=0.8.1", default-features = false, features = ["asset", "discover", "font-fontsource", "runtime", "serve", "tailwind"] }
+
+[[bin]]
+name = "topcoat-ant-design-gallery"
+path = "src/bin/gallery/main.rs"
+required-features = ["gallery"]
+
+[lints.rust]
+unsafe_code = "forbid"
