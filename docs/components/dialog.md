@@ -8,6 +8,7 @@ Dialog 统一提供标题栏、关闭按钮、遮罩、进入动画与可访问�
 | --- | --- | --- |
 | `config` | `DialogConfig<'_>` | Dialog 的可信 DOM 标识、标题和可选眉题。 |
 | `busy` | `&Signal<bool>` | 异步操作状态；为 `true` 时禁止关闭按钮和 Escape。 |
+| `language` | `UiLanguage` | 可选；组件自带文案默认英文，传入 `ChineseSimplified` 切换中文。 |
 | `attrs` | `Attributes` | 可选；转发到根元素，调用方 class 会与组件 class 合并。 |
 | `child` | `Child` | 调用方提供的表单、内容与底部操作区。 |
 

@@ -1,6 +1,7 @@
 mod app;
 mod assets;
 mod demo;
+mod locale;
 mod markdown;
 
 use std::{env, error::Error};

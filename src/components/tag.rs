@@ -3,7 +3,7 @@ use topcoat::{
     view::{Attributes, Child, View, class, component, view},
 };
 
-/// 标签的语义颜色；标签文字应同时表达状态，避免仅依赖颜色。
+/// Semantic tag color. The label must also state the status without relying on color.
 #[derive(Clone, Copy, Default)]
 pub enum TagTone {
     #[default]
@@ -14,7 +14,7 @@ pub enum TagTone {
     Processing,
 }
 
-/// 用于状态与分类的公共标签，支持调用方属性及文本子节点。
+/// Tag for status or categories with caller attributes and text children.
 #[component]
 pub async fn tag(
     #[default] tone: TagTone,

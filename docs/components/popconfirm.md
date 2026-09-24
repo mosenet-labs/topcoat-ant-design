@@ -9,6 +9,7 @@
 | `id` | `&str` | 气泡 DOM 标识，同时用于关联触发按钮。 |
 | `title` | `&str` | 确认问题。 |
 | `description` | `Option<&str>` | 可选的影响说明。 |
+| `language` | `UiLanguage` | 可选；组件自带文案默认英文，传入 `ChineseSimplified` 切换中文。 |
 | `attrs` | `Attributes` | 可选；转发到气泡根元素，调用方 class 会与组件 class 合并。 |
 | `child` | `Child` | 调用方提供的确认操作区域。 |
 

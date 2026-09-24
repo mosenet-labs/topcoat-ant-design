@@ -4,7 +4,7 @@ use topcoat::{
     view::{Unescaped, View, component, view},
 };
 
-const MISSING_RUST_EXAMPLE: &str = "// 当前文档没有可展示的 Rust 示例。";
+const MISSING_RUST_EXAMPLE: &str = "// No Rust example is available in this document.";
 
 /// 读取 Markdown 中第 `index` 个 Rust fenced code block。
 pub(crate) fn rust_code_block(source: &str, index: usize) -> &str {
@@ -57,6 +57,6 @@ mod tests {
 
         assert_eq!(rust_code_block(markdown, 0), "let first = 1;");
         assert_eq!(rust_code_block(markdown, 1), "let second = 2;");
-        assert!(rust_code_block(markdown, 2).contains("没有可展示"));
+        assert!(rust_code_block(markdown, 2).contains("No Rust example"));
     }
 }

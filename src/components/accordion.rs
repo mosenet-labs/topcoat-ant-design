@@ -6,9 +6,10 @@ use topcoat::{
     view::{Attributes, Child, View, attributes, class, component, view},
 };
 
+use crate::UiLanguage;
 use crate::icons::DOWN_OUTLINED;
 
-/// 一个手风琴条目的标题、说明和可选标记。
+/// Title, description, and optional badge for an accordion item.
 #[derive(Clone, Copy)]
 pub struct AccordionItemConfig<'a> {
     id: &'a str,
@@ -18,7 +19,7 @@ pub struct AccordionItemConfig<'a> {
 }
 
 impl<'a> AccordionItemConfig<'a> {
-    /// `id` 必须在当前页面中唯一，且不能来自未经校验的用户输入。
+    /// `id` must be unique on the page and must not come from unchecked user input.
     pub const fn new(id: &'a str, title: &'a str, description: &'a str) -> Self {
         Self {
             id,
@@ -28,7 +29,7 @@ impl<'a> AccordionItemConfig<'a> {
         }
     }
 
-    /// 在标题右侧显示简短标记，例如 `OR`。
+    /// Show a short badge, such as `OR`, beside the title.
     pub const fn with_badge(mut self, badge: &'a str) -> Self {
         self.badge = Some(badge);
         self
@@ -37,7 +38,7 @@ impl<'a> AccordionItemConfig<'a> {
 
 #[doc = include_str!(concat!(
     env!("CARGO_MANIFEST_DIR"),
-    "/docs/components/accordion.md"
+    "/docs/en/components/accordion.md"
 ))]
 #[component]
 pub async fn accordion_item(
@@ -45,6 +46,7 @@ pub async fn accordion_item(
     config: AccordionItemConfig<'_>,
     active: &Signal<String>,
     #[default] selected_count: Option<&Signal<f64>>,
+    #[default] language: UiLanguage,
     #[default] mut attrs: Attributes,
     #[default] child: Child<'_>,
 ) -> Result<impl View> {
@@ -57,6 +59,7 @@ pub async fn accordion_item(
     let trigger_id = format!("{id}-trigger");
     let active_id = id.to_owned();
     let current = active.clone();
+    let count_suffix = language.select(" enabled", " 项已启用");
     let caller_class = attrs.remove("class");
     let root_class = class!(
         "gr-accordion-item overflow-hidden rounded-lg border border-[#d9d9d9] bg-white",
@@ -82,7 +85,7 @@ pub async fn accordion_item(
                         <span class="mt-1 block text-xs font-normal leading-[1.5] text-[#8c8c8c]">(description)</span>
                     </span>
                     if let Some(count) = selected_count {
-                        <span class="shrink-0 text-xs font-normal text-[#595959]">$(count.get()) " 项已启用"</span>
+                        <span class="shrink-0 text-xs font-normal text-[#595959]">$(count.get()) (count_suffix)</span>
                     }
                     if let Some(badge) = badge {
                         <span class="shrink-0 rounded bg-[#e6f4ff] px-[7px] py-[2px] text-[11px] font-semibold text-[#0958d9]">(badge)</span>

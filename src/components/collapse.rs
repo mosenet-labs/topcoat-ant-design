@@ -5,9 +5,9 @@ use topcoat::{
     view::{Attributes, Child, View, attributes, class, component, view},
 };
 
-/// 生成 Collapse 触发控件需要的 Topcoat 响应式属性。
+/// Create the Topcoat reactive attributes required by a Collapse trigger.
 ///
-/// 调用方仍负责提供 `type="button"`、样式和按钮内容。
+/// The caller still supplies `type="button"`, styling, and button content.
 pub fn collapse_trigger_attributes(cx: &Cx, id: &str, open: &Signal<bool>) -> Attributes {
     let open = open.clone();
     attributes! { cx =>
@@ -19,7 +19,7 @@ pub fn collapse_trigger_attributes(cx: &Cx, id: &str, open: &Signal<bool>) -> At
 
 #[doc = include_str!(concat!(
     env!("CARGO_MANIFEST_DIR"),
-    "/docs/components/collapse.md"
+    "/docs/en/components/collapse.md"
 ))]
 #[component]
 pub async fn collapse(

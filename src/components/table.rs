@@ -4,19 +4,19 @@ use topcoat::{
     view::{Attributes, Child, View, attributes, class, component, view},
 };
 
-/// 数据表格的显示密度。
+/// Display density of a data table.
 #[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
 pub enum DataTableDensity {
-    /// 适合包含说明文字或操作按钮的常规表格。
+    /// Standard table rows for supporting text or action buttons.
     #[default]
     Default,
-    /// 适合事件、日志等需要在一屏展示更多记录的表格。
+    /// Compact rows for showing more events or logs at once.
     Compact,
 }
 
 #[doc = include_str!(concat!(
     env!("CARGO_MANIFEST_DIR"),
-    "/docs/components/table.md"
+    "/docs/en/components/table.md"
 ))]
 #[component]
 pub async fn data_table(
@@ -44,9 +44,9 @@ pub async fn data_table(
     })
 }
 
-/// 表格分页区域。调用方通过子内容提供真实链接或 Topcoat 交互按钮。
+/// Table pagination area. The caller supplies real links or Topcoat buttons as children.
 ///
-/// 完整参数、页码分页和游标分页示例见 [`data_table`] 的组件文档。
+/// See [`data_table`] for complete parameters and numbered or cursor pagination examples.
 #[component]
 pub async fn table_pagination(
     cx: &Cx,
@@ -69,10 +69,10 @@ pub async fn table_pagination(
     })
 }
 
-/// 分页区域中的页容量选择器。
+/// Page-size selector for the pagination area.
 ///
-/// 组件只提供一致的标签、样式和无障碍属性。当前值、选项以及变更后的查询行为
-/// 由调用方通过响应式属性和子内容控制。
+/// The component provides consistent labels, styles, and accessibility attributes. The caller controls
+/// the current value, options, and query behavior through reactive attributes and children.
 #[component]
 pub async fn table_page_size_select(
     cx: &Cx,

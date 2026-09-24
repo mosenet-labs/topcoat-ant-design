@@ -2,6 +2,8 @@
 
 将开始和结束时间收纳在一个原生 Popover 中，适合数据列表的时间筛选。组件保留原生表单语义，点击“应用”会提交所在表单。
 
+可选的 `language: UiLanguage` 参数控制组件内置文案；默认英文，传入 `UiLanguage::ChineseSimplified` 切换中文。
+
 ```rust,ignore
 date_time_range_filter(config: DateTimeRangeConfig::new(
     "run-time-range",

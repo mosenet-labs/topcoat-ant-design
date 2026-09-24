@@ -8,11 +8,12 @@ use topcoat::{
     view::{Attributes, View, attributes, class, component, view},
 };
 
+use crate::UiLanguage;
 use crate::icons::{
     CHECK_CIRCLE_FILLED, CLOSE_CIRCLE_FILLED, CLOSE_OUTLINED, INFO_CIRCLE_FILLED, WARNING_FILLED,
 };
 
-/// Notification 的视觉与无障碍语义。
+/// Visual and accessibility tone of a notification.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum NotificationTone {
     Success,
@@ -75,7 +76,7 @@ impl NotificationTone {
 
 #[doc = include_str!(concat!(
     env!("CARGO_MANIFEST_DIR"),
-    "/docs/components/notification.md"
+    "/docs/en/components/notification.md"
 ))]
 #[component]
 pub async fn notification(
@@ -83,6 +84,7 @@ pub async fn notification(
     message: &Signal<String>,
     title: &str,
     tone: NotificationTone,
+    #[default] language: UiLanguage,
     #[default] mut attrs: Attributes,
 ) -> Result<impl View> {
     static NEXT_NOTIFICATION_ID: AtomicU64 = AtomicU64::new(1);
@@ -126,7 +128,7 @@ pub async fn notification(
                     <strong class="mb-1.5 mt-px block text-base font-semibold leading-[1.4]">(title)</strong>
                     <p class="m-0 [overflow-wrap:anywhere] text-sm leading-[1.6] text-[#595959]">$(message.get())</p>
                 </div>
-                <button class="absolute right-[18px] top-[18px] inline-flex size-[22px] cursor-pointer items-center justify-center rounded-[4px] border-0 bg-transparent p-0 text-[rgba(0,0,0,0.45)] transition-colors duration-200 hover:bg-[rgba(0,0,0,0.06)] hover:text-[rgba(0,0,0,0.88)] active:bg-[rgba(0,0,0,0.15)] focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[#91caff]" type="button" aria-label="关闭通知" @click=$(|_e| message.set("".to_owned()))>
+                <button class="absolute right-[18px] top-[18px] inline-flex size-[22px] cursor-pointer items-center justify-center rounded-[4px] border-0 bg-transparent p-0 text-[rgba(0,0,0,0.45)] transition-colors duration-200 hover:bg-[rgba(0,0,0,0.06)] hover:text-[rgba(0,0,0,0.88)] active:bg-[rgba(0,0,0,0.15)] focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[#91caff]" type="button" aria-label=(language.select("Close notification", "关闭通知")) @click=$(|_e| message.set("".to_owned()))>
                     icon(data: CLOSE_OUTLINED, size: 12)
                 </button>
                 <span class=(timer_class) aria-hidden="true" @animationend=$(|_e| message.set("".to_owned()))></span>

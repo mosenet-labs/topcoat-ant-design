@@ -1,6 +1,6 @@
 #![doc = include_str!(concat!(
     env!("CARGO_MANIFEST_DIR"),
-    "/docs/icons.md"
+    "/docs/en/icons.md"
 ))]
 
 use topcoat::icon::iconify;

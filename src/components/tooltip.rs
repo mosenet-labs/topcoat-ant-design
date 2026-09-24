@@ -4,7 +4,7 @@ use topcoat::{
     view::{Child, View, component, view},
 };
 
-#[doc = include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/docs/components/tooltip.md"))]
+#[doc = include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/docs/en/components/tooltip.md"))]
 #[component]
 pub async fn tooltip(id: &str, content: &str, child: Child<'_>) -> Result<impl View> {
     let hover_id = id.to_owned();

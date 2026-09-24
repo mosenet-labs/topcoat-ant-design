@@ -8,6 +8,7 @@ Drawer 使用调用方提供的 `Signal<bool>` 表达开关状态。默认关闭
 | --- | --- | --- |
 | `config` | `DrawerConfig<'_>` | Drawer 的可信 DOM 标识、标题和可选关闭路由。 |
 | `open` | `&Signal<bool>` | 打开状态；关闭交互会自动写回 `false`。 |
+| `language` | `UiLanguage` | 可选；组件自带文案默认英文，传入 `ChineseSimplified` 切换中文。 |
 | `attrs` | `Attributes` | 可选；转发到根元素，调用方 class 会与组件 class 合并。 |
 | `child` | `Child` | Drawer 的详情内容。 |
 

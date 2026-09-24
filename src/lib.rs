@@ -2,6 +2,7 @@
 
 mod components;
 pub mod icons;
+mod language;
 mod theme;
 
 pub use components::accordion::{AccordionItemConfig, accordion_item};
@@ -19,6 +20,7 @@ pub use components::table::{
 };
 pub use components::tabs::{tab_link, tabs};
 pub use components::tooltip::tooltip;
+pub use language::UiLanguage;
 #[cfg(feature = "router")]
 pub use theme::RouterBuilderUiExt;
 pub use theme::{DEFAULT_FONT, STYLESHEET, head_assets};

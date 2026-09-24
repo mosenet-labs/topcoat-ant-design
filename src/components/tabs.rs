@@ -6,7 +6,7 @@ use topcoat::{
 
 #[doc = include_str!(concat!(
     env!("CARGO_MANIFEST_DIR"),
-    "/docs/components/tabs.md"
+    "/docs/en/components/tabs.md"
 ))]
 #[component]
 pub async fn tabs(
@@ -30,7 +30,7 @@ pub async fn tabs(
     })
 }
 
-/// 路由型页签链接；`active` 由宿主路由判定。
+/// Route-based tab link; the host route determines `active`.
 #[component]
 pub async fn tab_link(
     cx: &Cx,

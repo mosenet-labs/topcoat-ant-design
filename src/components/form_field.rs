@@ -4,7 +4,7 @@ use topcoat::{
     view::{Attributes, Child, View, attributes, class, component, view},
 };
 
-/// 表单字段的稳定标识、标签和辅助信息。
+/// Stable field ID, label, and supporting information.
 #[derive(Clone, Copy)]
 pub struct FormFieldConfig<'a> {
     id: &'a str,
@@ -15,7 +15,7 @@ pub struct FormFieldConfig<'a> {
 }
 
 impl<'a> FormFieldConfig<'a> {
-    /// 创建一个基础字段。调用方应把相同的 `id` 设置到内部控件上。
+    /// Create a basic field. Set the same `id` on the inner control.
     pub const fn new(id: &'a str, label: &'a str) -> Self {
         Self {
             id,
@@ -26,19 +26,19 @@ impl<'a> FormFieldConfig<'a> {
         }
     }
 
-    /// 显示必填标记；实际必填约束仍由内部控件和服务端共同负责。
+    /// Show a required marker. The inner control and server still enforce the requirement.
     pub const fn required(mut self) -> Self {
         self.required = true;
         self
     }
 
-    /// 添加正常状态下的简短说明。
+    /// Add a short hint for the normal state.
     pub const fn with_hint(mut self, hint: &'a str) -> Self {
         self.hint = Some(hint);
         self
     }
 
-    /// 添加字段错误；传入后会覆盖辅助说明并使用 `role=alert`。
+    /// Add a field error, replacing the hint and using `role=alert`.
     pub const fn with_error(mut self, error: &'a str) -> Self {
         self.error = Some(error);
         self
@@ -47,7 +47,7 @@ impl<'a> FormFieldConfig<'a> {
 
 #[doc = include_str!(concat!(
     env!("CARGO_MANIFEST_DIR"),
-    "/docs/components/form-field.md"
+    "/docs/en/components/form-field.md"
 ))]
 #[component]
 pub async fn form_field(

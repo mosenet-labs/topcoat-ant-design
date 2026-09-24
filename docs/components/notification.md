@@ -9,6 +9,7 @@
 | `message` | `&Signal<String>` | 通知正文，也是组件的显示状态；空字符串表示隐藏。 |
 | `title` | `&str` | 简短标题，例如“操作成功”。 |
 | `tone` | `NotificationTone` | `Success`、`Info`、`Warning` 或 `Error`。 |
+| `language` | `UiLanguage` | 可选；组件自带文案默认英文，传入 `ChineseSimplified` 切换中文。 |
 | `attrs` | `Attributes` | 可选；转发到通知根元素，调用方 class 会与组件 class 合并。 |
 
 ## 使用示例

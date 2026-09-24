@@ -7,6 +7,7 @@
 | `config` | `AccordionItemConfig` | 唯一 ID、标题、说明，可附加简短标记。 |
 | `active` | `&Signal<String>` | 当前展开条目的 ID；空字符串表示全部收起。 |
 | `selected_count` | `Option<&Signal<f64>>` | 可选；在标题上实时显示已启用项数量。 |
+| `language` | `UiLanguage` | 可选；组件自带文案默认英文，传入 `ChineseSimplified` 切换中文。 |
 | `attrs` | `Attributes` | 可选；转发到根元素，调用方 class 会与组件 class 合并。 |
 | `child` | `Child` | 折叠内容。 |
 

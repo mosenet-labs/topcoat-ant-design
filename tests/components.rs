@@ -134,7 +134,7 @@ async fn notification_renders_polite_success_semantics_and_runtime_controls() {
     assert!(html.contains("gr-notification-success"), "{html}");
     assert!(html.contains("role=\"status\""), "{html}");
     assert!(html.contains("aria-live=\"polite\""), "{html}");
-    assert!(html.contains("关闭通知"), "{html}");
+    assert!(html.contains("Close notification"), "{html}");
     assert!(html.contains("popover=\"manual\""), "{html}");
     assert!(html.contains("showPopover"), "{html}");
     assert!(html.contains("hidePopover"), "{html}");
@@ -218,7 +218,7 @@ async fn date_time_range_keeps_native_form_and_popover_semantics() {
     assert!(html.contains("name=\"from\""), "{html}");
     assert!(html.contains("name=\"to\""), "{html}");
     assert!(html.contains("09-20 10:00 → 09-21 10:00"), "{html}");
-    assert!(html.contains("最近 24 小时"), "{html}");
+    assert!(html.contains("Last 24 hours"), "{html}");
     assert!(html.contains("data-source=\"test\""), "{html}");
 }
 
@@ -243,7 +243,7 @@ async fn dialog_connects_native_controls_semantics_and_forwarded_attributes() {
         "{html}"
     );
     assert!(html.contains("data-topcoat-on:cancel"), "{html}");
-    assert!(html.contains("aria-label=\"关闭\""), "{html}");
+    assert!(html.contains("aria-label=\"Close\""), "{html}");
     assert!(html.contains("dialog-fixture"), "{html}");
     assert!(html.contains("data-source=\"test\""), "{html}");
     assert!(html.contains("Dialog 内容"), "{html}");
@@ -284,7 +284,7 @@ async fn accordion_uses_one_active_item_and_keeps_content_rendered() {
     assert!(html.contains("aria-controls=\"fixture-event\""), "{html}");
     assert!(html.contains("aria-expanded=\"false\""), "{html}");
     assert!(
-        html.contains("<!--::topcoat::expr::start") && html.contains(" 项已启用"),
+        html.contains("<!--::topcoat::expr::start") && html.contains(" enabled"),
         "{html}"
     );
     assert!(html.contains("第一组内容"), "{html}");
