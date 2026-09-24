@@ -2,7 +2,7 @@ use topcoat::{
     Result,
     context::Cx,
     icon::icon,
-    runtime::signal,
+    runtime::{Event, signal},
     view::{View, ViewExt, attributes, component, view},
 };
 use topcoat_ant_design::{
@@ -328,4 +328,93 @@ async fn table_pagination_supports_a_reusable_page_size_selector() {
     assert!(html.contains("data-source=\"test\""), "{html}");
     assert!(html.contains("上一页"), "{html}");
     assert!(html.contains("下一页"), "{html}");
+}
+
+#[component]
+async fn controlled_dialog_fixture(
+    cx: &Cx,
+    initially_open: bool,
+    pending: bool,
+) -> Result<impl View> {
+    let open = signal(cx, || initially_open);
+    let busy = signal(cx, || pending);
+    let title = signal(cx, || "编辑 Provider".to_owned());
+    let secret = signal(cx, || "".to_owned());
+    Ok(view! {
+        dialog(
+            config: DialogConfig::new("controlled-provider", "静态备用标题"),
+            busy: &busy,
+            open: Some(&open),
+            title: Some(&title),
+            attrs: attributes! { @close=$(|_event: Event| secret.set("".to_owned())) },
+            <form method="post" action="/providers/save">
+                <input type="password" :value=$(secret.get())>
+            </form>
+        )
+    })
+}
+
+#[tokio::test]
+async fn controlled_dialog_renders_signal_state_without_non_modal_open_attribute() {
+    for (initially_open, state) in [(false, "closed"), (true, "open")] {
+        let cx = &Cx::default();
+        let html = view! { cx => controlled_dialog_fixture(initially_open: initially_open, pending: false) }
+            .single().await.unwrap().render(cx);
+        assert!(html.contains(&format!("data-state=\"{state}\"")), "{html}");
+        assert!(
+            !html.contains(" open=\""),
+            "SSR must wait for showModal: {html}"
+        );
+        assert!(html.contains("data-topcoat-bind:data-state"));
+        assert!(html.contains("queueMicrotask"));
+        // Topcoat prefixes raw expressions with `return `: a leading line
+        // terminator silently returns undefined instead of running the adapter.
+        let binding = html
+            .split_once("data-topcoat-bind:data-state=\"")
+            .expect("dialog state binding")
+            .1
+            .split('"')
+            .next()
+            .unwrap();
+        let returned = binding.split_once("return ").expect("raw return").1;
+        let whitespace = &returned[..returned.len() - returned.trim_start().len()];
+        assert!(
+            !whitespace.contains(['\n', '\r', '\u{2028}', '\u{2029}']),
+            "a newline after return skips the dialog adapter"
+        );
+        assert!(html.contains("target.showModal()"));
+        assert!(html.contains("target.close()"));
+        assert!(html.contains("编辑 Provider"));
+        assert!(!html.contains("静态备用标题"));
+    }
+}
+
+#[tokio::test]
+async fn controlled_dialog_keeps_caller_close_cleanup_and_guards_busy_cancellation() {
+    let cx = &Cx::default();
+    let html = view! { cx => controlled_dialog_fixture(initially_open: true, pending: true) }
+        .single()
+        .await
+        .unwrap()
+        .render(cx);
+    assert!(
+        html.contains("data-topcoat-on:close"),
+        "caller cleanup must survive"
+    );
+    assert!(
+        html.contains("data-topcoat-on:cancel"),
+        "Escape uses the busy guard"
+    );
+    assert!(
+        html.contains("state.open.toggle()"),
+        "native close synchronizes the signal"
+    );
+    assert!(
+        html.contains("state.busy.get()"),
+        "native close retains busy protection"
+    );
+    assert!(
+        html.contains(" disabled"),
+        "busy disables the header close button"
+    );
 }

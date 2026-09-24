@@ -63,11 +63,17 @@ pub async fn dialog(
     cx: &Cx,
     config: DialogConfig<'_>,
     busy: &Signal<bool>,
+    #[default] open: Option<&Signal<bool>>,
+    #[default] title: Option<&Signal<String>>,
     #[default] language: UiLanguage,
     #[default] mut attrs: Attributes,
     #[default] child: Child<'_>,
 ) -> Result<impl View> {
-    let DialogConfig { id, title, eyebrow } = config;
+    let DialogConfig {
+        id,
+        title: static_title,
+        eyebrow,
+    } = config;
     let title_id = format!("{id}-title");
     let close = dialog_close_attributes(cx, id);
     let prevent_cancel = busy.clone();
@@ -89,6 +95,45 @@ pub async fn dialog(
         })
     });
 
+    if let Some(open) = open {
+        // Native dialog methods have no Topcoat Rust facade yet. Keep the DOM
+        // adapter here so applications only own signals, never dialog scripts.
+        // Queue the native operation until all bindings/listeners are hydrated.
+        // The per-element state is refreshed when Topcoat morphs a scope, while
+        // the close listener is installed once and preserves caller @close.
+        // Keep the opening expression on this line: Topcoat inserts `return `
+        // before raw JavaScript, so a leading newline triggers an early return.
+        attrs.extend(attributes! { cx =>
+            :data-state=$(raw!(r#"(() => {
+                    const desired = ${open}.get().dehydrate();
+                    ${busy}.get();
+                    queueMicrotask(() => {
+                        const target = document.getElementById(${id}.dehydrate());
+                        if (!(target instanceof HTMLDialogElement) || !target.isConnected) return;
+                        const key = Symbol.for('topcoat-ant-design.dialog-controller');
+                        if (!target[key]) {
+                            target.addEventListener('close', () => {
+                                const state = target[key];
+                                if (!target.isConnected) return;
+                                if (state.busy.get().dehydrate()) {
+                                    if (!state.open.get().dehydrate()) state.open.toggle();
+                                    if (!target.open) target.showModal();
+                                } else if (state.open.get().dehydrate()) {
+                                    state.open.toggle();
+                                }
+                            });
+                        }
+                        target[key] = { open: ${open}, busy: ${busy} };
+                        const requested = ${open}.get().dehydrate();
+                        if (requested && !target.open) target.showModal();
+                        else if (!requested && target.open && !${busy}.get().dehydrate()) target.close();
+                    });
+                    return desired ? 'open' : 'closed';
+                })()
+            "#, if open.get_untracked() { "open" } else { "closed" }))
+        });
+    }
+
     // 缩小父级 ThenView 的状态，避免嵌套弹窗渲染时产生大型栈临时值。
     Ok(view! {
         <dialog (attrs)>
@@ -97,7 +142,7 @@ pub async fn dialog(
                     if let Some(eyebrow) = eyebrow {
                         <p class="m-0 text-xs font-bold tracking-[0.08em] text-[#8c8c8c]">(eyebrow)</p>
                     }
-                    <h2 class="mb-0 mt-1 text-xl font-semibold leading-7" id=(title_id.as_str())>(title)</h2>
+                    <h2 class="mb-0 mt-1 text-xl font-semibold leading-7" id=(title_id.as_str())>if let Some(title) = title { $(title.get()) } else { (static_title) }</h2>
                 </div>
                 <button class="inline-flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-md border-0 bg-transparent p-0 text-[rgba(0,0,0,0.45)] transition-colors duration-200 hover:bg-[rgba(0,0,0,0.06)] hover:text-[rgba(0,0,0,0.88)] focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[#91caff]" type="button" (close) :disabled=$(busy.get()) aria-label=(language.select("Close", "关闭"))>
                     icon(data: CLOSE_OUTLINED, size: 16)
