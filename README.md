@@ -4,21 +4,21 @@
 
 当前组件：
 
-- [Icons](docs/icons.md)：由 Topcoat Iconify 编译期生成的 Ant Design 图标目录；
-- [Notification](docs/components/notification.md)：页面右上角的操作结果通知；
-- [Popconfirm](docs/components/popconfirm.md)：按钮附近的轻量二次确认气泡；
-- [Dialog](docs/components/dialog.md)：承载表单与集中操作的原生模态对话框；
-- [Tag](docs/components/tag.md)：展示状态和分类；
-- [Tooltip](docs/components/tooltip.md)：提供悬停和键盘聚焦时的文字提示；
-- [Collapse](docs/components/collapse.md)：未知高度内容的展开与收起动效；
-- [Accordion](docs/components/accordion.md)：在多个面板间切换内容；
-- [Tabs](docs/components/tabs.md)：使用真实链接的路由型页签；
-- [Drawer](docs/components/drawer.md)：由 signal 或关闭路由控制的右侧详情面板；
-- [Table](docs/components/table.md)：支持显示密度和分页组合的数据表格；
-- [FormField](docs/components/form-field.md)：统一表单字段的标签、说明和错误展示；
-- [DateTimeRange](docs/components/date-time-range.md)：选择起止日期时间。
+- [Icons](https://docs.rs/topcoat-ant-design/latest/topcoat_ant_design/icons/index.html)：由 Topcoat Iconify 编译期生成的 Ant Design 图标目录；
+- [Notification](https://docs.rs/topcoat-ant-design/latest/topcoat_ant_design/struct.notification.html)：页面右上角的操作结果通知；
+- [Popconfirm](https://docs.rs/topcoat-ant-design/latest/topcoat_ant_design/struct.popconfirm.html)：按钮附近的轻量二次确认气泡；
+- [Dialog](https://docs.rs/topcoat-ant-design/latest/topcoat_ant_design/struct.dialog.html)：承载表单与集中操作的原生模态对话框；
+- [Tag](https://docs.rs/topcoat-ant-design/latest/topcoat_ant_design/struct.tag.html)：展示状态和分类；
+- [Tooltip](https://docs.rs/topcoat-ant-design/latest/topcoat_ant_design/struct.tooltip.html)：提供悬停和键盘聚焦时的文字提示；
+- [Collapse](https://docs.rs/topcoat-ant-design/latest/topcoat_ant_design/struct.collapse.html)：未知高度内容的展开与收起动效；
+- [Accordion](https://docs.rs/topcoat-ant-design/latest/topcoat_ant_design/struct.accordion_item.html)：在多个面板间切换内容；
+- [Tabs](https://docs.rs/topcoat-ant-design/latest/topcoat_ant_design/struct.tabs.html)：使用真实链接的路由型页签；
+- [Drawer](https://docs.rs/topcoat-ant-design/latest/topcoat_ant_design/struct.drawer.html)：由 signal 或关闭路由控制的右侧详情面板；
+- [Table](https://docs.rs/topcoat-ant-design/latest/topcoat_ant_design/struct.data_table.html)：支持显示密度和分页组合的数据表格；
+- [FormField](https://docs.rs/topcoat-ant-design/latest/topcoat_ant_design/struct.form_field.html)：统一表单字段的标签、说明和错误展示；
+- [DateTimeRange](https://docs.rs/topcoat-ant-design/latest/topcoat_ant_design/struct.date_time_range_filter.html)：选择起止日期时间。
 
-[完整快速开始](docs/getting-started.md)说明了依赖、页面资源、AssetBundle 和 Router 的接入关系。
+[完整快速开始](https://github.com/mosenet-labs/topcoat-ant-design/blob/main/docs/getting-started.md)说明了依赖、页面资源、AssetBundle 和 Router 的接入关系。
 
 ## 添加依赖
 
@@ -26,7 +26,7 @@
 
 ```toml
 [dependencies]
-topcoat-ant-design = "0.1.1"
+topcoat-ant-design = "0.1.2"
 ```
 
 在发布前或开发组件库时，可以使用本地路径：
@@ -39,7 +39,7 @@ topcoat-ant-design = { path = "../topcoat-ant-design" }
 默认 feature 已足够渲染组件。只有宿主采用选择性路由发现并需要显式注册字体时，才启用 `router`：
 
 ```toml
-topcoat-ant-design = { version = "0.1.1", features = ["router"] }
+topcoat-ant-design = { version = "0.1.2", features = ["router"] }
 ```
 
 ## 接入样式与字体
@@ -59,7 +59,7 @@ Ok(view! {
 使用完整 `.discover()` 的应用会同时发现 Fontsource 字体路由，不需要额外注册。只发现部分路由的应用可启用 `router` feature，并调用一次扩展：
 
 ```toml
-topcoat-ant-design = { version = "0.1.1", features = ["router"] }
+topcoat-ant-design = { version = "0.1.2", features = ["router"] }
 ```
 
 ```rust,ignore
@@ -97,7 +97,7 @@ Ok(view! {
 })
 ```
 
-图标集缓存位于 `icons/ant-design.json` 并纳入版本控制，CI 和 Docker 构建可以离线完成图标生成。完整语义和尺寸说明见 [Icons 文档](docs/icons.md)。
+图标集缓存位于 `icons/ant-design.json` 并纳入版本控制，CI 和 Docker 构建可以离线完成图标生成。完整语义和尺寸说明见 [Icons 文档](https://docs.rs/topcoat-ant-design/latest/topcoat_ant_design/icons/index.html)。
 
 ## 接入组件
 

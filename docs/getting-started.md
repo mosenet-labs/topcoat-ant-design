@@ -4,7 +4,7 @@
 
 ```toml
 [dependencies]
-topcoat-ant-design = { version = "0.1.1", features = ["router"] }
+topcoat-ant-design = { version = "0.1.2", features = ["router"] }
 ```
 
 本地开发组件库时，可以使用路径依赖：
@@ -126,7 +126,7 @@ notification(
 )
 ```
 
-图标常量从 `topcoat_ant_design::icons` 导入，并交给 Topcoat 原生 `icon` 组件渲染。完整示例见 [Icons 图标](icons.md)。
+图标常量从 `topcoat_ant_design::icons` 导入，并交给 Topcoat 原生 `icon` 组件渲染。完整示例见 [Icons 图标](https://docs.rs/topcoat-ant-design/latest/topcoat_ant_design/icons/index.html)。
 
 ## 接入边界
 
