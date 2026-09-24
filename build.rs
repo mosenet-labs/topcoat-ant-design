@@ -17,11 +17,19 @@ fn main() {
         .expect("stage Ant Design Iconify set");
 
     // UI crate 自己生成组件样式，宿主只需把公开的 Asset 加入最终资源包。
-    let component_stylesheet_path = topcoat::tailwind::BuildConfig::new()
-        .input("styles.css")
-        .output(out.join("topcoat-ant-design.css"))
-        .render()
-        .expect("render component Tailwind stylesheet");
+    let component_stylesheet_path = if env::var_os("DOCS_RS").is_some() {
+        // docs.rs 禁止网络访问，无法由 Topcoat 下载 Tailwind CLI。
+        let path = out.join("topcoat-ant-design.css");
+        fs::copy("assets/topcoat-ant-design.css", &path)
+            .expect("copy bundled component stylesheet for docs.rs");
+        path
+    } else {
+        topcoat::tailwind::BuildConfig::new()
+            .input("styles.css")
+            .output(out.join("topcoat-ant-design.css"))
+            .render()
+            .expect("render component Tailwind stylesheet")
+    };
     let component_stylesheet =
         fs::read(component_stylesheet_path).expect("read component Tailwind stylesheet");
     fs::write(
@@ -34,6 +42,7 @@ fn main() {
     build_gallery(&out);
 
     println!("cargo:rerun-if-changed=build.rs");
+    println!("cargo:rerun-if-changed=assets/topcoat-ant-design.css");
     println!("cargo:rerun-if-changed=icons/ant-design.json");
     println!("cargo:rerun-if-changed=styles.css");
     println!("cargo:rerun-if-changed=src/components");

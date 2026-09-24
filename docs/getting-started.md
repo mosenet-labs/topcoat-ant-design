@@ -4,7 +4,7 @@
 
 ```toml
 [dependencies]
-topcoat-ant-design = { version = "0.1.0", features = ["router"] }
+topcoat-ant-design = { version = "0.1.1", features = ["router"] }
 ```
 
 本地开发组件库时，可以使用路径依赖：
