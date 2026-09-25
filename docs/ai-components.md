@@ -5,7 +5,7 @@
 - 借助 Topcoat 的服务端渲染、浏览器响应式状态、路由和服务端交互能力，逐步实现受 Ant Design X 启发的 AI 界面组件。
 - 从直观的 Chat 聊天界面开始，先验证组件拆分和组合方式，再扩展到思考过程、附件、引用等能力。
 - `topcoat-ant-design` 提供通用 UI、状态呈现和浏览器交互；会话持久化、模型请求、鉴权和文件存储由宿主应用负责。
-- Gallery 单列「AI 组件」分类。Chat 界面是第一个组合示例，后续在同一分类展示各组件的独立状态和用法。
+- Gallery 单列「AI 组件」分类，同时展示 Chat 组合界面和各基础组件的独立状态与用法。
 
 ## Chat 界面拆分
 
@@ -40,9 +40,10 @@ ChatPage（会话数据、路由、请求和流式响应）
 
 ## 当前已落地
 
-- Gallery 已有「AI 组件」分类和 [`/chat`](../src/bin/gallery/app/_ai/chat.rs) 页面，组件概览页也提供入口。
+- Gallery 的「AI 组件」分类提供 [`/chat`](../src/bin/gallery/app/_ai/chat.rs) 组合页，以及 [`/bubble`](../src/bin/gallery/app/_ai/bubble.rs)、[`/message-list`](../src/bin/gallery/app/_ai/message_list.rs)、[`/sender`](../src/bin/gallery/app/_ai/sender.rs) 三个独立组件示例页；每页可展开示例代码。
 - [`chat_bubble`、`chat_message_list`、`chat_sender`](../src/components/chat/mod.rs) 已作为公共组件导出，各自位于 `chat/` 下的独立子模块。
 - Chat 页面展示用户与助手样例消息，草稿由浏览器端 signal 管理；发送后会显示最近一次提交的消息。
+- 独立示例分别展示两种消息角色、消息列表的可访问区域，以及输入区的本地发送交互。
 - 预览支持中英文，不调用模型、不保存会话，也尚未追加完整的多轮历史。
 
 ## 后续需求与验收

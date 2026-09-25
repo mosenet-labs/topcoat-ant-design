@@ -6,7 +6,7 @@
 
 Available components: [Icons](https://docs.rs/topcoat-ant-design/latest/topcoat_ant_design/icons/index.html), [Notification](https://docs.rs/topcoat-ant-design/latest/topcoat_ant_design/struct.notification.html), [Popconfirm](https://docs.rs/topcoat-ant-design/latest/topcoat_ant_design/struct.popconfirm.html), [Dropdown Menu](docs/en/components/dropdown-menu.md), [Dialog](https://docs.rs/topcoat-ant-design/latest/topcoat_ant_design/struct.dialog.html), [Tag](https://docs.rs/topcoat-ant-design/latest/topcoat_ant_design/struct.tag.html), [Tooltip](https://docs.rs/topcoat-ant-design/latest/topcoat_ant_design/struct.tooltip.html), [Collapse](https://docs.rs/topcoat-ant-design/latest/topcoat_ant_design/struct.collapse.html), [Accordion](https://docs.rs/topcoat-ant-design/latest/topcoat_ant_design/struct.accordion_item.html), [Tabs](https://docs.rs/topcoat-ant-design/latest/topcoat_ant_design/struct.tabs.html), [Drawer](https://docs.rs/topcoat-ant-design/latest/topcoat_ant_design/struct.drawer.html), [Table](https://docs.rs/topcoat-ant-design/latest/topcoat_ant_design/struct.data_table.html), [FormField](https://docs.rs/topcoat-ant-design/latest/topcoat_ant_design/struct.form_field.html), and [DateTimeRange](https://docs.rs/topcoat-ant-design/latest/topcoat_ant_design/struct.date_time_range_filter.html).
 
-The AI component set starts with `chat_bubble`, `chat_message_list`, and `chat_sender`. The Gallery's **AI Components** section shows them together in a Chat interface preview.
+The AI component set starts with `chat_bubble`, `chat_message_list`, and `chat_sender`. The Gallery's **AI Components** section shows them together in a Chat interface preview and on separate example pages.
 
 The current scope and next steps are recorded in [AI component requirements](docs/en/ai-components.md).
 
@@ -111,6 +111,8 @@ cargo run -p topcoat-ant-design \
 Open `http://127.0.0.1:3100/` for the English Quick Start page, or `http://127.0.0.1:3100/overview` for the component overview. Use the **中文** switch for Chinese, or open `http://127.0.0.1:3100/?lang=zh` directly. `HOST` and `PORT` override the listening address. Existing component pages render real interactions alongside the same Markdown used by their public API docs. Gallery interactions change browser-side Topcoat signals only and do not call a business service.
 
 Open `http://127.0.0.1:3100/chat` for the Chat interface preview. Its input updates a local message; it does not contact a model.
+
+Open `/bubble`, `/message-list`, and `/sender` for individual Chat component examples and expandable source code.
 
 Open `http://127.0.0.1:3100/dropdown-menu` for the interactive Dropdown Menu example.
 

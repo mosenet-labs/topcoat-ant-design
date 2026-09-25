@@ -95,6 +95,9 @@ async fn gallery_layout(cx: &Cx, slot: Slot<'_>) -> Result<impl View> {
     let form_field_link = href!(_data_entry::form_field_page);
     let date_time_range_link = href!(_data_entry::date_time_range_page);
     let chat_link = href!(_ai::chat_page);
+    let bubble_link = href!(_ai::bubble_page);
+    let message_list_link = href!(_ai::message_list_page);
+    let sender_link = href!(_ai::sender_page);
 
     let overview_active = overview_link.is_current(cx);
     let getting_started_active =
@@ -113,6 +116,9 @@ async fn gallery_layout(cx: &Cx, slot: Slot<'_>) -> Result<impl View> {
     let form_field_active = form_field_link.is_current(cx);
     let date_time_range_active = date_time_range_link.is_current(cx);
     let chat_active = chat_link.is_current(cx);
+    let bubble_active = bubble_link.is_current(cx);
+    let message_list_active = message_list_link.is_current(cx);
+    let sender_active = sender_link.is_current(cx);
     let document_title = if getting_started_active {
         text(locale, "快速开始")
     } else if overview_active {
@@ -121,6 +127,12 @@ async fn gallery_layout(cx: &Cx, slot: Slot<'_>) -> Result<impl View> {
         text(locale, "Icons 图标")
     } else if chat_active {
         locale.select("Chat interface", "Chat 聊天界面")
+    } else if bubble_active {
+        "ChatBubble"
+    } else if message_list_active {
+        "ChatMessageList"
+    } else if sender_active {
+        "ChatSender"
     } else if notification_active {
         text(locale, "Notification 通知提醒框")
     } else if tag_active {
@@ -168,6 +180,9 @@ async fn gallery_layout(cx: &Cx, slot: Slot<'_>) -> Result<impl View> {
     let form_field_url = locale.link(&form_field_link.resolve(cx));
     let date_time_range_url = locale.link(&date_time_range_link.resolve(cx));
     let chat_url = locale.link(&chat_link.resolve(cx));
+    let bubble_url = locale.link(&bubble_link.resolve(cx));
+    let message_list_url = locale.link(&message_list_link.resolve(cx));
+    let sender_url = locale.link(&sender_link.resolve(cx));
 
     Ok(view! {
         <!DOCTYPE html>
@@ -208,6 +223,9 @@ async fn gallery_layout(cx: &Cx, slot: Slot<'_>) -> Result<impl View> {
                                 <p class="mb-2 mt-0 px-3 text-[11px] font-bold tracking-[0.1em] text-[#8c8c8c]">(locale.select("AI Components", "AI 组件"))</p>
                                 <div class="grid gap-1">
                                     gallery_nav_link(href: chat_url.as_str(), badge: "AI", label: locale.select("Chat interface", "Chat 聊天界面"), active: chat_active)
+                                    gallery_nav_link(href: bubble_url.as_str(), badge: "B", label: "ChatBubble", active: bubble_active)
+                                    gallery_nav_link(href: message_list_url.as_str(), badge: "L", label: "ChatMessageList", active: message_list_active)
+                                    gallery_nav_link(href: sender_url.as_str(), badge: "S", label: "ChatSender", active: sender_active)
                                 </div>
                             </section>
                             <section>
@@ -271,6 +289,9 @@ pub(in crate::app) async fn overview_content(cx: &Cx) -> Result<impl View> {
             <a class="group flex items-center justify-between gap-6 rounded-xl border border-[#91caff] bg-[#e6f4ff] p-6 text-[#262626] no-underline shadow-sm transition-[border-color,box-shadow,transform] duration-200 hover:-translate-y-0.5 hover:border-[#1677ff] hover:shadow-md max-[620px]:block" href=(locale.link(&href!(home).resolve(cx)))><div><span class="text-xs font-bold tracking-[0.1em] text-[#0958d9]">(text(locale, "第一次使用"))</span><h2 class="mb-2 mt-2 text-xl font-semibold">(text(locale, "先完成五步接入"))</h2><p class="m-0 text-sm leading-6 text-[#595959]">(text(locale, "查看依赖、页面资源、AssetBundle、Router 和第一个组件的完整示例。"))</p></div><span class="shrink-0 text-sm font-semibold text-[#1677ff] max-[620px]:mt-5 max-[620px]:inline-block">(text(locale, "打开快速开始 →"))</span></a>
             <section class="grid grid-cols-3 gap-5 max-[760px]:grid-cols-1">
                 <a class="group rounded-xl border border-[#cbdfff] bg-[#f6faff] p-6 text-[#262626] no-underline shadow-sm transition-[border-color,box-shadow,transform] duration-200 hover:-translate-y-0.5 hover:border-[#1677ff] hover:shadow-md" href=(locale.link(&href!(_ai::chat_page).resolve(cx)))><span class="mb-5 grid size-10 place-items-center rounded-lg bg-[#1677ff] text-xs font-bold text-white">"AI"</span><h2 class="m-0 text-lg font-semibold">(locale.select("Chat interface", "Chat 聊天界面"))</h2><p class="mb-0 mt-2 text-sm leading-6 text-[#595959]">(locale.select("Explore a composed AI conversation with reusable Topcoat components.", "用可复用的 Topcoat 组件查看完整聊天界面。"))</p><span class="mt-6 inline-block text-sm text-[#1677ff]">(text(locale, "查看组件 →"))</span></a>
+                <a class="group rounded-xl border border-[#e8eaee] bg-white p-6 text-[#262626] no-underline shadow-sm transition-[border-color,box-shadow,transform] duration-200 hover:-translate-y-0.5 hover:border-[#91caff] hover:shadow-md" href=(locale.link(&href!(_ai::bubble_page).resolve(cx)))><span class="mb-5 grid size-10 place-items-center rounded-lg bg-[#e6f4ff] font-bold text-[#1677ff]">"B"</span><h2 class="m-0 text-lg font-semibold">"ChatBubble"</h2><p class="mb-0 mt-2 text-sm leading-6 text-[#595959]">(locale.select("Compare user and assistant message bubbles.", "查看用户与助手消息气泡。"))</p><span class="mt-6 inline-block text-sm text-[#1677ff]">(text(locale, "查看组件 →"))</span></a>
+                <a class="group rounded-xl border border-[#e8eaee] bg-white p-6 text-[#262626] no-underline shadow-sm transition-[border-color,box-shadow,transform] duration-200 hover:-translate-y-0.5 hover:border-[#91caff] hover:shadow-md" href=(locale.link(&href!(_ai::message_list_page).resolve(cx)))><span class="mb-5 grid size-10 place-items-center rounded-lg bg-[#e6f4ff] font-bold text-[#1677ff]">"L"</span><h2 class="m-0 text-lg font-semibold">"ChatMessageList"</h2><p class="mb-0 mt-2 text-sm leading-6 text-[#595959]">(locale.select("See a labelled conversation region with messages.", "查看带标签的会话消息区域。"))</p><span class="mt-6 inline-block text-sm text-[#1677ff]">(text(locale, "查看组件 →"))</span></a>
+                <a class="group rounded-xl border border-[#e8eaee] bg-white p-6 text-[#262626] no-underline shadow-sm transition-[border-color,box-shadow,transform] duration-200 hover:-translate-y-0.5 hover:border-[#91caff] hover:shadow-md" href=(locale.link(&href!(_ai::sender_page).resolve(cx)))><span class="mb-5 grid size-10 place-items-center rounded-lg bg-[#e6f4ff] font-bold text-[#1677ff]">"S"</span><h2 class="m-0 text-lg font-semibold">"ChatSender"</h2><p class="mb-0 mt-2 text-sm leading-6 text-[#595959]">(locale.select("Try the browser-side draft and submit behavior.", "体验浏览器本地草稿和发送交互。"))</p><span class="mt-6 inline-block text-sm text-[#1677ff]">(text(locale, "查看组件 →"))</span></a>
                 <a class="group rounded-xl border border-[#e8eaee] bg-white p-6 text-[#262626] no-underline shadow-sm transition-[border-color,box-shadow,transform] duration-200 hover:-translate-y-0.5 hover:border-[#91caff] hover:shadow-md" href=(locale.link(&href!(_feedback::notification_page).resolve(cx)))><span class="mb-5 grid size-10 place-items-center rounded-lg bg-[#e6f4ff] font-bold text-[#1677ff]">"N"</span><h2 class="m-0 text-lg font-semibold">"Notification"</h2><p class="mb-0 mt-2 text-sm leading-6 text-[#595959]">(text(locale, "在视口右上角反馈操作结果，支持四种语义状态。"))</p><span class="mt-6 inline-block text-sm text-[#1677ff]">(text(locale, "查看组件 →"))</span></a>
                 <a class="group rounded-xl border border-[#e8eaee] bg-white p-6 text-[#262626] no-underline shadow-sm transition-[border-color,box-shadow,transform] duration-200 hover:-translate-y-0.5 hover:border-[#91caff] hover:shadow-md" href=(locale.link(&href!(_feedback::popconfirm_page).resolve(cx)))><span class="mb-5 grid size-10 place-items-center rounded-lg bg-[#fff7e6] font-bold text-[#d46b08]">"P"</span><h2 class="m-0 text-lg font-semibold">"Popconfirm"</h2><p class="mb-0 mt-2 text-sm leading-6 text-[#595959]">(text(locale, "贴近操作入口完成轻量确认，并处理边缘偏移和翻转。"))</p><span class="mt-6 inline-block text-sm text-[#1677ff]">(text(locale, "查看组件 →"))</span></a>
                 <a class="group rounded-xl border border-[#e8eaee] bg-white p-6 text-[#262626] no-underline shadow-sm transition-[border-color,box-shadow,transform] duration-200 hover:-translate-y-0.5 hover:border-[#91caff] hover:shadow-md" href=(locale.link(&href!(_feedback::dialog_page).resolve(cx)))><span class="mb-5 grid size-10 place-items-center rounded-lg bg-[#e6f4ff] font-bold text-[#1677ff]">"Di"</span><h2 class="m-0 text-lg font-semibold">"Dialog"</h2><p class="mb-0 mt-2 text-sm leading-6 text-[#595959]">(text(locale, "使用原生模态语义承载表单和集中操作。"))</p><span class="mt-6 inline-block text-sm text-[#1677ff]">(text(locale, "查看组件 →"))</span></a>
@@ -397,6 +418,9 @@ mod tests {
             ("/overview", "Component overview", None),
             ("/icons", "Icons", None),
             ("/chat", "Chat interface", None),
+            ("/bubble", "ChatBubble", None),
+            ("/message-list", "ChatMessageList", None),
+            ("/sender", "ChatSender", None),
             ("/notification", "Notification", None),
             ("/tag", "Tag", None),
             ("/tooltip", "Tooltip", None),
@@ -441,6 +465,9 @@ mod tests {
                 assert!(html.contains("Complete the five integration steps"));
                 assert!(html.contains("href=\"/\""));
                 assert!(html.contains("href=\"/chat\""));
+                assert!(html.contains("href=\"/bubble\""));
+                assert!(html.contains("href=\"/message-list\""));
+                assert!(html.contains("href=\"/sender\""));
                 assert!(html.contains("href=\"/dropdown-menu\""));
             }
             if path == "/dropdown-menu" {
@@ -452,6 +479,18 @@ mod tests {
                 assert!(html.contains("gr-chat-bubble"));
                 assert!(html.contains("gr-chat-sender"));
                 assert!(html.contains("AI Components"));
+            }
+            if path == "/bubble" {
+                assert!(html.contains("gr-chat-bubble-user"));
+                assert!(html.contains("data-role=\"assistant\""));
+            }
+            if path == "/message-list" {
+                assert!(html.contains("gr-chat-message-list"));
+                assert!(html.contains("role=\"log\""));
+            }
+            if path == "/sender" {
+                assert!(html.contains("gr-chat-sender"));
+                assert!(html.contains("gallery-sender-draft"));
             }
             assert!(
                 !html
@@ -479,6 +518,9 @@ mod tests {
                 path,
                 "/notification"
                     | "/chat"
+                    | "/bubble"
+                    | "/message-list"
+                    | "/sender"
                     | "/tag"
                     | "/tooltip"
                     | "/popconfirm"

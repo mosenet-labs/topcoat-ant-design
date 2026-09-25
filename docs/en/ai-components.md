@@ -5,7 +5,7 @@
 - Use Topcoat's server rendering, browser reactivity, routing, and server interaction features to build AI interface components inspired by Ant Design X.
 - Start with a visible Chat interface to validate component composition, then add thinking, attachments, sources, and other capabilities.
 - `topcoat-ant-design` owns reusable UI, state presentation, and browser interaction. The host application owns conversation persistence, model requests, authentication, and file storage.
-- Keep a separate **AI Components** section in the Gallery. Chat is its first composed example; later entries can demonstrate individual components and states.
+- Keep a separate **AI Components** section in the Gallery for the composed Chat interface and individual component examples.
 
 ## Chat interface composition
 
@@ -40,9 +40,10 @@ The component library does not prescribe a model protocol. The host handles requ
 
 ## Implemented so far
 
-- The Gallery has an **AI Components** section, a [`/chat`](../../src/bin/gallery/app/_ai/chat.rs) page, and a link from the component overview.
+- The Gallery's **AI Components** section has a composed [`/chat`](../../src/bin/gallery/app/_ai/chat.rs) page and individual [`/bubble`](../../src/bin/gallery/app/_ai/bubble.rs), [`/message-list`](../../src/bin/gallery/app/_ai/message_list.rs), and [`/sender`](../../src/bin/gallery/app/_ai/sender.rs) examples. Each example can reveal its source code.
 - [`chat_bubble`, `chat_message_list`, and `chat_sender`](../../src/components/chat/mod.rs) are exported as public components, each in its own `chat/` submodule.
 - The Chat page displays sample user and assistant messages. A browser-side signal holds the draft, and submitting displays the most recently sent message.
+- The individual examples cover both message roles, the accessible message region, and local sender interaction.
 - The preview supports English and Chinese. It does not call a model, persist conversations, or append a complete multi-turn history yet.
 
 ## Next requirements and acceptance
