@@ -6,6 +6,7 @@ mod language;
 mod theme;
 
 pub use components::accordion::{AccordionItemConfig, accordion_item};
+pub use components::chat::{ChatBubbleRole, chat_bubble, chat_message_list, chat_sender};
 pub use components::collapse::{collapse, collapse_trigger_attributes};
 pub use components::date_time_range::{DateTimeRangeConfig, date_time_range_filter};
 pub use components::dialog::{

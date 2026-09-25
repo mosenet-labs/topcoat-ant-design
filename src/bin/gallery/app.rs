@@ -1,4 +1,5 @@
 use crate::locale::text;
+mod _ai;
 mod _data_display;
 mod _data_entry;
 mod _feedback;
@@ -93,6 +94,7 @@ async fn gallery_layout(cx: &Cx, slot: Slot<'_>) -> Result<impl View> {
     let table_link = href!(_data_display::table_page);
     let form_field_link = href!(_data_entry::form_field_page);
     let date_time_range_link = href!(_data_entry::date_time_range_page);
+    let chat_link = href!(_ai::chat_page);
 
     let overview_active = overview_link.is_current(cx);
     let getting_started_active =
@@ -109,12 +111,15 @@ async fn gallery_layout(cx: &Cx, slot: Slot<'_>) -> Result<impl View> {
     let table_active = table_link.is_current(cx);
     let form_field_active = form_field_link.is_current(cx);
     let date_time_range_active = date_time_range_link.is_current(cx);
+    let chat_active = chat_link.is_current(cx);
     let document_title = if getting_started_active {
         text(locale, "快速开始")
     } else if overview_active {
         text(locale, "组件概览")
     } else if icons_active {
         text(locale, "Icons 图标")
+    } else if chat_active {
+        locale.select("Chat interface", "Chat 聊天界面")
     } else if notification_active {
         text(locale, "Notification 通知提醒框")
     } else if tag_active {
@@ -157,6 +162,7 @@ async fn gallery_layout(cx: &Cx, slot: Slot<'_>) -> Result<impl View> {
     let table_url = locale.link(&table_link.resolve(cx));
     let form_field_url = locale.link(&form_field_link.resolve(cx));
     let date_time_range_url = locale.link(&date_time_range_link.resolve(cx));
+    let chat_url = locale.link(&chat_link.resolve(cx));
 
     Ok(view! {
         <!DOCTYPE html>
@@ -191,6 +197,12 @@ async fn gallery_layout(cx: &Cx, slot: Slot<'_>) -> Result<impl View> {
                                     gallery_nav_link(href: getting_started_url.as_str(), badge: "→", label: text(locale, "快速开始"), active: getting_started_active)
                                     gallery_nav_link(href: overview_url.as_str(), badge: "01", label: text(locale, "组件概览"), active: overview_active)
                                     gallery_nav_link(href: icons_url.as_str(), badge: "I", label: text(locale, "Icons 图标"), active: icons_active)
+                                </div>
+                            </section>
+                            <section>
+                                <p class="mb-2 mt-0 px-3 text-[11px] font-bold tracking-[0.1em] text-[#8c8c8c]">(locale.select("AI Components", "AI 组件"))</p>
+                                <div class="grid gap-1">
+                                    gallery_nav_link(href: chat_url.as_str(), badge: "AI", label: locale.select("Chat interface", "Chat 聊天界面"), active: chat_active)
                                 </div>
                             </section>
                             <section>
@@ -252,6 +264,7 @@ pub(in crate::app) async fn overview_content(cx: &Cx) -> Result<impl View> {
         <div class="grid gap-6">
             <a class="group flex items-center justify-between gap-6 rounded-xl border border-[#91caff] bg-[#e6f4ff] p-6 text-[#262626] no-underline shadow-sm transition-[border-color,box-shadow,transform] duration-200 hover:-translate-y-0.5 hover:border-[#1677ff] hover:shadow-md max-[620px]:block" href=(locale.link(&href!(home).resolve(cx)))><div><span class="text-xs font-bold tracking-[0.1em] text-[#0958d9]">(text(locale, "第一次使用"))</span><h2 class="mb-2 mt-2 text-xl font-semibold">(text(locale, "先完成五步接入"))</h2><p class="m-0 text-sm leading-6 text-[#595959]">(text(locale, "查看依赖、页面资源、AssetBundle、Router 和第一个组件的完整示例。"))</p></div><span class="shrink-0 text-sm font-semibold text-[#1677ff] max-[620px]:mt-5 max-[620px]:inline-block">(text(locale, "打开快速开始 →"))</span></a>
             <section class="grid grid-cols-3 gap-5 max-[760px]:grid-cols-1">
+                <a class="group rounded-xl border border-[#cbdfff] bg-[#f6faff] p-6 text-[#262626] no-underline shadow-sm transition-[border-color,box-shadow,transform] duration-200 hover:-translate-y-0.5 hover:border-[#1677ff] hover:shadow-md" href=(locale.link(&href!(_ai::chat_page).resolve(cx)))><span class="mb-5 grid size-10 place-items-center rounded-lg bg-[#1677ff] text-xs font-bold text-white">"AI"</span><h2 class="m-0 text-lg font-semibold">(locale.select("Chat interface", "Chat 聊天界面"))</h2><p class="mb-0 mt-2 text-sm leading-6 text-[#595959]">(locale.select("Explore a composed AI conversation with reusable Topcoat components.", "用可复用的 Topcoat 组件查看完整聊天界面。"))</p><span class="mt-6 inline-block text-sm text-[#1677ff]">(text(locale, "查看组件 →"))</span></a>
                 <a class="group rounded-xl border border-[#e8eaee] bg-white p-6 text-[#262626] no-underline shadow-sm transition-[border-color,box-shadow,transform] duration-200 hover:-translate-y-0.5 hover:border-[#91caff] hover:shadow-md" href=(locale.link(&href!(_feedback::notification_page).resolve(cx)))><span class="mb-5 grid size-10 place-items-center rounded-lg bg-[#e6f4ff] font-bold text-[#1677ff]">"N"</span><h2 class="m-0 text-lg font-semibold">"Notification"</h2><p class="mb-0 mt-2 text-sm leading-6 text-[#595959]">(text(locale, "在视口右上角反馈操作结果，支持四种语义状态。"))</p><span class="mt-6 inline-block text-sm text-[#1677ff]">(text(locale, "查看组件 →"))</span></a>
                 <a class="group rounded-xl border border-[#e8eaee] bg-white p-6 text-[#262626] no-underline shadow-sm transition-[border-color,box-shadow,transform] duration-200 hover:-translate-y-0.5 hover:border-[#91caff] hover:shadow-md" href=(locale.link(&href!(_feedback::popconfirm_page).resolve(cx)))><span class="mb-5 grid size-10 place-items-center rounded-lg bg-[#fff7e6] font-bold text-[#d46b08]">"P"</span><h2 class="m-0 text-lg font-semibold">"Popconfirm"</h2><p class="mb-0 mt-2 text-sm leading-6 text-[#595959]">(text(locale, "贴近操作入口完成轻量确认，并处理边缘偏移和翻转。"))</p><span class="mt-6 inline-block text-sm text-[#1677ff]">(text(locale, "查看组件 →"))</span></a>
                 <a class="group rounded-xl border border-[#e8eaee] bg-white p-6 text-[#262626] no-underline shadow-sm transition-[border-color,box-shadow,transform] duration-200 hover:-translate-y-0.5 hover:border-[#91caff] hover:shadow-md" href=(locale.link(&href!(_feedback::dialog_page).resolve(cx)))><span class="mb-5 grid size-10 place-items-center rounded-lg bg-[#e6f4ff] font-bold text-[#1677ff]">"Di"</span><h2 class="m-0 text-lg font-semibold">"Dialog"</h2><p class="mb-0 mt-2 text-sm leading-6 text-[#595959]">(text(locale, "使用原生模态语义承载表单和集中操作。"))</p><span class="mt-6 inline-block text-sm text-[#1677ff]">(text(locale, "查看组件 →"))</span></a>
@@ -366,6 +379,7 @@ mod tests {
             ("/getting-started", "Quick start", None),
             ("/overview", "Component overview", None),
             ("/icons", "Icons", None),
+            ("/chat", "Chat interface", None),
             ("/notification", "Notification", None),
             ("/tag", "Tag", None),
             ("/tooltip", "Tooltip", None),
@@ -408,6 +422,13 @@ mod tests {
                 assert!(html.contains("<title>Component overview · Topcoat Ant Design</title>"));
                 assert!(html.contains("Complete the five integration steps"));
                 assert!(html.contains("href=\"/\""));
+                assert!(html.contains("href=\"/chat\""));
+            }
+            if path == "/chat" {
+                assert!(html.contains("<title>Chat interface · Topcoat Ant Design</title>"));
+                assert!(html.contains("gr-chat-bubble"));
+                assert!(html.contains("gr-chat-sender"));
+                assert!(html.contains("AI Components"));
             }
             assert!(
                 !html
@@ -434,6 +455,7 @@ mod tests {
             if matches!(
                 path,
                 "/notification"
+                    | "/chat"
                     | "/tag"
                     | "/tooltip"
                     | "/popconfirm"

@@ -1,4 +1,5 @@
 pub(super) mod accordion;
+pub(super) mod chat;
 pub(super) mod collapse;
 pub(super) mod date_time_range;
 pub(super) mod dialog;

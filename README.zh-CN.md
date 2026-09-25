@@ -20,6 +20,8 @@
 - [FormField](https://docs.rs/topcoat-ant-design/latest/topcoat_ant_design/struct.form_field.html)：统一表单字段的标签、说明和错误展示；
 - [DateTimeRange](https://docs.rs/topcoat-ant-design/latest/topcoat_ant_design/struct.date_time_range_filter.html)：选择起止日期时间。
 
+AI 组件从 `chat_bubble`、`chat_message_list` 和 `chat_sender` 开始。Gallery 中的「AI 组件」分类会把它们组合成 Chat 聊天界面展示。
+
 [完整快速开始](https://github.com/mosenet-labs/topcoat-ant-design/blob/main/docs/getting-started.md)说明了依赖、页面资源、AssetBundle 和 Router 的接入关系。
 
 ## 添加依赖
@@ -198,13 +200,14 @@ cargo run -p topcoat-ant-design \
 - `http://127.0.0.1:3100/`：快速开始与完整接入说明；
 - `http://127.0.0.1:3100/overview`：组件概览；
 - `http://127.0.0.1:3100/icons`：Topcoat Iconify 图标目录；
+- `http://127.0.0.1:3100/chat`：Chat 聊天界面，本地发送预览，不连接模型；
 - `http://127.0.0.1:3100/notification`：Notification；
 - `http://127.0.0.1:3100/popconfirm`：Popconfirm；
 - `http://127.0.0.1:3100/collapse`：Collapse 动画；
 - `http://127.0.0.1:3100/tabs`：Tabs 路由页签；
 - `http://127.0.0.1:3100/drawer`：Drawer。
 
-可以使用 `HOST` 和 `PORT` 环境变量覆盖监听地址。Gallery 使用 `app.rs` 根路由、下划线逻辑分组、无路径 `#[page]`、根 `#[layout]` 和类型安全的 `href!`；每个组件页同时展示真实交互效果与公开 API 共用的 Markdown 文档。
+可以使用 `HOST` 和 `PORT` 环境变量覆盖监听地址。Gallery 使用 `app.rs` 根路由、下划线逻辑分组、无路径 `#[page]`、根 `#[layout]` 和类型安全的 `href!`；现有基础组件页同时展示真实交互效果与公开 API 共用的 Markdown 文档。
 
 Gallery 只修改浏览器中的 Topcoat signal，不连接业务服务。
 
