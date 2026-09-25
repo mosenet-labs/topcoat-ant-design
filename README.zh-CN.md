@@ -9,6 +9,7 @@
 - [Icons](https://docs.rs/topcoat-ant-design/latest/topcoat_ant_design/icons/index.html)：由 Topcoat Iconify 编译期生成的 Ant Design 图标目录；
 - [Notification](https://docs.rs/topcoat-ant-design/latest/topcoat_ant_design/struct.notification.html)：页面右上角的操作结果通知；
 - [Popconfirm](https://docs.rs/topcoat-ant-design/latest/topcoat_ant_design/struct.popconfirm.html)：按钮附近的轻量二次确认气泡；
+- [Dropdown Menu](docs/components/dropdown-menu.md)：按钮附近的紧凑操作菜单；
 - [Dialog](https://docs.rs/topcoat-ant-design/latest/topcoat_ant_design/struct.dialog.html)：承载表单与集中操作的原生模态对话框；
 - [Tag](https://docs.rs/topcoat-ant-design/latest/topcoat_ant_design/struct.tag.html)：展示状态和分类；
 - [Tooltip](https://docs.rs/topcoat-ant-design/latest/topcoat_ant_design/struct.tooltip.html)：提供悬停和键盘聚焦时的文字提示；
@@ -179,6 +180,7 @@ Tabs 由 `tabs` 和 `tab_link` 组成。宿主根据当前 Topcoat 路由传入 
 | `icons` | 提供编译期校验的 Ant Design `IconData` 常量 | 无 |
 | `notification`、`NotificationTone` | 展示页面级操作反馈 | 无 |
 | `popconfirm`、`popconfirm_trigger_attributes` | 建立确认气泡及其触发关系 | 无 |
+| `dropdown_menu`、`dropdown_menu_trigger_attributes` | 建立操作菜单及其触发关系 | 无 |
 | `collapse`、`collapse_trigger_attributes` | 建立可访问的折叠内容及触发关系 | 无 |
 | `tabs`、`tab_link` | 建立路由型详情页签 | 无 |
 | `drawer` | 展示可关闭的右侧详情面板 | 无 |
@@ -205,6 +207,7 @@ cargo run -p topcoat-ant-design \
 - `http://127.0.0.1:3100/chat`：Chat 聊天界面，本地发送预览，不连接模型；
 - `http://127.0.0.1:3100/notification`：Notification；
 - `http://127.0.0.1:3100/popconfirm`：Popconfirm；
+- `http://127.0.0.1:3100/dropdown-menu`：Dropdown 下拉菜单；
 - `http://127.0.0.1:3100/collapse`：Collapse 动画；
 - `http://127.0.0.1:3100/tabs`：Tabs 路由页签；
 - `http://127.0.0.1:3100/drawer`：Drawer。

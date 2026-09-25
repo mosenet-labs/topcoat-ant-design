@@ -4,6 +4,7 @@ pub(super) mod collapse;
 pub(super) mod date_time_range;
 pub(super) mod dialog;
 pub(super) mod drawer;
+pub(super) mod dropdown_menu;
 pub(super) mod form_field;
 pub(super) mod notification;
 pub(super) mod popconfirm;

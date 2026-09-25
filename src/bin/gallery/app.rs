@@ -89,6 +89,7 @@ async fn gallery_layout(cx: &Cx, slot: Slot<'_>) -> Result<impl View> {
     let drawer_link = href!(_feedback::drawer_page);
     let collapse_link = href!(_motion::collapse_page);
     let accordion_link = href!(_motion::accordion_page);
+    let dropdown_menu_link = href!(_navigation::dropdown_menu_page);
     let tabs_link = href!(_navigation::tabs_page);
     let table_link = href!(_data_display::table_page);
     let form_field_link = href!(_data_entry::form_field_page);
@@ -106,6 +107,7 @@ async fn gallery_layout(cx: &Cx, slot: Slot<'_>) -> Result<impl View> {
     let drawer_active = drawer_link.is_current(cx);
     let collapse_active = collapse_link.is_current(cx);
     let accordion_active = accordion_link.is_current(cx);
+    let dropdown_menu_active = dropdown_menu_link.is_current(cx);
     let tabs_active = tabs_link.is_current(cx) || uri(cx).path().starts_with("/tabs/");
     let table_active = table_link.is_current(cx);
     let form_field_active = form_field_link.is_current(cx);
@@ -135,6 +137,8 @@ async fn gallery_layout(cx: &Cx, slot: Slot<'_>) -> Result<impl View> {
         text(locale, "Collapse 折叠动画")
     } else if accordion_active {
         text(locale, "Accordion 手风琴")
+    } else if dropdown_menu_active {
+        locale.select("Dropdown Menu", "Dropdown 下拉菜单")
     } else if tabs_active {
         text(locale, "Tabs 路由页签")
     } else if table_active {
@@ -158,6 +162,7 @@ async fn gallery_layout(cx: &Cx, slot: Slot<'_>) -> Result<impl View> {
     let drawer_url = locale.link(&drawer_link.resolve(cx));
     let collapse_url = locale.link(&collapse_link.resolve(cx));
     let accordion_url = locale.link(&accordion_link.resolve(cx));
+    let dropdown_menu_url = locale.link(&dropdown_menu_link.resolve(cx));
     let tabs_url = locale.link(&tabs_link.resolve(cx));
     let table_url = locale.link(&table_link.resolve(cx));
     let form_field_url = locale.link(&form_field_link.resolve(cx));
@@ -218,6 +223,7 @@ async fn gallery_layout(cx: &Cx, slot: Slot<'_>) -> Result<impl View> {
                             </section>
                             <section>
                                 <p class="mb-2 mt-0 px-3 text-[11px] font-bold tracking-[0.1em] text-[#8c8c8c]">(text(locale, "导航"))</p>
+                                gallery_nav_link(href: dropdown_menu_url.as_str(), badge: "Dd", label: locale.select("Dropdown Menu", "Dropdown 下拉菜单"), active: dropdown_menu_active)
                                 gallery_nav_link(href: tabs_url.as_str(), badge: "T", label: "Tabs", active: tabs_active)
                             </section>
                             <section>
@@ -270,6 +276,7 @@ pub(in crate::app) async fn overview_content(cx: &Cx) -> Result<impl View> {
                 <a class="group rounded-xl border border-[#e8eaee] bg-white p-6 text-[#262626] no-underline shadow-sm transition-[border-color,box-shadow,transform] duration-200 hover:-translate-y-0.5 hover:border-[#91caff] hover:shadow-md" href=(locale.link(&href!(_feedback::dialog_page).resolve(cx)))><span class="mb-5 grid size-10 place-items-center rounded-lg bg-[#e6f4ff] font-bold text-[#1677ff]">"Di"</span><h2 class="m-0 text-lg font-semibold">"Dialog"</h2><p class="mb-0 mt-2 text-sm leading-6 text-[#595959]">(text(locale, "使用原生模态语义承载表单和集中操作。"))</p><span class="mt-6 inline-block text-sm text-[#1677ff]">(text(locale, "查看组件 →"))</span></a>
                 <a class="group rounded-xl border border-[#e8eaee] bg-white p-6 text-[#262626] no-underline shadow-sm transition-[border-color,box-shadow,transform] duration-200 hover:-translate-y-0.5 hover:border-[#91caff] hover:shadow-md" href=(locale.link(&href!(_motion::collapse_page).resolve(cx)))><span class="mb-5 grid size-10 place-items-center rounded-lg bg-[#f6ffed] font-bold text-[#389e0d]">"C"</span><h2 class="m-0 text-lg font-semibold">"Collapse"</h2><p class="mb-0 mt-2 text-sm leading-6 text-[#595959]">(text(locale, "为未知高度内容提供可逆的展开与收起过渡。"))</p><span class="mt-6 inline-block text-sm text-[#1677ff]">(text(locale, "查看组件 →"))</span></a>
                 <a class="group rounded-xl border border-[#e8eaee] bg-white p-6 text-[#262626] no-underline shadow-sm transition-[border-color,box-shadow,transform] duration-200 hover:-translate-y-0.5 hover:border-[#91caff] hover:shadow-md" href=(locale.link(&href!(_feedback::drawer_page).resolve(cx)))><span class="mb-5 grid size-10 place-items-center rounded-lg bg-[#f9f0ff] font-bold text-[#722ed1]">"D"</span><h2 class="m-0 text-lg font-semibold">"Drawer"</h2><p class="mb-0 mt-2 text-sm leading-6 text-[#595959]">(text(locale, "在当前列表上方查看完整记录详情。"))</p><span class="mt-6 inline-block text-sm text-[#1677ff]">(text(locale, "查看组件 →"))</span></a>
+                <a class="group rounded-xl border border-[#e8eaee] bg-white p-6 text-[#262626] no-underline shadow-sm transition-[border-color,box-shadow,transform] duration-200 hover:-translate-y-0.5 hover:border-[#91caff] hover:shadow-md" href=(locale.link(&href!(_navigation::dropdown_menu_page).resolve(cx)))><span class="mb-5 grid size-10 place-items-center rounded-lg bg-[#e6f4ff] font-bold text-[#1677ff]">"Dd"</span><h2 class="m-0 text-lg font-semibold">"Dropdown Menu"</h2><p class="mb-0 mt-2 text-sm leading-6 text-[#595959]">(locale.select("Group secondary actions beside their trigger.", "把次要操作收进触发按钮旁的菜单。"))</p><span class="mt-6 inline-block text-sm text-[#1677ff]">(text(locale, "查看组件 →"))</span></a>
                 <a class="group rounded-xl border border-[#e8eaee] bg-white p-6 text-[#262626] no-underline shadow-sm transition-[border-color,box-shadow,transform] duration-200 hover:-translate-y-0.5 hover:border-[#91caff] hover:shadow-md" href=(locale.link(&href!(_navigation::tabs_page).resolve(cx)))><span class="mb-5 grid size-10 place-items-center rounded-lg bg-[#e6f4ff] font-bold text-[#1677ff]">"T"</span><h2 class="m-0 text-lg font-semibold">"Tabs"</h2><p class="mb-0 mt-2 text-sm leading-6 text-[#595959]">(text(locale, "用真实路由组织对象详情页面。"))</p><span class="mt-6 inline-block text-sm text-[#1677ff]">(text(locale, "查看组件 →"))</span></a>
                 <a class="group rounded-xl border border-[#e8eaee] bg-white p-6 text-[#262626] no-underline shadow-sm transition-[border-color,box-shadow,transform] duration-200 hover:-translate-y-0.5 hover:border-[#91caff] hover:shadow-md" href=(locale.link(&href!(_data_display::table_page).resolve(cx)))><span class="mb-5 grid size-10 place-items-center rounded-lg bg-[#f9f0ff] font-bold text-[#722ed1]">"Tb"</span><h2 class="m-0 text-lg font-semibold">"Table"</h2><p class="mb-0 mt-2 text-sm leading-6 text-[#595959]">(text(locale, "用统一密度展示数据，并组合页码或游标分页。"))</p><span class="mt-6 inline-block text-sm text-[#1677ff]">(text(locale, "查看组件 →"))</span></a>
                 <a class="group rounded-xl border border-[#e8eaee] bg-white p-6 text-[#262626] no-underline shadow-sm transition-[border-color,box-shadow,transform] duration-200 hover:-translate-y-0.5 hover:border-[#91caff] hover:shadow-md" href=(locale.link(&href!(_data_entry::form_field_page).resolve(cx)))><span class="mb-5 grid size-10 place-items-center rounded-lg bg-[#fff7e6] font-bold text-[#d46b08]">"F"</span><h2 class="m-0 text-lg font-semibold">"FormField"</h2><p class="mb-0 mt-2 text-sm leading-6 text-[#595959]">(text(locale, "统一表单字段标签、说明与错误反馈。"))</p><span class="mt-6 inline-block text-sm text-[#1677ff]">(text(locale, "查看组件 →"))</span></a>
@@ -312,6 +319,12 @@ mod tests {
             ("/", "en", "Quick start", "Add the Cargo dependency"),
             ("/?lang=zh", "zh-CN", "快速开始", "添加 Cargo 依赖"),
             ("/overview?lang=zh", "zh-CN", "组件概览", "先完成五步接入"),
+            (
+                "/dropdown-menu?lang=zh",
+                "zh-CN",
+                "Dropdown 下拉菜单",
+                "暂不可用",
+            ),
         ] {
             let response = router
                 .handle(Request::builder().uri(uri).body(Body::empty()).unwrap())
@@ -334,9 +347,11 @@ mod tests {
             if language == "zh-CN" {
                 assert!(html.contains("href=\"/notification?lang=zh\""), "{uri}");
                 assert!(html.contains("href=\"/tag?lang=zh\""), "{uri}");
+                assert!(html.contains("href=\"/dropdown-menu?lang=zh\""), "{uri}");
             } else {
                 assert!(html.contains("href=\"/notification\""), "{uri}");
                 assert!(html.contains("href=\"/tag\""), "{uri}");
+                assert!(html.contains("href=\"/dropdown-menu\""), "{uri}");
             }
         }
 
@@ -386,6 +401,7 @@ mod tests {
             ("/tag", "Tag", None),
             ("/tooltip", "Tooltip", None),
             ("/popconfirm", "Popconfirm", None),
+            ("/dropdown-menu", "Dropdown Menu", None),
             ("/dialog", "Dialog", None),
             ("/drawer", "Drawer", None),
             ("/table", "Table", None),
@@ -425,6 +441,11 @@ mod tests {
                 assert!(html.contains("Complete the five integration steps"));
                 assert!(html.contains("href=\"/\""));
                 assert!(html.contains("href=\"/chat\""));
+                assert!(html.contains("href=\"/dropdown-menu\""));
+            }
+            if path == "/dropdown-menu" {
+                assert!(html.contains("id=\"gallery-actions-menu\""));
+                assert!(html.contains("gr-dropdown-menu"));
             }
             if path == "/chat" {
                 assert!(html.contains("<title>Chat interface · Topcoat Ant Design</title>"));
@@ -461,6 +482,7 @@ mod tests {
                     | "/tag"
                     | "/tooltip"
                     | "/popconfirm"
+                    | "/dropdown-menu"
                     | "/dialog"
                     | "/drawer"
                     | "/collapse"

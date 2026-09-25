@@ -132,6 +132,8 @@
 .gr-notification *,
 .gr-popconfirm,
 .gr-popconfirm *,
+.gr-dropdown-menu,
+.gr-dropdown-menu *,
 .gr-collapse,
 .gr-collapse *,
 .gr-dialog,
@@ -333,6 +335,40 @@
   animation: gr-popconfirm-enter 140ms ease-out;
 }
 
+.gr-dropdown-menu {
+  position-area: bottom span-left;
+  position-try-fallbacks: flip-block, flip-inline;
+}
+
+.gr-dropdown-menu form {
+  @apply m-0 block w-full;
+}
+
+.gr-dropdown-menu button {
+  @apply flex min-h-9 w-full items-center justify-between gap-3 rounded-md border-0 bg-transparent px-3 py-2 text-left font-mono text-[13px] leading-5 text-[#262626];
+}
+
+.gr-dropdown-menu button:not(:disabled) {
+  @apply cursor-pointer;
+}
+
+.gr-dropdown-menu button:hover:not(:disabled) {
+  @apply bg-[#e6f4ff] text-[#1677ff];
+}
+
+.gr-dropdown-menu button:disabled {
+  @apply cursor-default text-[#8c8c8c];
+}
+
+.gr-dropdown-menu button:focus-visible {
+  outline: 2px solid #91caff;
+  outline-offset: -2px;
+}
+
+.gr-dropdown-menu:popover-open {
+  animation: gr-popconfirm-enter 140ms ease-out;
+}
+
 .gr-date-range-panel {
   position-area: bottom span-left;
   position-try-fallbacks: flip-block, flip-inline;
@@ -387,6 +423,13 @@
 
 @supports not (position-area: bottom) {
   .gr-popconfirm {
+    top: 50%;
+    left: 50%;
+    margin: 0;
+    transform: translate(-50%, -50%);
+  }
+
+  .gr-dropdown-menu {
     top: 50%;
     left: 50%;
     margin: 0;
@@ -457,6 +500,7 @@
 @media (prefers-reduced-motion: reduce) {
   .gr-notification,
   .gr-popconfirm:popover-open,
+  .gr-dropdown-menu:popover-open,
   .gr-dialog[open],
   .gr-dialog[open]::backdrop {
     animation-duration: 1ms;

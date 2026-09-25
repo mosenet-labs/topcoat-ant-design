@@ -13,6 +13,7 @@ pub use components::dialog::{
     DialogConfig, dialog, dialog_close_attributes, dialog_trigger_attributes,
 };
 pub use components::drawer::{DrawerConfig, drawer};
+pub use components::dropdown_menu::{dropdown_menu, dropdown_menu_trigger_attributes};
 pub use components::form_field::{FormFieldConfig, form_field};
 pub use components::notification::{NotificationTone, notification};
 pub use components::popconfirm::{popconfirm, popconfirm_trigger_attributes};
