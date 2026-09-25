@@ -83,7 +83,6 @@ async fn gallery_layout(cx: &Cx, slot: Slot<'_>) -> Result<impl View> {
     let notification_link = href!(_feedback::notification_page);
     let tag_link = href!(_feedback::tag_page);
     let tag_active = tag_link.is_current(cx);
-    let tag_url = tag_link.resolve(cx);
     let tooltip_link = href!(_feedback::tooltip_page);
     let popconfirm_link = href!(_feedback::popconfirm_page);
     let dialog_link = href!(_feedback::dialog_page);
@@ -152,6 +151,7 @@ async fn gallery_layout(cx: &Cx, slot: Slot<'_>) -> Result<impl View> {
     let getting_started_url = locale.link(&getting_started_link.resolve(cx));
     let icons_url = locale.link(&icons_link.resolve(cx));
     let notification_url = locale.link(&notification_link.resolve(cx));
+    let tag_url = locale.link(&tag_link.resolve(cx));
     let tooltip_url = locale.link(&tooltip_link.resolve(cx));
     let popconfirm_url = locale.link(&popconfirm_link.resolve(cx));
     let dialog_url = locale.link(&dialog_link.resolve(cx));
@@ -333,8 +333,10 @@ mod tests {
             assert!(html.contains("data-language-switch"), "{uri}");
             if language == "zh-CN" {
                 assert!(html.contains("href=\"/notification?lang=zh\""), "{uri}");
+                assert!(html.contains("href=\"/tag?lang=zh\""), "{uri}");
             } else {
                 assert!(html.contains("href=\"/notification\""), "{uri}");
+                assert!(html.contains("href=\"/tag\""), "{uri}");
             }
         }
 
