@@ -22,6 +22,8 @@
 
 AI 组件从 `chat_bubble`、`chat_message_list` 和 `chat_sender` 开始。Gallery 中的「AI 组件」分类会把它们组合成 Chat 聊天界面展示。
 
+当前范围和后续验收要求见 [AI 组件需求记录](docs/ai-components.md)。
+
 [完整快速开始](https://github.com/mosenet-labs/topcoat-ant-design/blob/main/docs/getting-started.md)说明了依赖、页面资源、AssetBundle 和 Router 的接入关系。
 
 ## 添加依赖

@@ -8,6 +8,8 @@ Available components: [Icons](https://docs.rs/topcoat-ant-design/latest/topcoat_
 
 The AI component set starts with `chat_bubble`, `chat_message_list`, and `chat_sender`. The Gallery's **AI Components** section shows them together in a Chat interface preview.
 
+The current scope and next steps are recorded in [AI component requirements](docs/en/ai-components.md).
+
 See the [complete integration guide](docs/en/getting-started.md) or its [Chinese version](docs/getting-started.md).
 
 ## Add the dependency
