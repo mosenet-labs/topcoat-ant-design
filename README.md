@@ -21,7 +21,7 @@ For a published version:
 
 ```toml
 [dependencies]
-topcoat-ant-design = "0.1.2"
+topcoat-ant-design = "=0.2.0-dev.1"
 ```
 
 For local component development:
@@ -34,7 +34,7 @@ topcoat-ant-design = { path = "../topcoat-ant-design" }
 The default feature is sufficient to render components. Enable `router` only when the host uses selective route discovery and must explicitly register font routes:
 
 ```toml
-topcoat-ant-design = { version = "0.1.2", features = ["router"] }
+topcoat-ant-design = { version = "=0.2.0-dev.1", features = ["router"] }
 ```
 
 ## CSS, fonts, and assets
@@ -112,7 +112,7 @@ The custom Collapse, Accordion, Dialog, Drawer, Dropdown Menu, Tooltip, Popconfi
 The regular `head_assets()` includes the native styles. Wrap direct native components in an element with `class="native-ui"` to apply the scoped neutral theme. For a standalone native stylesheet, enable the `native-ui` feature and call `topcoat_ant_design::native_ui::head_assets()` instead:
 
 ```toml
-topcoat-ant-design = { version = "0.1.2", features = ["native-ui"] }
+topcoat-ant-design = { version = "=0.2.0-dev.1", features = ["native-ui"] }
 ```
 
 The Gallery includes an interactive [Topcoat native UI showcase](http://127.0.0.1:3100/topcoat-ui) with light and dark themes, sidebar, fields, dialogs, tables, and other controls.

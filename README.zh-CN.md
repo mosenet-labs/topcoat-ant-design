@@ -37,7 +37,7 @@ AI 组件覆盖消息、输入、会话导航、Markdown、过程详情、来源
 
 ```toml
 [dependencies]
-topcoat-ant-design = "0.1.2"
+topcoat-ant-design = "=0.2.0-dev.1"
 ```
 
 在发布前或开发组件库时，可以使用本地路径：
@@ -50,7 +50,7 @@ topcoat-ant-design = { path = "../topcoat-ant-design" }
 默认 feature 已足够渲染组件。只有宿主采用选择性路由发现并需要显式注册字体时，才启用 `router`：
 
 ```toml
-topcoat-ant-design = { version = "0.1.2", features = ["router"] }
+topcoat-ant-design = { version = "=0.2.0-dev.1", features = ["router"] }
 ```
 
 ## 接入样式与字体
@@ -70,7 +70,7 @@ Ok(view! {
 使用完整 `.discover()` 的应用会同时发现 Fontsource 字体路由，不需要额外注册。只发现部分路由的应用可启用 `router` feature，并调用一次扩展：
 
 ```toml
-topcoat-ant-design = { version = "0.1.2", features = ["router"] }
+topcoat-ant-design = { version = "=0.2.0-dev.1", features = ["router"] }
 ```
 
 ```rust,ignore
@@ -104,7 +104,7 @@ Collapse、Accordion、Dialog、Drawer、Dropdown Menu、Tooltip、Popconfirm �
 常规 `head_assets()` 已加载原生组件样式。直接使用原生组件时，用 `class="native-ui"` 包裹组件区域即可应用限定作用域的 neutral 主题。若只需独立的原生组件样式，可以启用 `native-ui` feature 并调用 `topcoat_ant_design::native_ui::head_assets()`：
 
 ```toml
-topcoat-ant-design = { version = "0.1.2", features = ["native-ui"] }
+topcoat-ant-design = { version = "=0.2.0-dev.1", features = ["native-ui"] }
 ```
 
 运行 Gallery 后打开 [Topcoat 原生组件展示页](http://127.0.0.1:3100/topcoat-ui)，可以直接试用明暗主题、Sidebar、表单字段、弹层、表格等组件。

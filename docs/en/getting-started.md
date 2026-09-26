@@ -4,7 +4,7 @@ Add this to your application's `Cargo.toml`:
 
 ```toml
 [dependencies]
-topcoat-ant-design = { version = "0.1.2", features = ["router"] }
+topcoat-ant-design = { version = "=0.2.0-dev.1", features = ["router"] }
 ```
 
 Use a path dependency while developing the component library locally:

@@ -8,7 +8,7 @@ Applications depend directly on Topcoat with icon and view support:
 
 ```toml
 [dependencies]
-topcoat-ant-design = "0.1.2"
+topcoat-ant-design = "=0.2.0-dev.1"
 topcoat = { version = "=0.9.0", default-features = false, features = ["icon", "view"] }
 ```
 
