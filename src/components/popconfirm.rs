@@ -6,8 +6,8 @@ use topcoat::{
     view::{Attributes, Child, View, ViewExt, attributes, class, component, view},
 };
 
-use crate::UiLanguage;
 use crate::icons::EXCLAMATION_CIRCLE_FILLED;
+use crate::{UiLanguage, ui::button};
 
 /// Create the attributes for a Popconfirm trigger and declare it as a CSS anchor.
 ///
@@ -44,7 +44,7 @@ pub async fn popconfirm(
     let closing_id = id.to_owned();
     let caller_class = attrs.remove("class");
     let panel_class = class!(
-        "gr-popconfirm fixed inset-auto mx-4 mb-0 mt-2.5 w-[min(300px,calc(100vw_-_32px))] overflow-visible rounded-lg border border-[#f0f0f0] bg-white px-4 pb-3 pt-3.5 font-mono text-[#262626] shadow-lg",
+        "gr-popconfirm fixed inset-auto mx-4 mb-0 mt-2.5 w-[min(300px,calc(100vw_-_32px))] overflow-visible rounded-lg border border-[var(--gr-border-subtle)] bg-[var(--gr-surface)] px-4 pb-3 pt-3.5 font-mono text-[var(--gr-fg)] shadow-lg",
         caller_class,
     );
     let semantics = attributes! { cx =>
@@ -70,18 +70,18 @@ pub async fn popconfirm(
         <aside (attrs)>
             <span class="gr-popconfirm-arrow" aria-hidden="true"></span>
             <div class="flex items-start gap-2.5">
-                <span class="size-5 shrink-0 text-[#faad14]" aria-hidden="true">
+                <span class="size-5 shrink-0 text-[var(--gr-warning)]" aria-hidden="true">
                     icon(data: EXCLAMATION_CIRCLE_FILLED, size: 20)
                 </span>
                 <div class="min-w-0">
                     <strong class="block whitespace-normal break-words text-sm font-medium leading-6 [overflow-wrap:anywhere]" id=(title_id.as_str())>(title)</strong>
                     if let Some(description) = description {
-                        <p class="mb-0 mt-1 whitespace-normal break-words text-[13px] leading-[1.5] text-[#595959] [overflow-wrap:anywhere]" id=(description_id.as_str())>(description)</p>
+                        <p class="mb-0 mt-1 whitespace-normal break-words text-[13px] leading-[1.5] text-[var(--gr-fg-muted)] [overflow-wrap:anywhere]" id=(description_id.as_str())>(description)</p>
                     }
                 </div>
             </div>
             <footer class="mt-3 flex justify-end gap-2">
-                <button class="gr-button gr-button-default" type="button" popovertarget=(id) popovertargetaction="hide">(language.select("Cancel", "取消"))</button>
+                button::button(variant: button::ButtonVariant::Outline, attrs: attributes! { class="gr-button gr-button-default" type="button" popovertarget=(id) popovertargetaction="hide" }, (language.select("Cancel", "取消")))
                 <span class="contents" @click=$(move |_e: Event| {
                     let _id = closing_id.to_owned();
                     // 组件先恢复隐藏状态，避免异步业务刷新锚点时气泡仍然可见。

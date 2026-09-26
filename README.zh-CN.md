@@ -10,7 +10,7 @@
 - [Notification](https://docs.rs/topcoat-ant-design/latest/topcoat_ant_design/struct.notification.html)：页面右上角的操作结果通知；
 - [Popconfirm](https://docs.rs/topcoat-ant-design/latest/topcoat_ant_design/struct.popconfirm.html)：按钮附近的轻量二次确认气泡；
 - [Dropdown Menu](docs/components/dropdown-menu.md)：按钮附近的紧凑操作菜单；
-- [Dialog](https://docs.rs/topcoat-ant-design/latest/topcoat_ant_design/struct.dialog.html)：承载表单与集中操作的原生模态对话框；
+- [Dialog](https://docs.rs/topcoat-ant-design/latest/topcoat_ant_design/struct.dialog.html)：承载表单与集中操作的官方对话框结构；
 - [Tag](https://docs.rs/topcoat-ant-design/latest/topcoat_ant_design/struct.tag.html)：展示状态和分类；
 - [Tooltip](https://docs.rs/topcoat-ant-design/latest/topcoat_ant_design/struct.tooltip.html)：提供悬停和键盘聚焦时的文字提示；
 - [Collapse](https://docs.rs/topcoat-ant-design/latest/topcoat_ant_design/struct.collapse.html)：未知高度内容的展开与收起动效；
@@ -21,11 +21,15 @@
 - [FormField](https://docs.rs/topcoat-ant-design/latest/topcoat_ant_design/struct.form_field.html)：统一表单字段的标签、说明和错误展示；
 - [DateTimeRange](https://docs.rs/topcoat-ant-design/latest/topcoat_ant_design/struct.date_time_range_filter.html)：选择起止日期时间。
 
-AI 组件从 `chat_bubble`、`chat_message_list` 和 `chat_sender` 开始。Gallery 中的「AI 组件」分类会把它们组合成 Chat 聊天界面展示。
+AI 组件覆盖消息、输入、会话导航、Markdown、过程详情、来源、操作、附件和建议输入。Gallery 的「AI 组件」分类同时展示独立示例与完整 Chat 界面。
 
-当前范围和后续验收要求见 [AI 组件需求记录](docs/ai-components.md)。
+当前范围与验收结果见 [AI 组件需求记录](docs/ai-components.md)。
+分阶段开发任务的完成状态见 [Chat 组件开发待办清单](docs/chat-todo.md)。
+公共 API 和宿主接入边界见 [Chat 组件文档](docs/components/chat.md)。
 
 [完整快速开始](https://github.com/mosenet-labs/topcoat-ant-design/blob/main/docs/getting-started.md)说明了依赖、页面资源、AssetBundle 和 Router 的接入关系。
+
+组件库当前面向 Topcoat 0.9.0。交互式宿主需要在 Router 上启用 `.runtime()`，并在文档 `<head>` 中加入 `topcoat::runtime::script()`。
 
 ## 添加依赖
 
@@ -33,7 +37,7 @@ AI 组件从 `chat_bubble`、`chat_message_list` 和 `chat_sender` 开始。Gall
 
 ```toml
 [dependencies]
-topcoat-ant-design = "0.1.2"
+topcoat-ant-design = "=0.2.0-dev.1"
 ```
 
 在发布前或开发组件库时，可以使用本地路径：
@@ -46,7 +50,7 @@ topcoat-ant-design = { path = "../topcoat-ant-design" }
 默认 feature 已足够渲染组件。只有宿主采用选择性路由发现并需要显式注册字体时，才启用 `router`：
 
 ```toml
-topcoat-ant-design = { version = "0.1.2", features = ["router"] }
+topcoat-ant-design = { version = "=0.2.0-dev.1", features = ["router"] }
 ```
 
 ## 接入样式与字体
@@ -66,7 +70,7 @@ Ok(view! {
 使用完整 `.discover()` 的应用会同时发现 Fontsource 字体路由，不需要额外注册。只发现部分路由的应用可启用 `router` feature，并调用一次扩展：
 
 ```toml
-topcoat-ant-design = { version = "0.1.2", features = ["router"] }
+topcoat-ant-design = { version = "=0.2.0-dev.1", features = ["router"] }
 ```
 
 ```rust,ignore
@@ -90,6 +94,20 @@ let router = topcoat::router::module_router!()
 默认字体为 JetBrains Mono，包含界面使用的 400、500、600 和 700 字重。它不包含中文字形，中文会按字体栈回退到系统中文字体。
 
 当前 Fontsource 使用默认的 jsDelivr 字体来源。UI crate 在全新构建环境中会通过 Topcoat 下载锁定的 Tailwind CLI；离线构建和字体自托管需要另外提供对应资源。组件样式不包含 Tailwind Preflight，不会重置宿主页面的全局元素样式。
+
+## Topcoat 原生 UI 组件
+
+Topcoat 0.9.0 官方 registry 的全部 31 个组件直接从 `topcoat_ant_design` 导出，也可通过 `topcoat_ant_design::ui` 下的对应模块访问。例如 `use topcoat_ant_design::{button, ButtonVariant, dialog, dialog_content};`。官方组件的来源记录在 [components.toml](components.toml)。
+
+根目录直接导出的 API 目前仅在此源码版本中提供。已发布的 `0.2.0-dev.1` 尚未包含该改动；新版本发布前请使用上文的本地 path 依赖。
+
+原有的 Accordion、Dialog、Dropdown Menu、Tabs、Tooltip 自定义实现已由官方组件替换，直接使用根目录导出的官方名称及组合 API。`data_table`、`drawer`、`popconfirm`、`notification` 等具有独立功能的复合组件继续保留；Drawer 内部使用官方 Sheet。
+
+常规 `head_assets()` 同时加载官方及自定义组件样式和项目字体。它们共用当前库的 Ant Design 主题变量，不需要额外包裹类或 Cargo feature。祖先元素设置 `class="dark"` 可切换深色主题。
+
+运行 Gallery 后打开 [Topcoat 原生组件展示页](http://127.0.0.1:3100/topcoat-ui)，可以直接试用明暗主题、Sidebar、表单字段、弹层、表格等组件。
+
+原始源码来自 Topcoat 官方 `v0.9.0` 标签对应的提交 `96e8f9e0932ea883ced2859d462e9d6d3f52ea59`，见[上游许可证](assets/topcoat-upstream-LICENSE)。项目直接导入官方 registry 源码，不依赖 Topcoat 的 `ui` Cargo feature。
 
 ## 接入图标
 
@@ -171,7 +189,7 @@ Ok(view! {
 
 组件样式使用 `0fr`/`1fr` 网格轨道完成双向高度过渡，并同步处理透明度、可见性和 `prefers-reduced-motion`。
 
-Tabs 由 `tabs` 和 `tab_link` 组成。宿主根据当前 Topcoat 路由传入 `active`，组件输出真实链接与 `aria-current`。Drawer 接收 `DrawerConfig` 和 `Signal<bool>`；由查询参数控制详情时，可以通过 `DrawerConfig::with_close_href` 设置不含详情参数的关闭地址。
+Tabs 由官方 `tabs`、`tabs_list`、`tabs_trigger` 和 `tabs_content` 组成。宿主根据当前 Topcoat 路由传入 `active`，组件输出真实链接与 `aria-current`。Drawer 接收 `DrawerConfig` 和 `Signal<bool>`；由查询参数控制详情时，可以通过 `DrawerConfig::with_close_href` 设置不含详情参数的关闭地址。
 
 ## 公开接口
 
@@ -180,16 +198,16 @@ Tabs 由 `tabs` 和 `tab_link` 组成。宿主根据当前 Topcoat 路由传入 
 | `icons` | 提供编译期校验的 Ant Design `IconData` 常量 | 无 |
 | `notification`、`NotificationTone` | 展示页面级操作反馈 | 无 |
 | `popconfirm`、`popconfirm_trigger_attributes` | 建立确认气泡及其触发关系 | 无 |
-| `dropdown_menu`、`dropdown_menu_trigger_attributes` | 建立操作菜单及其触发关系 | 无 |
+| `dropdown_menu`、`dropdown_menu_trigger`、`dropdown_menu_content` | 组合官方操作菜单 | 无 |
 | `collapse`、`collapse_trigger_attributes` | 建立可访问的折叠内容及触发关系 | 无 |
-| `tabs`、`tab_link` | 建立路由型详情页签 | 无 |
+| `tabs`、`tabs_list`、`tabs_trigger`、`tabs_content` | 建立路由型详情页签 | 无 |
 | `drawer` | 展示可关闭的右侧详情面板 | 无 |
 | `head_assets` | 在根布局加载组件 CSS 和默认字体 | 无 |
 | `RouterBuilderUiExt` | 为选择性发现的 Router 注册字体路由 | `router` |
 
 ## 浏览组件
 
-组件内置按钮和无障碍标签默认使用英文。中文页面可向 Notification、Popconfirm、Dialog、Drawer、Accordion 和 DateTimeRange 传入 `language: UiLanguage::ChineseSimplified`。
+复合组件的内置按钮和无障碍标签默认使用英文。中文页面可向 Notification、Popconfirm、Drawer 和 DateTimeRange 传入 `language: UiLanguage::ChineseSimplified`。
 
 在仓库根目录运行：
 
@@ -204,7 +222,11 @@ cargo run -p topcoat-ant-design \
 - `http://127.0.0.1:3100/`：快速开始与完整接入说明；
 - `http://127.0.0.1:3100/overview`：组件概览；
 - `http://127.0.0.1:3100/icons`：Topcoat Iconify 图标目录；
-- `http://127.0.0.1:3100/chat`：Chat 聊天界面，本地发送预览，不连接模型；
+- `http://127.0.0.1:3100/chat`：Chat 聊天界面，含真实会话路由和服务端示例过程函数，不连接模型；
+- `http://127.0.0.1:3100/chat/new`：空会话、多轮消息和请求状态演示；
+- `http://127.0.0.1:3100/bubble`：ChatBubble 的用户与助手消息示例；
+- `http://127.0.0.1:3100/message-list`：ChatMessageList 的会话区域示例；
+- `http://127.0.0.1:3100/sender`：ChatSender 的本地发送示例；
 - `http://127.0.0.1:3100/notification`：Notification；
 - `http://127.0.0.1:3100/popconfirm`：Popconfirm；
 - `http://127.0.0.1:3100/dropdown-menu`：Dropdown 下拉菜单；

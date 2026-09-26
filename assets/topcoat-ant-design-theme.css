@@ -1,0 +1,93 @@
+/* Official Topcoat components share the Ant Design tokens used by this crate. */
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --font-sans: var(--font-mono);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-ring: var(--ring);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --shadow-xs: var(--topcoat-shadow-xs);
+  --shadow-sm: var(--topcoat-shadow-sm);
+}
+
+:root,
+.dark {
+  --background: var(--gr-surface-muted);
+  --foreground: var(--gr-fg);
+  --card: var(--gr-surface);
+  --card-foreground: var(--gr-fg);
+  --popover: var(--gr-surface);
+  --popover-foreground: var(--gr-fg);
+  --muted-foreground: var(--gr-fg-subtle);
+  --primary: var(--gr-accent);
+  --primary-foreground: var(--gr-on-accent);
+  --destructive: var(--gr-error);
+  --destructive-foreground: var(--gr-on-accent);
+  --border: var(--gr-border);
+  --ring: var(--gr-accent);
+  --sidebar: var(--gr-surface);
+  --sidebar-foreground: var(--gr-fg);
+  --sidebar-primary: var(--gr-accent);
+  --sidebar-primary-foreground: var(--gr-on-accent);
+  --sidebar-accent: var(--gr-accent-soft);
+  --sidebar-accent-foreground: var(--gr-accent-strong);
+  --sidebar-border: var(--gr-border-subtle);
+  --sidebar-ring: var(--gr-accent);
+  --topcoat-shadow-xs: 0 1px 2px var(--gr-shadow-color);
+  --topcoat-shadow-sm: 0 2px 8px var(--gr-shadow-color);
+}
+
+@layer base {
+  :is(nav[aria-label="pagination"] ul, nav[aria-label="breadcrumb"] ol, [data-sidebar="menu"], [data-sidebar="menu-sub"]) {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  :is(a.inline-flex, a[data-sidebar], nav[aria-label="breadcrumb"] a) {
+    text-decoration: none;
+  }
+
+  a[data-sidebar="menu-button"],
+  a[data-sidebar="menu-sub-button"] {
+    color: var(--sidebar-foreground);
+  }
+
+  a[data-sidebar="menu-button"][data-active="true"] {
+    color: var(--sidebar-accent-foreground);
+  }
+
+  dialog {
+    border: 0 solid;
+    margin: 0;
+    padding: 0;
+  }
+
+  :is(button, input, optgroup, select, textarea) {
+    font-family: inherit;
+    color: inherit;
+    box-sizing: border-box;
+  }
+}
+
+[hidden] {
+  display: none !important;
+}

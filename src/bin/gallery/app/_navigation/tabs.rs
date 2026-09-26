@@ -8,9 +8,10 @@ use topcoat::{
     Result,
     context::Cx,
     router::{Slot, error::redirect, href, layout, page, request::uri},
-    view::{View, view},
+    runtime::{Event, signal},
+    view::{View, attributes, view},
 };
-use topcoat_ant_design::{tab_link, tabs};
+use topcoat_ant_design::{tabs, tabs_content, tabs_list, tabs_trigger};
 
 use crate::{
     app::page_header,
@@ -27,7 +28,7 @@ const TABS_DOC_ZH: &str = include_str!(concat!(
     "/docs/components/tabs.md"
 ));
 
-/// Tabs 示例的共用外壳；当前路由同时决定激活态和预览内容。
+/// Tabs 示例的共用外壳；路由决定初始页签，浏览器状态负责后续切换。
 #[layout]
 async fn tabs_layout(cx: &Cx, slot: Slot<'_>) -> Result<impl View> {
     let locale = Locale::current(cx);
@@ -43,26 +44,48 @@ async fn tabs_layout(cx: &Cx, slot: Slot<'_>) -> Result<impl View> {
     let events_localized_url = locale.link(&events_url);
     let permissions_localized_url = locale.link(&permissions_url);
     let example_source = rust_code_block(document, 0);
+    let initial_tab = if current_path == events_url.as_str() {
+        "events"
+    } else if current_path == permissions_url.as_str() {
+        "permissions"
+    } else {
+        "webhook"
+    };
+    let selected = signal(cx, || initial_tab.to_owned());
 
     Ok(view! {
         page_header(
             eyebrow: "NAVIGATION",
             title: text(locale, "Tabs 路由页签"),
-            description: text(locale, "使用真实链接组织同一对象下的多个页面，并由 Topcoat 路由决定当前状态。"),
+            description: text(locale, "页签在浏览器中即时切换；直接打开某个页签地址时，会显示对应的初始内容。"),
         )
         <div class="grid gap-6">
-            component_example(id: "tabs-preview", title: text(locale, "组件预览"), description: text(locale, "切换页签后，路由、激活态和下方内容会一起更新。"), source: example_source,
+            component_example(id: "tabs-preview", title: text(locale, "组件预览"), description: text(locale, "点击页签即可切换内容，无需刷新页面。"), source: example_source,
                 <div class="p-6">
-                    tabs(label: text(locale, "项目详情示例"),
-                        tab_link(href: webhook_localized_url.as_str(), active: current_path == webhook_url.as_str(), (text(locale, "Webhook 配置")))
-                        tab_link(href: events_localized_url.as_str(), active: current_path == events_url.as_str(), (text(locale, "事件记录")))
-                        tab_link(href: permissions_localized_url.as_str(), active: current_path == permissions_url.as_str(), (text(locale, "访问权限")))
+                    tabs(attrs: attributes! { aria-label=(text(locale, "项目详情示例")) },
+                        tabs_list(
+                            tabs_trigger(active: $(selected.get() == "webhook"), attrs: attributes! {
+                                href=(webhook_localized_url.as_str())
+                                @click=$(|e: Event| { e.prevent_default(); selected.set("webhook".to_owned()); })
+                            }, (text(locale, "Webhook 配置")))
+                            tabs_trigger(active: $(selected.get() == "events"), attrs: attributes! {
+                                href=(events_localized_url.as_str())
+                                @click=$(|e: Event| { e.prevent_default(); selected.set("events".to_owned()); })
+                            }, (text(locale, "事件记录")))
+                            tabs_trigger(active: $(selected.get() == "permissions"), attrs: attributes! {
+                                href=(permissions_localized_url.as_str())
+                                @click=$(|e: Event| { e.prevent_default(); selected.set("permissions".to_owned()); })
+                            }, (text(locale, "访问权限")))
+                        )
+                        tabs_content(attrs: attributes! { class="min-h-40 rounded-lg bg-background px-5 py-7" :hidden=$(selected.get() != "webhook") }, webhook::content(locale: locale))
+                        tabs_content(attrs: attributes! { class="min-h-40 rounded-lg bg-background px-5 py-7" :hidden=$(selected.get() != "events") }, events::content(locale: locale))
+                        tabs_content(attrs: attributes! { class="min-h-40 rounded-lg bg-background px-5 py-7" :hidden=$(selected.get() != "permissions") }, permissions::content(locale: locale))
                     )
-                    <div class="min-h-40 rounded-b-lg bg-[#fafafa] px-5 py-7">(slot)</div>
                 </div>
             )
             markdown_document(source: document)
         </div>
+        (slot)
     })
 }
 

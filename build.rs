@@ -15,6 +15,11 @@ fn main() {
         .icon_set("ant-design")
         .stage()
         .expect("stage Ant Design Iconify set");
+    topcoat::icon::iconify::BuildConfig::new()
+        .cache_dir("icons")
+        .icon_set("lucide")
+        .stage()
+        .expect("stage Lucide Iconify set for official UI components");
 
     // UI crate 自己生成组件样式，宿主只需把公开的 Asset 加入最终资源包。
     let component_stylesheet_path = if env::var_os("DOCS_RS").is_some() {
@@ -43,9 +48,12 @@ fn main() {
 
     println!("cargo:rerun-if-changed=build.rs");
     println!("cargo:rerun-if-changed=assets/topcoat-ant-design.css");
+    println!("cargo:rerun-if-changed=assets/topcoat-ant-design-tokens.css");
     println!("cargo:rerun-if-changed=icons/ant-design.json");
     println!("cargo:rerun-if-changed=styles.css");
     println!("cargo:rerun-if-changed=src/components");
+    println!("cargo:rerun-if-changed=assets/topcoat-ant-design-theme.css");
+    println!("cargo:rerun-if-changed=src/ui");
     #[cfg(feature = "gallery")]
     println!("cargo:rerun-if-changed=src/bin/gallery");
 }

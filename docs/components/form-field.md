@@ -9,12 +9,10 @@ form_field(
     config: FormFieldConfig::new("automation-name", "自动化名称")
         .required()
         .with_hint("用于项目内识别这项自动化。"),
-    <input
-        id="automation-name"
-        name="name"
-        required
+    input(attrs: attributes! {
+        id="automation-name" name="name" required=""
         aria-describedby="automation-name-help"
-    >
+    })
 )
 ```
 
@@ -24,11 +22,9 @@ form_field(
 form_field(
     config: FormFieldConfig::new("command-name", "指令")
         .with_error("指令只能包含小写字母、数字、连字符和下划线。"),
-    <input
-        id="command-name"
-        name="command"
-        aria-invalid="true"
+    input(attrs: attributes! {
+        id="command-name" name="command" aria-invalid="true"
         aria-describedby="command-name-help"
-    >
+    })
 )
 ```

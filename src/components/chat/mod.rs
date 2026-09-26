@@ -1,7 +1,25 @@
+mod actions;
+mod attachments;
 mod bubble;
+mod conversations;
+mod markdown;
+mod message;
 mod message_list;
+mod prompts;
 mod sender;
+mod sources;
+mod think;
+mod thought_chain;
 
+pub use actions::chat_actions;
+pub use attachments::{chat_attachment_tray, chat_file};
 pub use bubble::{ChatBubbleRole, chat_bubble};
+pub use conversations::{chat_conversation_item, chat_conversation_list};
+pub use markdown::{chat_markdown, render_chat_markdown};
+pub use message::{ChatMessage, ChatMessageStatus};
 pub use message_list::chat_message_list;
+pub use prompts::{chat_prompt, chat_prompts};
 pub use sender::chat_sender;
+pub use sources::{chat_source, chat_sources};
+pub use think::chat_think;
+pub use thought_chain::{ChatThoughtStatus, chat_thought_chain, chat_thought_step};

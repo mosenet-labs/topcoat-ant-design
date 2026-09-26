@@ -41,10 +41,11 @@ This example updates Topcoat signals in the browser without a full-page navigati
 use topcoat_ant_design::{
     DataTableDensity, data_table, table_page_size_select, table_pagination,
 };
-use topcoat::{runtime::{Event, signal}, view::{attributes, view}};
+use topcoat::{runtime::{Event, expr, signal}, view::{attributes, view}};
 
 let page = signal(cx, || "1".to_owned());
 let page_size = signal(cx, || "10".to_owned());
+let last_page = expr!(if page_size.get() == "20" { true } else { page.get() == "2" });
 
 view! {
     data_table(label: "Projects", density: DataTableDensity::Compact,
@@ -67,7 +68,7 @@ view! {
         )
         <button type="button" :disabled=$(page.get() == "1") @click=$(|_e| page.set("1".to_owned()))>"Previous"</button>
         <span aria-current="page">$(page.get()) " / 2"</span>
-        <button type="button" :disabled=$(page.get() == "2") @click=$(|_e| page.set("2".to_owned()))>"Next"</button>
+        <button type="button" :disabled=$(last_page) @click=$(|_e| page.set("2".to_owned()))>"Next"</button>
     )
 }
 ```

@@ -6,8 +6,11 @@ use topcoat::{
     view::{Attributes, View, attributes, class, component, view},
 };
 
-use crate::UiLanguage;
 use crate::icons::CALENDAR_OUTLINED;
+use crate::{
+    UiLanguage,
+    ui::{button, input, label},
+};
 
 #[derive(Clone, Copy, Debug)]
 pub struct DateTimeRangeConfig<'a> {
@@ -45,6 +48,8 @@ pub async fn date_time_range_filter(
     cx: &Cx,
     config: DateTimeRangeConfig<'_>,
     #[default] language: UiLanguage,
+    #[default] from_attrs: Attributes,
+    #[default] to_attrs: Attributes,
     #[default] mut attrs: Attributes,
 ) -> Result<impl View> {
     let DateTimeRangeConfig {
@@ -76,26 +81,32 @@ pub async fn date_time_range_filter(
 
     Ok(view! {
         <span (attrs)>
-            <button class="gr-date-range-trigger" type="button" popovertarget=(id) popovertargetaction="toggle" aria-haspopup="dialog" aria-controls=(id) style=(anchor)>
+            button::button(variant: button::ButtonVariant::Outline, attrs: attributes! { class="gr-date-range-trigger" type="button" popovertarget=(id) popovertargetaction="toggle" aria-haspopup="dialog" aria-controls=(id) style=(anchor) },
                 <span class="gr-date-range-calendar" aria-hidden="true">icon(data: CALENDAR_OUTLINED, size: 16)</span><span>(label)</span>
-            </button>
+            )
             <aside id=(id) class="gr-date-range-panel" popover="auto" role="dialog" aria-label=(language.select("Select date range", "选择时间范围")) style=(panel_anchor)>
                 <div class="gr-date-range-fields">
-                    <label for=(from_id.as_str())><span>(language.select("Start time", "开始时间"))</span><input id=(from_id.as_str()) name=(from_name) type="datetime-local" value=(from)></label>
+                    label::label(attrs: attributes! { for=(from_id.as_str()) },
+                        <span>(language.select("Start time", "开始时间"))</span>
+                        input::input(attrs: attributes! { (from_attrs) id=(from_id.as_str()) name=(from_name) type="datetime-local" value=(from) })
+                    )
                     <span class="gr-date-range-separator" aria-hidden="true">"→"</span>
-                    <label for=(to_id.as_str())><span>(language.select("End time", "结束时间"))</span><input id=(to_id.as_str()) name=(to_name) type="datetime-local" value=(to)></label>
+                    label::label(attrs: attributes! { for=(to_id.as_str()) },
+                        <span>(language.select("End time", "结束时间"))</span>
+                        input::input(attrs: attributes! { (to_attrs) id=(to_id.as_str()) name=(to_name) type="datetime-local" value=(to) })
+                    )
                 </div>
                 <div class="gr-date-range-quick" aria-label=(language.select("Quick date ranges", "快捷时间范围"))>
-                    <button type="button" (quick_day)>(language.select("Last 24 hours", "最近 24 小时"))</button>
-                    <button type="button" (quick_week)>(language.select("Last 7 days", "最近 7 天"))</button>
-                    <button type="button" (quick_month)>(language.select("Last 30 days", "最近 30 天"))</button>
+                    button::button(variant: button::ButtonVariant::Ghost, attrs: attributes! { type="button" (quick_day) }, (language.select("Last 24 hours", "最近 24 小时")))
+                    button::button(variant: button::ButtonVariant::Ghost, attrs: attributes! { type="button" (quick_week) }, (language.select("Last 7 days", "最近 7 天")))
+                    button::button(variant: button::ButtonVariant::Ghost, attrs: attributes! { type="button" (quick_month) }, (language.select("Last 30 days", "最近 30 天")))
                 </div>
                 <footer class="gr-date-range-actions">
-                    <button class="gr-button gr-button-default" type="button" @click=$(move |_e: Event| {
+                    button::button(variant: button::ButtonVariant::Outline, attrs: attributes! { cx => class="gr-button gr-button-default" type="button" @click=$(move |_e: Event| {
                         let _from = clear_from.to_owned(); let _to = clear_to.to_owned();
-                        raw!("document.getElementById(${_from}.dehydrate()).value=''; document.getElementById(${_to}.dehydrate()).value=''", ());
-                    })>(language.select("Clear", "清除"))</button>
-                    <button class="gr-button gr-button-primary" type="submit">(language.select("Apply", "应用"))</button>
+                        raw!("(() => { const update = id => { const input = document.getElementById(id); if (!(input instanceof HTMLInputElement)) return; input.value = ''; input.dispatchEvent(new Event('input', { bubbles: true })); input.dispatchEvent(new Event('change', { bubbles: true })); }; update(${_from}.dehydrate()); update(${_to}.dehydrate()); })()", ());
+                    }) }, (language.select("Clear", "清除")))
+                    button::button(attrs: attributes! { class="gr-button gr-button-primary" type="submit" }, (language.select("Apply", "应用")))
                 </footer>
             </aside>
         </span>
@@ -125,7 +136,7 @@ fn recent_range_attributes(cx: &Cx, from_id: String, to_id: String, days: f64) -
     attributes! { cx =>
         @click=$(move |_e: Event| {
             let _from = from_id.to_owned(); let _to = to_id.to_owned(); let _days = days;
-            raw!("(() => { const pad = value => String(value).padStart(2, '0'); const format = date => date.getFullYear() + '-' + pad(date.getMonth()+1) + '-' + pad(date.getDate()) + 'T' + pad(date.getHours()) + ':' + pad(date.getMinutes()); const end = new Date(); const start = new Date(end.getTime() - ${_days}.dehydrate() * 86400000); document.getElementById(${_from}.dehydrate()).value = format(start); document.getElementById(${_to}.dehydrate()).value = format(end); })()", ());
+            raw!("(() => { const pad = value => String(value).padStart(2, '0'); const format = date => date.getFullYear() + '-' + pad(date.getMonth()+1) + '-' + pad(date.getDate()) + 'T' + pad(date.getHours()) + ':' + pad(date.getMinutes()); const update = (id, value) => { const input = document.getElementById(id); if (!(input instanceof HTMLInputElement)) return; input.value = value; input.dispatchEvent(new Event('input', { bubbles: true })); input.dispatchEvent(new Event('change', { bubbles: true })); }; const end = new Date(); const start = new Date(end.getTime() - ${_days}.dehydrate() * 86400000); update(${_from}.dehydrate(), format(start)); update(${_to}.dehydrate(), format(end)); })()", ());
         })
     }
 }

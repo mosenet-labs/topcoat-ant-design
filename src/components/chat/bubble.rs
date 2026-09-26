@@ -1,13 +1,16 @@
+use serde::{Deserialize, Serialize};
 use topcoat::{
     Result,
     context::Cx,
     view::{Attributes, Child, View, attributes, class, component, view},
 };
 
-use crate::UiLanguage;
+use super::message::ChatMessageStatus;
+use crate::{UiLanguage, ui::avatar};
 
 /// Which side of a conversation a message belongs to.
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub enum ChatBubbleRole {
     Assistant,
     User,
@@ -21,6 +24,7 @@ pub enum ChatBubbleRole {
 pub async fn chat_bubble(
     cx: &Cx,
     role: ChatBubbleRole,
+    #[default] status: Option<ChatMessageStatus>,
     #[default] language: UiLanguage,
     #[default] mut attrs: Attributes,
     #[default] child: Child<'_>,
@@ -43,13 +47,24 @@ pub async fn chat_bubble(
         data-role=(role_name)
         aria-label=(role_label)
     });
+    if let Some(status) = status {
+        attrs.extend(attributes! { cx =>
+            data-status=(status.as_str())
+            aria-busy=(matches!(status, ChatMessageStatus::Sending | ChatMessageStatus::Streaming))
+        });
+    }
 
     Ok(view! {
         <article (attrs)>
-            <span class="gr-chat-avatar grid size-8 shrink-0 place-items-center rounded-[10px] text-[11px] font-bold" aria-hidden="true">(if is_user { "U" } else { "AI" })</span>
+            avatar::avatar(size: avatar::AvatarSize::Sm, attrs: attributes! { class="gr-chat-avatar" aria-hidden="true" },
+                avatar::avatar_fallback((if is_user { "U" } else { "AI" }))
+            )
             <div class="min-w-0 max-w-[min(76ch,88%)]">
-                <p class="gr-chat-role m-0 mb-1 text-[11px] font-semibold tracking-[0.08em] text-[#8c8c8c]">(role_label)</p>
+                <p class="gr-chat-role m-0 mb-1 text-[11px] font-semibold tracking-[0.08em] text-[var(--gr-fg-subtle)]">(role_label)</p>
                 <div class="gr-chat-content rounded-[14px] px-4 py-3 text-sm leading-6">(child)</div>
+                if let Some(status) = status {
+                    <p class="mb-0 mt-1.5 text-[11px] font-medium text-[var(--gr-fg-muted)]" role="status">(status.label(language))</p>
+                }
             </div>
         </article>
     })

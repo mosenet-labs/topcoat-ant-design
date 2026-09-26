@@ -39,14 +39,14 @@ pub(in crate::app) async fn drawer_page(cx: &Cx) -> Result<impl View> {
         )
         <div class="grid gap-6">
             component_example(id: "drawer-preview", title: text(locale, "组件预览"), description: text(locale, "打开后可点击遮罩、关闭按钮或按 Escape。"), source: example_source,
-                <div class="p-6"><button class="h-9 cursor-pointer rounded-md border border-[#1677ff] bg-[#1677ff] px-4 font-mono text-sm text-white hover:bg-[#4096ff]" type="button" @click=$(|_e| open.set(true))>(text(locale, "查看事件详情"))</button></div>
+                <div class="p-6"><button class="h-9 cursor-pointer rounded-md border border-primary bg-primary px-4 font-mono text-sm text-primary-foreground hover:bg-[var(--gr-accent-strong)]" type="button" @click=$(|_e| open.set(true))>(text(locale, "查看事件详情"))</button></div>
             )
             markdown_document(source: document)
         </div>
         drawer(language: locale.ui(), config: DrawerConfig::new("gallery-event-drawer", text(locale, "Webhook 事件详情")), open: &open,
             <div class="grid gap-5">
-                <section class="rounded-lg border border-[#f0f0f0] p-4"><h3 class="mb-3 mt-0 text-sm font-semibold">(text(locale, "事件信息"))</h3><dl class="m-0 grid grid-cols-[140px_minmax(0,1fr)] gap-x-4 gap-y-3 text-sm"><dt class="text-[#8c8c8c]">(text(locale, "事件类型"))</dt><dd class="m-0">"Note Hook"</dd><dt class="text-[#8c8c8c]">(text(locale, "处理状态"))</dt><dd class="m-0 text-[#389e0d]">(text(locale, "处理成功"))</dd></dl></section>
-                <section class="rounded-lg border border-[#f0f0f0] p-4"><h3 class="mb-3 mt-0 text-sm font-semibold">"Request Body"</h3><pre class="m-0 overflow-auto rounded-md bg-[#0d1117] p-4 text-xs leading-6 text-[#d6deeb]">"{\n  \"object_kind\": \"note\",\n  \"project_id\": 2788\n}"</pre></section>
+                <section class="rounded-lg border border-border p-4"><h3 class="mb-3 mt-0 text-sm font-semibold">(text(locale, "事件信息"))</h3><dl class="m-0 grid grid-cols-[140px_minmax(0,1fr)] gap-x-4 gap-y-3 text-sm"><dt class="text-muted-foreground">(text(locale, "事件类型"))</dt><dd class="m-0">"Note Hook"</dd><dt class="text-muted-foreground">(text(locale, "处理状态"))</dt><dd class="m-0 text-[var(--gr-success)]">(text(locale, "处理成功"))</dd></dl></section>
+                <section class="rounded-lg border border-border p-4"><h3 class="mb-3 mt-0 text-sm font-semibold">"Request Body"</h3><pre class="m-0 overflow-auto rounded-md bg-[#0d1117] p-4 text-xs leading-6 text-[#d6deeb]">"{\n  \"object_kind\": \"note\",\n  \"project_id\": 2788\n}"</pre></section>
             </div>
         )
     })

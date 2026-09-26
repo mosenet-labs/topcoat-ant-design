@@ -26,22 +26,22 @@ pub(crate) async fn component_example(
     let show_code_label = text(locale, "显示示例代码");
 
     Ok(view! {
-        <section class="gr-gallery-demo overflow-hidden rounded-xl border border-[#e8eaee] bg-white shadow-sm" aria-labelledby=(title_id.as_str())>
-            <header class="border-b border-[#edf0f4] px-6 py-5">
+        <section class="gr-gallery-demo overflow-hidden rounded-xl border border-border bg-card shadow-sm" aria-labelledby=(title_id.as_str())>
+            <header class="border-b border-border px-6 py-5">
                 <h2 class="m-0 text-lg font-semibold" id=(title_id.as_str())>(title)</h2>
-                <p class="mb-0 mt-1.5 text-sm leading-6 text-[#8c8c8c]">(description)</p>
+                <p class="mb-0 mt-1.5 text-sm leading-6 text-muted-foreground">(description)</p>
             </header>
             <div class="min-w-0">(child)</div>
-            <div class="flex min-h-12 items-center justify-center border-t border-[#edf0f4]">
-                <button class="group inline-flex size-8 cursor-pointer items-center justify-center rounded-md border-0 bg-transparent p-0 font-mono text-[13px] font-semibold text-[#8c8c8c] transition-colors duration-150 hover:bg-[#f5f5f5] hover:text-[#1677ff] focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[#91caff]" type="button" (trigger) :title=$(if code_open.get() { hide_code_label } else { show_code_label })>
+            <div class="flex min-h-12 items-center justify-center border-t border-border">
+                <button class="group inline-flex size-8 cursor-pointer items-center justify-center rounded-md border-0 bg-transparent p-0 font-mono text-[13px] font-semibold text-muted-foreground transition-colors duration-150 hover:bg-background hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-ring" type="button" (trigger) :title=$(if code_open.get() { hide_code_label } else { show_code_label })>
                     <span aria-hidden="true" :hidden=$(code_open.get())>"<>"</span>
                     <span aria-hidden="true" :hidden=$(!code_open.get())>"</>"</span>
                     <span class="sr-only">$(if code_open.get() { hide_code_label } else { show_code_label })</span>
                 </button>
             </div>
             collapse(id: code_id.as_str(), open: &code_open,
-                <div class="border-t border-[#edf0f4] bg-[#fafafa]">
-                    <div class="flex items-center justify-between px-5 py-2.5 text-xs text-[#8c8c8c]"><span>(text(locale, "示例代码"))</span><span>"Rust"</span></div>
+                <div class="border-t border-border bg-background">
+                    <div class="flex items-center justify-between px-5 py-2.5 text-xs text-muted-foreground"><span>(text(locale, "示例代码"))</span><span>"Rust"</span></div>
                     <pre class="gallery-code-block"><code class="language-rust">(source)</code></pre>
                 </div>
             )

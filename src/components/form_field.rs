@@ -4,6 +4,8 @@ use topcoat::{
     view::{Attributes, Child, View, attributes, class, component, view},
 };
 
+use crate::ui::field;
+
 /// Stable field ID, label, and supporting information.
 #[derive(Clone, Copy)]
 pub struct FormFieldConfig<'a> {
@@ -69,17 +71,17 @@ pub async fn form_field(
     attrs.extend(attributes! { cx => class=(root_class) });
 
     Ok(view! {
-        <div (attrs)>
-            <label class="text-sm font-medium leading-5 text-[#262626]" for=(id)>
+        field::field(attrs: attrs,
+            field::field_label(attrs: attributes! { for=(id) class="text-[var(--gr-fg)]" },
                 (label)
-                if required { <span class="ml-1 text-[#ff4d4f]" aria-hidden="true">"*"</span> }
-            </label>
+                if required { <span class="ml-1 text-[var(--gr-error)]" aria-hidden="true">"*"</span> }
+            )
             (child)
             if let Some(message) = error {
-                <p class="m-0 text-xs leading-5 text-[#ff4d4f]" id=(help_id.as_str()) role="alert">(message)</p>
+                field::field_error(attrs: attributes! { id=(help_id.as_str()) class="text-xs leading-5 text-[var(--gr-error)]" }, (message))
             } else if let Some(message) = hint {
-                <p class="m-0 text-xs leading-5 text-[#8c8c8c]" id=(help_id.as_str())>(message)</p>
+                field::field_description(attrs: attributes! { id=(help_id.as_str()) class="text-xs leading-5 text-[var(--gr-fg-subtle)]" }, (message))
             }
-        </div>
+        )
     })
 }

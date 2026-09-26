@@ -4,9 +4,9 @@ use topcoat::{
     Result,
     context::Cx,
     router::page,
-    view::{View, view},
+    view::{View, attributes, view},
 };
-use topcoat_ant_design::{FormFieldConfig, form_field};
+use topcoat_ant_design::{FormFieldConfig, form_field, input};
 
 use crate::{
     app::page_header,
@@ -40,14 +40,14 @@ pub(in crate::app) async fn form_field_page(cx: &Cx) -> Result<impl View> {
             component_example(id: "form-field-basic", title: text(locale, "基础字段"), description: text(locale, "标签会通过稳定 id 与输入控件关联；必填标记只表达界面语义。"), source: basic_source,
                 <div class="max-w-[560px] p-6">
                     form_field(config: FormFieldConfig::new("gallery-automation-name", text(locale, "自动化名称")).required().with_hint(text(locale, "用于项目内识别这项自动化。")),
-                        <input id="gallery-automation-name" class="h-10 rounded-md border border-[#d9d9d9] px-3 font-mono text-sm outline-none transition-colors focus:border-[#1677ff] focus:shadow-[0_0_0_2px_rgba(22,119,255,0.12)]" type="text" value=(text(locale, "连通性测试")) required="" aria-describedby="gallery-automation-name-help">
+                        input(attrs: attributes! { id="gallery-automation-name" type="text" value=(text(locale, "连通性测试")) required="" aria-describedby="gallery-automation-name-help" })
                     )
                 </div>
             )
             component_example(id: "form-field-error", title: text(locale, "错误状态"), description: text(locale, "服务端校验失败时用统一位置呈现可操作的字段错误。"), source: error_source,
                 <div class="max-w-[560px] p-6">
                     form_field(config: FormFieldConfig::new("gallery-command-name", text(locale, "指令")).with_error(text(locale, "指令只能包含小写字母、数字、连字符和下划线。")),
-                        <input id="gallery-command-name" class="h-10 rounded-md border border-[#ff4d4f] px-3 font-mono text-sm outline-none shadow-[0_0_0_2px_rgba(255,77,79,0.08)]" type="text" value="/Test Command" aria-invalid="true" aria-describedby="gallery-command-name-help">
+                        input(attrs: attributes! { id="gallery-command-name" type="text" value="/Test Command" aria-invalid="true" aria-describedby="gallery-command-name-help" })
                     )
                 </div>
             )

@@ -1,4 +1,4 @@
-Show supplementary details from the right edge without leaving the current list, for example an event or audit record.
+Show supplementary details from the right edge without leaving the current list, for example an event or audit record. Drawer composes the official Topcoat `sheet` and `sheet_content` primitives.
 
 The caller provides a `Signal<bool>` for open state. By default, close actions set it to `false`. If a close URL is configured, clicking the backdrop or close button or pressing Escape navigates there instead. Scrolling stays inside the panel; it is up to 720 px wide on desktop and fills the viewport on mobile.
 

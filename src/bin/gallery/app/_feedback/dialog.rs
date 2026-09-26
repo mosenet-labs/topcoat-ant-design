@@ -1,19 +1,19 @@
-use crate::locale::Locale;
-use crate::locale::text;
 use topcoat::{
     Result,
     context::Cx,
     router::page,
-    runtime::signal,
-    view::{View, view},
+    runtime::{Event, signal},
+    view::{View, attributes, view},
 };
 use topcoat_ant_design::{
-    DialogConfig, dialog, dialog_close_attributes, dialog_trigger_attributes,
+    ButtonVariant, button, dialog, dialog_content, dialog_description, dialog_footer,
+    dialog_header, dialog_title, input, label,
 };
 
 use crate::{
     app::page_header,
     demo::component_example,
+    locale::Locale,
     markdown::{markdown_document, rust_code_block},
 };
 
@@ -30,42 +30,42 @@ const DIALOG_DOC_ZH: &str = include_str!(concat!(
 pub(in crate::app) async fn dialog_page(cx: &Cx) -> Result<impl View> {
     let locale = Locale::current(cx);
     let document = locale.select(DIALOG_DOC_EN, DIALOG_DOC_ZH);
-    let busy = signal(cx, || false);
-    let trigger = dialog_trigger_attributes(cx, "gallery-connection-dialog");
-    let cancel = dialog_close_attributes(cx, "gallery-connection-dialog");
-    let save = dialog_close_attributes(cx, "gallery-connection-dialog");
-    let example_source = rust_code_block(document, 0);
+    let source = rust_code_block(document, 0);
+    let open = signal(cx, || false);
 
     Ok(view! {
         page_header(
-            eyebrow: "FEEDBACK",
-            title: text(locale, "Dialog 模态对话框"),
-            description: text(locale, "用于编辑连接、填写配置等需要集中处理的任务。下方说明与 dialog 方法的 Rustdoc 来自同一份 Markdown。"),
+            eyebrow: "FEEDBACK / OFFICIAL",
+            title: locale.select("Dialog", "Dialog 对话框"),
+            description: locale.select("The official dialog groups a title, description, form fields and actions.", "使用官方 Dialog 组织标题、说明、表单字段与操作。"),
         )
         <div class="grid gap-6">
-            component_example(id: "dialog-preview", title: text(locale, "组件预览"), description: text(locale, "原生模态行为包含焦点约束、Escape 关闭和统一标题栏。"), source: example_source,
+            component_example(
+                id: "dialog-preview",
+                title: locale.select("Component preview", "组件预览"),
+                description: locale.select("Open the panel, edit its field, then close it.", "打开面板、编辑字段并关闭。"),
+                source: source,
                 <div class="p-6">
-                    <button class="h-9 cursor-pointer rounded-md border border-[#1677ff] bg-[#1677ff] px-4 font-mono text-sm text-white hover:bg-[#4096ff]" type="button" (trigger)>(text(locale, "编辑连接"))</button>
+                    button(attrs: attributes! { type="button" @click=$(|_e: Event| open.set(true)) }, (locale.select("Edit connection", "编辑连接")))
                 </div>
             )
             markdown_document(source: document)
         </div>
-        dialog(
-            language: locale.ui(),
-            config: DialogConfig::new("gallery-connection-dialog", text(locale, "编辑示例连接"))
-                .with_eyebrow("CONNECTION"),
-            busy: &busy,
-            <form class="flex min-h-0 flex-1 flex-col">
-                <div class="min-h-0 flex-1 overflow-y-auto px-6 py-5 max-[640px]:px-[18px]">
-                    <p class="mb-5 mt-0 text-sm leading-6 text-[#595959]">(text(locale, "修改连接信息后保存。这里仅演示组件，不会发送请求。"))</p>
-                    <label class="grid gap-2 text-sm font-medium" for="gallery-connection-name">(text(locale, "连接名称"))</label>
-                    <input class="mt-2 h-10 rounded-md border border-[#d9d9d9] px-3 font-mono text-sm outline-none focus:border-[#1677ff]" id="gallery-connection-name" value=(text(locale, "示例 GitLab")) autocomplete="off">
+        dialog(open: $(open.get()), attrs: attributes! { aria-labelledby="gallery-dialog-title" aria-describedby="gallery-dialog-description" },
+            dialog_content(
+                dialog_header(
+                    dialog_title(attrs: attributes! { id="gallery-dialog-title" }, (locale.select("Edit example connection", "编辑示例连接")))
+                    dialog_description(attrs: attributes! { id="gallery-dialog-description" }, (locale.select("Change the connection name in this preview.", "在预览中修改连接名称。")))
+                )
+                <div class="grid gap-2 py-2">
+                    label(attrs: attributes! { for="gallery-connection-name" }, (locale.select("Connection name", "连接名称")))
+                    input(attrs: attributes! { id="gallery-connection-name" value="Example GitLab" autocomplete="off" })
                 </div>
-                <footer class="flex shrink-0 justify-end gap-2.5 border-t border-[#f0f0f0] bg-[#fafafa] px-6 py-4 max-[640px]:px-[18px]">
-                    <button class="h-8 cursor-pointer rounded-md border border-[#d9d9d9] bg-white px-4 font-mono text-sm text-[#262626]" type="button" (cancel)>(text(locale, "取消"))</button>
-                    <button class="h-8 cursor-pointer rounded-md border border-[#1677ff] bg-[#1677ff] px-4 font-mono text-sm text-white" type="button" (save)>(text(locale, "保存"))</button>
-                </footer>
-            </form>
+                dialog_footer(
+                    button(variant: ButtonVariant::Outline, attrs: attributes! { type="button" @click=$(|_e: Event| open.set(false)) }, (locale.select("Cancel", "取消")))
+                    button(attrs: attributes! { type="button" @click=$(|_e: Event| open.set(false)) }, (locale.select("Save", "保存")))
+                )
+            )
         )
     })
 }

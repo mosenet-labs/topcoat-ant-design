@@ -1,15 +1,60 @@
-@layer theme, utilities;
+@layer theme, base, utilities;
 @import "tailwindcss/theme.css" layer(theme);
 @import "tailwindcss/utilities.css" layer(utilities) source(none);
 @source "./**/*.rs";
+@source "../../ui/**/*.rs";
+@import "../../../assets/topcoat-ant-design-theme.css";
 
 @theme {
   --font-mono: "JetBrains Mono", "Noto Sans SC", "PingFang SC", "Microsoft YaHei", ui-monospace, SFMono-Regular, monospace;
 }
 
+/* Official UI utilities assume border-box sizing; scope it to the Gallery. */
+.gallery-shell, .gallery-shell *, .gallery-shell *::before, .gallery-shell *::after {
+  box-sizing: border-box;
+}
+
+.native-demo-preview .native-card {
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  padding-block: 0;
+}
+
+.native-demo-preview .native-card > div:first-child:has(h3) {
+  display: none;
+}
+
+.native-demo-preview .native-card > div {
+  padding-inline: 0;
+}
+
+/* Keep one card visibly framed so the registry's card entry has a live preview. */
+#buttons_card .native-card {
+  max-width: 36rem;
+  border: 1px solid var(--border);
+  background: var(--card);
+  box-shadow: var(--shadow-sm);
+  padding-block: 1.5rem;
+}
+
+#buttons_card .native-card > div {
+  padding-inline: 1.5rem;
+}
+
+.native-sidebar-demo [data-sidebar="provider"] {
+  min-height: 0;
+  height: 16rem;
+  overflow: hidden;
+}
+
+.native-sidebar-demo [data-sidebar="sidebar"] {
+  height: 100%;
+}
+
 /* Markdown 来自仓库内的可信组件文档，由 Gallery 在服务端转换成 HTML。 */
 .gallery-markdown {
-  @apply overflow-hidden rounded-xl border border-[#e8eaee] bg-white px-7 py-6 text-sm leading-7 text-[#595959] shadow-sm;
+  @apply overflow-hidden rounded-xl border border-border bg-card px-7 py-6 text-sm leading-7 text-muted-foreground shadow-sm;
 }
 
 .gallery-markdown > :first-child {
@@ -21,11 +66,11 @@
 }
 
 .gallery-markdown h2 {
-  @apply mb-3 mt-8 border-b border-[#edf0f4] pb-3 text-xl font-semibold text-[#262626];
+  @apply mb-3 mt-8 border-b border-border pb-3 text-xl font-semibold text-foreground;
 }
 
 .gallery-markdown h3 {
-  @apply mb-2 mt-6 text-base font-semibold text-[#262626];
+  @apply mb-2 mt-6 text-base font-semibold text-foreground;
 }
 
 .gallery-markdown p,
@@ -42,11 +87,11 @@
 }
 
 .gallery-markdown a {
-  @apply text-[#1677ff] no-underline hover:text-[#0958d9] hover:underline;
+  @apply text-primary no-underline hover:text-[var(--gr-accent-strong)] hover:underline;
 }
 
 .gallery-markdown :not(pre) > code {
-  @apply rounded bg-[#f5f5f5] px-1.5 py-0.5 text-[13px] text-[#cf1322];
+  @apply rounded bg-background px-1.5 py-0.5 text-[13px] text-[#cf1322];
 }
 
 .gallery-markdown pre,
@@ -70,9 +115,9 @@
 
 .gallery-markdown th,
 .gallery-markdown td {
-  @apply border border-[#edf0f4] px-3 py-2 align-top;
+  @apply border border-border px-3 py-2 align-top;
 }
 
 .gallery-markdown th {
-  @apply bg-[#fafafa] font-semibold text-[#262626];
+  @apply bg-background font-semibold text-foreground;
 }

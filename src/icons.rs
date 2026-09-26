@@ -14,6 +14,7 @@ iconify::include!(pub "ant-design:check-circle-filled");
 iconify::include!(pub "ant-design:check-outlined");
 iconify::include!(pub "ant-design:close-circle-filled");
 iconify::include!(pub "ant-design:close-outlined");
+iconify::include!(pub "ant-design:copy-outlined");
 iconify::include!(pub "ant-design:down-outlined");
 iconify::include!(pub "ant-design:exclamation-circle-filled");
 iconify::include!(pub "ant-design:file-done-outlined");
