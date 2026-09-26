@@ -138,10 +138,7 @@ async fn gallery_layout(cx: &Cx, slot: Slot<'_>) -> Result<impl View> {
         getting_started_link.is_current(cx) || href!(_guide::getting_started_page).is_current(cx);
     let icons_active = icons_link.is_current(cx);
     let native_ui_active = native_ui_link.is_current(cx);
-    // The official showcase owns a nested theme root; its page signal reads the
-    // same cookie without a second `.dark` ancestor from this layout.
-    let initially_dark = theme_is_dark(cx) && !native_ui_active;
-    let dark = signal(cx, || initially_dark);
+    let dark = signal(cx, || theme_is_dark(cx));
     let notification_active = notification_link.is_current(cx);
     let tooltip_active = tooltip_link.is_current(cx);
     let popconfirm_active = popconfirm_link.is_current(cx);
@@ -275,10 +272,7 @@ async fn gallery_layout(cx: &Cx, slot: Slot<'_>) -> Result<impl View> {
                 topcoat::dev::script(status_indicator: false)
             </head>
             <body class="m-0 min-w-80 bg-background font-mono text-foreground antialiased">
-                if native_ui_active {
-                    <main class="min-h-screen">(slot)</main>
-                } else {
-                    sidebar_provider(attrs: attributes! { class="gallery-shell" },
+                sidebar_provider(attrs: attributes! { class="gallery-shell" },
                         sidebar(
                             open: $(sidebar_open.get()),
                             mobile_open: $(mobile_open.get()),
@@ -288,7 +282,7 @@ async fn gallery_layout(cx: &Cx, slot: Slot<'_>) -> Result<impl View> {
                             sidebar_header(attrs: attributes! { class="[&]:h-auto gap-4 px-5 py-5" },
                                 <a class="flex items-center gap-3 text-sidebar-foreground no-underline" href=(getting_started_url.as_str())>
                                     <span class="grid size-9 place-items-center rounded-lg bg-primary text-sm font-bold text-primary-foreground shadow-sm">"AD"</span>
-                                    <span><strong class="block text-[15px] font-semibold leading-5">"Topcoat Ant Design"</strong><small class="mt-0.5 block text-xs text-muted-foreground">"Topcoat components"</small></span>
+                                    <span><strong class="block text-[15px] font-semibold leading-5">"Topcoat Ant Design"</strong><small class="mt-0.5 block text-xs text-muted-foreground">(locale.select("Topcoat components", "Topcoat 组件"))</small></span>
                                 </a>
                                 <nav class="flex gap-2" aria-label=(text(locale, "语言"))>
                                     <a class="rounded-md border border-border px-3 py-1 text-xs text-sidebar-foreground no-underline aria-[current=page]:border-primary aria-[current=page]:bg-sidebar-accent aria-[current=page]:text-sidebar-accent-foreground" href=(english_url) data-language-switch="" aria-current=(if locale == Locale::En { Some("page") } else { None })>"English"</a>
@@ -306,6 +300,17 @@ async fn gallery_layout(cx: &Cx, slot: Slot<'_>) -> Result<impl View> {
                                     gallery_nav_link(href: icons_url.as_str(), badge: "I", label: text(locale, "Icons 图标"), active: icons_active)
                                     gallery_nav_link(href: native_ui_url.as_str(), badge: "UI", label: locale.select("Official Topcoat components", "Topcoat 官方组件"), active: native_ui_active)
                                 </div>
+                            </section>
+                            <section>
+                                <details class="rounded-lg border border-border bg-card open:shadow-sm" open=(native_ui_active)>
+                                    <summary class="cursor-pointer px-3 py-3 text-[11px] font-bold tracking-[0.1em] text-muted-foreground">(locale.select("Official UI · 31 components", "官方 UI · 31 个组件"))</summary>
+                                    <div class="grid grid-cols-2 gap-1 border-t border-border p-2">
+                                        for name in _native::REGISTRY_COMPONENTS {
+                                            let target = format!("{}#{}", native_ui_url, _native::registry_target(name));
+                                            <a class="truncate rounded px-2 py-1.5 font-mono text-[11px] text-sidebar-foreground no-underline hover:bg-sidebar-accent hover:text-primary" href=(target.as_str())>(name)</a>
+                                        }
+                                    </div>
+                                </details>
                             </section>
                             <section class="max-[899px]:hidden">
                                 <p class="mb-2 mt-0 px-3 text-[11px] font-bold tracking-[0.1em] text-muted-foreground">(locale.select("AI Components", "AI 组件"))</p>
@@ -368,8 +373,8 @@ async fn gallery_layout(cx: &Cx, slot: Slot<'_>) -> Result<impl View> {
                         )
                         sidebar_inset(
                             sidebar_header(attrs: attributes! { class="[&]:h-16 [&]:bg-card px-6" },
-                                sidebar_trigger(open: $(sidebar_open.get()), attrs: attributes! { class="max-md:hidden" aria-controls="gallery-sidebar" @click=$(|_e: Event| sidebar_open.toggle()) })
-                                sidebar_trigger(open: $(mobile_open.get()), attrs: attributes! { class="md:hidden" aria-controls="gallery-sidebar" @click=$(|_e: Event| mobile_open.toggle()) })
+                                sidebar_trigger(open: $(sidebar_open.get()), attrs: attributes! { class="max-md:hidden" aria-label=(locale.select("Toggle sidebar", "切换侧边栏")) aria-controls="gallery-sidebar" @click=$(|_e: Event| sidebar_open.toggle()) })
+                                sidebar_trigger(open: $(mobile_open.get()), attrs: attributes! { class="md:hidden" aria-label=(locale.select("Toggle sidebar", "切换侧边栏")) aria-controls="gallery-sidebar" @click=$(|_e: Event| mobile_open.toggle()) })
                                 <span class="h-5 w-px bg-border" aria-hidden="true"></span>
                                 <span class="min-w-0 flex-1 truncate text-sm font-semibold text-foreground">(document_title)</span>
                                 button(attrs: attributes! { type="button" class="shrink-0" @click=$(|_e: Event| {
@@ -387,7 +392,6 @@ async fn gallery_layout(cx: &Cx, slot: Slot<'_>) -> Result<impl View> {
                             <div class="mx-auto box-border w-full min-w-0 max-w-[1240px] px-8 pb-24 pt-12 max-[640px]:px-4 max-[640px]:pt-8">(slot)</div>
                         )
                     )
-                }
             </body>
         </html>
     })
@@ -421,16 +425,46 @@ mod tests {
         let body = to_bytes(response.into_body(), usize::MAX).await.unwrap();
         let html = String::from_utf8(body.to_vec()).unwrap();
         for marker in [
-            "31 official components",
-            "Ant Design theme",
-            "Buttons",
-            "Forms",
-            "Sidebar",
-            "Dialog",
-            "Accordion",
+            "Topcoat Ant Design",
+            "Official Topcoat components",
+            "Component index",
+            "Topcoat 0.9.0 · 31 / 31",
+            "Show example code",
+            "async fn buttons_card",
+            "async fn sidebar_card",
         ] {
             assert!(html.contains(marker), "missing {marker}");
         }
+        for name in super::_native::REGISTRY_COMPONENTS {
+            let target = super::_native::registry_target(name);
+            assert!(
+                html.contains(&format!("href=\"/topcoat-ui#{target}\"")),
+                "missing link for {name}"
+            );
+            assert!(
+                html.contains(&format!("id=\"{target}\"")),
+                "missing example for {name}"
+            );
+        }
+
+        let response = router
+            .handle(
+                Request::builder()
+                    .uri("/topcoat-ui?lang=zh")
+                    .body(Body::empty())
+                    .unwrap(),
+            )
+            .await;
+        let chinese = String::from_utf8(
+            to_bytes(response.into_body(), usize::MAX)
+                .await
+                .unwrap()
+                .to_vec(),
+        )
+        .unwrap();
+        assert!(chinese.contains("Topcoat 官方组件"));
+        assert!(chinese.contains("组件索引"));
+        assert!(chinese.contains("显示示例代码"));
     }
 
     #[tokio::test]
@@ -455,11 +489,7 @@ mod tests {
                     .to_vec(),
             )
             .unwrap();
-            if path == "/topcoat-ui" {
-                assert!(html.contains("dark relative min-h-screen"), "{path}");
-            } else {
-                assert!(html.contains("class=\"dark\""), "{path}");
-            }
+            assert!(html.contains("class=\"dark\""), "{path}");
         }
     }
 
@@ -779,7 +809,7 @@ mod tests {
                 let active_href = tabs_html.find(&format!("href=\"{path}\"")).unwrap();
                 let active_link_start = tabs_html[..active_href].rfind("<a").expect("tab start");
                 let active_link_end =
-                    active_href + tabs_html[active_href..].find('>').expect("tab start end");
+                    active_href + tabs_html[active_href..].find("</a>").expect("tab end");
                 assert!(
                     tabs_html[active_link_start..active_link_end].contains("aria-current=\"page\""),
                     "{path}: current tab missing from {}",

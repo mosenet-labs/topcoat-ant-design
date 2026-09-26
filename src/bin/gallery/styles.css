@@ -10,9 +10,46 @@
 }
 
 /* Official UI utilities assume border-box sizing; scope it to the Gallery. */
-.gallery-shell, .gallery-shell *, .gallery-shell *::before, .gallery-shell *::after,
-.showcase-shell, .showcase-shell *, .showcase-shell *::before, .showcase-shell *::after {
+.gallery-shell, .gallery-shell *, .gallery-shell *::before, .gallery-shell *::after {
   box-sizing: border-box;
+}
+
+.native-demo-preview .native-card {
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  padding-block: 0;
+}
+
+.native-demo-preview .native-card > div:first-child:has(h3) {
+  display: none;
+}
+
+.native-demo-preview .native-card > div {
+  padding-inline: 0;
+}
+
+/* Keep one card visibly framed so the registry's card entry has a live preview. */
+#buttons_card .native-card {
+  max-width: 36rem;
+  border: 1px solid var(--border);
+  background: var(--card);
+  box-shadow: var(--shadow-sm);
+  padding-block: 1.5rem;
+}
+
+#buttons_card .native-card > div {
+  padding-inline: 1.5rem;
+}
+
+.native-sidebar-demo [data-sidebar="provider"] {
+  min-height: 0;
+  height: 16rem;
+  overflow: hidden;
+}
+
+.native-sidebar-demo [data-sidebar="sidebar"] {
+  height: 100%;
 }
 
 /* Markdown 来自仓库内的可信组件文档，由 Gallery 在服务端转换成 HTML。 */
