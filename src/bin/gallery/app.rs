@@ -253,8 +253,8 @@ async fn gallery_layout(cx: &Cx, slot: Slot<'_>) -> Result<impl View> {
                 topcoat::dev::script(status_indicator: false)
             </head>
             <body class="m-0 min-w-80 bg-[#f5f7fa] font-mono text-[#262626] antialiased">
-                <div class="min-h-screen min-[900px]:grid min-[900px]:grid-cols-[248px_minmax(0,1fr)]">
-                    <aside class="border-b border-[#edf0f4] bg-white min-[900px]:sticky min-[900px]:top-0 min-[900px]:h-screen min-[900px]:overflow-y-auto min-[900px]:border-b-0 min-[900px]:border-r">
+                <div class=(if native_ui_active { "min-h-screen" } else { "min-h-screen min-[900px]:grid min-[900px]:grid-cols-[248px_minmax(0,1fr)]" })>
+                    <aside class=(class!("border-b border-[#edf0f4] bg-white min-[900px]:sticky min-[900px]:top-0 min-[900px]:h-screen min-[900px]:overflow-y-auto min-[900px]:border-b-0 min-[900px]:border-r", "hidden" if native_ui_active))>
                         <div class="border-b border-[#edf0f4] px-6 py-6">
                             <a class="flex items-center gap-3 text-[#262626] no-underline" href=(getting_started_url.as_str())>
                                 <span class="grid size-9 place-items-center rounded-lg bg-[#1677ff] text-sm font-bold text-white shadow-[0_4px_12px_rgba(22,119,255,0.22)]">"AD"</span>
@@ -333,8 +333,8 @@ async fn gallery_layout(cx: &Cx, slot: Slot<'_>) -> Result<impl View> {
                             </section>
                         </nav>
                     </aside>
-                    <main class="min-w-0 px-8 pb-20 pt-12 max-[640px]:px-4 max-[640px]:pt-8">
-                        <div class="mx-auto w-full max-w-[1080px]">(slot)</div>
+                    <main class=(if native_ui_active { "min-w-0" } else { "min-w-0 px-8 pb-20 pt-12 max-[640px]:px-4 max-[640px]:pt-8" })>
+                        <div class=(if native_ui_active { "w-full" } else { "mx-auto w-full max-w-[1080px]" })>(slot)</div>
                     </main>
                 </div>
             </body>

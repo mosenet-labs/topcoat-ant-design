@@ -134,10 +134,27 @@
 
 /* The Gallery intentionally omits global Tailwind Preflight. Restore the
    native HTML defaults that the upstream showcase relies on inside this area. */
+:where(.native-ui),
+:where(.native-ui) *,
+:where(.native-ui) *::before,
+:where(.native-ui) *::after {
+  box-sizing: border-box;
+}
+
+:where(.native-ui) :where(h1, h2, h3, h4, p, ul, ol) {
+  margin: 0;
+}
+
 .native-ui [hidden] {
   display: none !important;
 }
 
 :where(.native-ui) a {
   text-decoration: none;
+}
+
+:where(.native-ui) :where(ul, ol) {
+  list-style: none;
+  margin: 0;
+  padding: 0;
 }

@@ -1,5 +1,6 @@
 use topcoat_ant_design::native_ui as components;
 
+use crate::locale::Locale;
 use components::{
     accordion::{accordion, accordion_content, accordion_item, accordion_trigger},
     alert::{AlertVariant, alert, alert_description, alert_title},
@@ -126,14 +127,17 @@ fn status_variant(status: &str) -> BadgeVariant {
 
 #[page("/topcoat-ui")]
 pub(in crate::app) async fn native_ui_page(cx: &Cx) -> Result<impl View> {
+    let locale = Locale::current(cx);
+    let gallery_url = locale.link("/overview");
     let dark = signal(cx, || false);
     let sidebar_open = signal(cx, || true);
     let mobile_open = signal(cx, || false);
 
     Ok(view! {
-        <div :class=$(if dark.get() { "native-ui dark relative -mx-8 -mt-12 min-h-screen overflow-hidden bg-background text-foreground max-[640px]:-mx-4 max-[640px]:-mt-8" } else { "native-ui relative -mx-8 -mt-12 min-h-screen overflow-hidden bg-background text-foreground max-[640px]:-mx-4 max-[640px]:-mt-8" })>
-            <div class="border-b border-border bg-card px-6 py-4 text-sm text-muted-foreground">
-                "Topcoat 0.9.0 · 31 native components · neutral theme"
+        <div :class=$(if dark.get() { "native-ui dark relative min-h-screen overflow-x-clip bg-background text-foreground" } else { "native-ui relative min-h-screen overflow-x-clip bg-background text-foreground" })>
+            <div class="flex flex-wrap items-center justify-between gap-3 border-b border-border bg-card px-6 py-3 text-sm text-muted-foreground">
+                <span>"Topcoat 0.9.0 · 31 native components · neutral theme"</span>
+                <a class="font-medium text-foreground hover:underline" href=(gallery_url.as_str())>(locale.select("← Back to Ant Design Gallery", "← 返回 Ant Design Gallery"))</a>
             </div>
                 sidebar_provider(
                     app_sidebar(open: $(sidebar_open), mobile_open: $(mobile_open))
