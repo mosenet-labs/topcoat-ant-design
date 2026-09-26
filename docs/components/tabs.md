@@ -17,7 +17,7 @@
 | 参数 | 类型 | 说明 |
 | --- | --- | --- |
 | `href` | `&str` | 页签对应的真实路由。 |
-| `active` | `bool` | 是否为当前页面。 |
+| `active` | `Expr<bool>`（可直接传 `bool`） | 是否为当前页面，也可随 signal 响应式更新。 |
 | `attrs` | `Attributes` | 可选；转发到链接。 |
 | `child` | `Child` | 页签文字或图标。 |
 

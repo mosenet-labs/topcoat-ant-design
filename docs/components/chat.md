@@ -17,6 +17,9 @@
 
 这些组件都从 crate 根导出。`ChatMessageStatus` 有 `Sending`、`Streaming`、`Complete`、`Failed`、`Cancelled` 五种状态。`chat_bubble` 可以通过 `status` 显示状态并设置 `aria-busy`；`chat_message_list` 提供带标签的 `role="log"` 区域。页面应为消息提供稳定 ID，并在 `view!` 的消息循环中使用 Topcoat 0.9 的 `#[key(message.id.clone())]`，使消息组件的浏览器状态在列表更新后仍对应同一条消息。
 
+所有会渲染元素的 Chat 组件都接受可选的 `attrs`，转发到根元素，并与组件自身的 class 合并，与 Topcoat 原生 UI 的模式一致。`chat_conversation_item` 的 `active` 可传入布尔值或响应式 `Expr<bool>`。
+Chat 组件颜色使用 `--gr-*` 主题变量，并随 `.dark` 主题类切换。
+
 `chat_think` 使用轻量的三角形与脑图标入口，在回复正文前展开过程摘要。Gallery 的“复制回复”操作位于回复底部，只复制该条助手消息的文本内容；复制成功后显示反馈。操作本身由页面提供，`chat_actions` 只负责承载与布局。
 
 `chat_thought_chain` 使用中性的编号节点和细连接线；`chat_thought_step` 将子内容作为浅灰说明展示。需要强调执行结果时，可传入 `ChatThoughtStatus::{Loading, Success, Error, Abort}`，并用 `language` 指定状态的可访问文案。视觉层级参考 [Ant Design X ThoughtChain](https://x.ant.design/components/thought-chain-cn/)。

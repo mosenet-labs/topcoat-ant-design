@@ -34,19 +34,19 @@ impl NotificationTone {
 
     const fn icon_class(self) -> &'static str {
         match self {
-            Self::Success => "bg-[#f6ffed] text-[#389e0d]",
-            Self::Info => "bg-[#e6f4ff] text-[#1677ff]",
-            Self::Warning => "bg-[#fffbe6] text-[#d48806]",
-            Self::Error => "bg-[#fff1f0] text-[#cf1322]",
+            Self::Success => "bg-[var(--gr-success-soft)] text-[var(--gr-success)]",
+            Self::Info => "bg-[var(--gr-accent-soft)] text-[var(--gr-accent)]",
+            Self::Warning => "bg-[var(--gr-warning-soft)] text-[var(--gr-warning)]",
+            Self::Error => "bg-[var(--gr-error-soft)] text-[var(--gr-error)]",
         }
     }
 
     const fn timer_class(self) -> &'static str {
         match self {
-            Self::Success => "bg-[#52c41a]",
-            Self::Info => "bg-[#1677ff]",
-            Self::Warning => "bg-[#faad14]",
-            Self::Error => "bg-[#ff4d4f]",
+            Self::Success => "bg-[var(--gr-success)]",
+            Self::Info => "bg-[var(--gr-accent)]",
+            Self::Warning => "bg-[var(--gr-warning)]",
+            Self::Error => "bg-[var(--gr-error)]",
         }
     }
 
@@ -96,7 +96,7 @@ pub async fn notification(
     // Topcoat UI 组件允许调用方补充根元素属性，并合并而不是覆盖公共样式。
     let caller_class = attrs.remove("class");
     let notification_class = class!(
-        "native-ui gr-notification group relative grid min-h-[92px] grid-cols-[32px_minmax(0,1fr)] gap-3 overflow-hidden rounded-lg border border-[#f0f0f0] bg-white px-[18px] pb-4 pt-[18px] font-mono text-[#262626] shadow-lg pointer-events-auto animate-[gr-notification-enter_180ms_ease-out]",
+        "native-ui gr-notification group relative grid min-h-[92px] grid-cols-[32px_minmax(0,1fr)] gap-3 overflow-hidden rounded-lg border border-[var(--gr-border-subtle)] bg-[var(--gr-surface)] px-[18px] pb-4 pt-[18px] font-mono text-[var(--gr-fg)] shadow-lg pointer-events-auto animate-[gr-notification-enter_180ms_ease-out]",
         tone.class_name(),
         caller_class,
     );
@@ -126,9 +126,9 @@ pub async fn notification(
                 </span>
                 <div class="min-w-0 pr-7">
                     <strong class="mb-1.5 mt-px block text-base font-semibold leading-[1.4]">(title)</strong>
-                    <p class="m-0 [overflow-wrap:anywhere] text-sm leading-[1.6] text-[#595959]">$(message.get())</p>
+                    <p class="m-0 [overflow-wrap:anywhere] text-sm leading-[1.6] text-[var(--gr-fg-muted)]">$(message.get())</p>
                 </div>
-                button::button(variant: button::ButtonVariant::Ghost, size: button::ButtonSize::Icon, attrs: attributes! { cx => class="absolute right-[18px] top-[18px] size-[22px] rounded-[4px] p-0 text-[rgba(0,0,0,0.45)] hover:text-[rgba(0,0,0,0.88)]" type="button" aria-label=(language.select("Close notification", "关闭通知")) @click=$(|_e: Event| message.set("".to_owned())) },
+                button::button(variant: button::ButtonVariant::Ghost, size: button::ButtonSize::Icon, attrs: attributes! { cx => class="absolute right-[18px] top-[18px] size-[22px] rounded-[4px] p-0 text-[var(--gr-fg-subtle)] hover:text-[var(--gr-fg)]" type="button" aria-label=(language.select("Close notification", "关闭通知")) @click=$(|_e: Event| message.set("".to_owned())) },
                     icon(data: CLOSE_OUTLINED, size: 12)
                 )
                 <span class=(timer_class) aria-hidden="true" @animationend=$(|_e| message.set("".to_owned()))></span>

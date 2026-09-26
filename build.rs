@@ -55,6 +55,7 @@ fn main() {
 
     println!("cargo:rerun-if-changed=build.rs");
     println!("cargo:rerun-if-changed=assets/topcoat-ant-design.css");
+    println!("cargo:rerun-if-changed=assets/topcoat-ant-design-tokens.css");
     println!("cargo:rerun-if-changed=icons/ant-design.json");
     println!("cargo:rerun-if-changed=styles.css");
     println!("cargo:rerun-if-changed=src/components");

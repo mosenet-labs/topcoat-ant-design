@@ -17,7 +17,7 @@ Provide route-based tabs for console detail pages.
 | Parameter | Type | Description |
 | --- | --- | --- |
 | `href` | `&str` | Real route for this tab. |
-| `active` | `bool` | Whether this is the current page. |
+| `active` | `Expr<bool>` (accepts `bool`) | Whether this is the current page; may be reactive. |
 | `attrs` | `Attributes` | Optional link attributes. |
 | `child` | `Child` | Tab text or icon. |
 

@@ -1,0 +1,55 @@
+/* Custom component colors follow the same theme switch as the native UI. */
+:root,
+.native-ui {
+  --gr-surface: #fff;
+  --gr-surface-muted: #fafafa;
+  --gr-fg: #262626;
+  --gr-fg-muted: #595959;
+  --gr-fg-subtle: #8c8c8c;
+  --gr-fg-disabled: #bfbfbf;
+  --gr-border: #d9d9d9;
+  --gr-border-subtle: #f0f0f0;
+  --gr-accent: #1677ff;
+  --gr-accent-strong: #0958d9;
+  --gr-accent-soft: #e6f4ff;
+  --gr-accent-border: #91caff;
+  --gr-on-accent: #fff;
+  --gr-success: #389e0d;
+  --gr-success-soft: #f6ffed;
+  --gr-success-border: #b7eb8f;
+  --gr-warning: #d48806;
+  --gr-warning-soft: #fffbe6;
+  --gr-warning-border: #ffe58f;
+  --gr-error: #cf1322;
+  --gr-error-soft: #fff1f0;
+  --gr-error-border: #ffccc7;
+  --gr-shadow-color: rgb(0 0 0 / 20%);
+}
+
+:root.dark,
+.dark .native-ui,
+.native-ui.dark {
+  --gr-surface: #20252c;
+  --gr-surface-muted: #292f38;
+  --gr-fg: #eef2f6;
+  --gr-fg-muted: #bac4ce;
+  --gr-fg-subtle: #97a4b2;
+  --gr-fg-disabled: #6f7b88;
+  --gr-border: #4a5562;
+  --gr-border-subtle: #37414c;
+  --gr-accent: #69b1ff;
+  --gr-accent-strong: #91caff;
+  --gr-accent-soft: #17344f;
+  --gr-accent-border: #3b6386;
+  --gr-on-accent: #102234;
+  --gr-success: #95de64;
+  --gr-success-soft: #263927;
+  --gr-success-border: #456846;
+  --gr-warning: #ffd666;
+  --gr-warning-soft: #3d3520;
+  --gr-warning-border: #705c30;
+  --gr-error: #ff7875;
+  --gr-error-soft: #442628;
+  --gr-error-border: #7f4447;
+  --gr-shadow-color: rgb(0 0 0 / 45%);
+}

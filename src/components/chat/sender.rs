@@ -19,7 +19,7 @@ pub async fn chat_sender(
     cx: &Cx,
     id: &str,
     draft: &Signal<String>,
-    submit_attrs: Attributes,
+    mut submit_attrs: Attributes,
     #[default] busy: Option<&Signal<bool>>,
     #[default] language: UiLanguage,
     #[default] placeholder: Option<&str>,
@@ -32,6 +32,7 @@ pub async fn chat_sender(
     let caller_class = attrs.remove("class");
     let root_class = class!("native-ui gr-chat-sender", caller_class);
     attrs.extend(attributes! { cx => class=(root_class) });
+    let form_class = class!("gr-chat-sender-form", submit_attrs.remove("class"));
     let default_placeholder = language.select(
         "Ask a question or describe a task...",
         "提问或描述一个任务...",
@@ -42,7 +43,7 @@ pub async fn chat_sender(
 
     Ok(view! {
         <div (attrs)>
-            <form class="gr-chat-sender-form" (submit_attrs)>
+            <form class=(form_class) (submit_attrs)>
                 (child)
                 label::label(attrs: attributes! { class="sr-only" for=(id) }, (input_label))
                 textarea::textarea(attrs: attributes! { cx =>

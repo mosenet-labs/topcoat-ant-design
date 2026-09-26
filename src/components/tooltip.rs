@@ -1,17 +1,22 @@
 use topcoat::{
     Result,
     runtime::Event,
-    view::{Child, View, component, view},
+    view::{Attributes, Child, View, class, component, view},
 };
 
 #[doc = include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/docs/en/components/tooltip.md"))]
 #[component]
-pub async fn tooltip(id: &str, content: &str, child: Child<'_>) -> Result<impl View> {
+pub async fn tooltip(
+    id: &str,
+    content: &str,
+    #[default] mut attrs: Attributes,
+    child: Child<'_>,
+) -> Result<impl View> {
     let hover_id = id.to_owned();
     let focus_id = id.to_owned();
     let positioning_id = id.to_owned();
     Ok(view! {
-        <span class="gr-tooltip-trigger" tabindex="0" aria-describedby=(id)
+        <span class=(class!("gr-tooltip-trigger", attrs.remove("class"))) tabindex="0" aria-describedby=(id) (attrs)
             @mouseenter=$(move |_e: Event| {
                 let _id = hover_id.to_owned();
                 raw!("document.getElementById(${_id}.dehydrate())?.showPopover()", ());

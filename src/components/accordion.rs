@@ -67,7 +67,7 @@ pub async fn accordion_item(
     let count_suffix = language.select(" enabled", " 项已启用");
     let caller_class = attrs.remove("class");
     let root_class = class!(
-        "gr-accordion-item native-ui overflow-hidden rounded-lg border border-[#d9d9d9] bg-white",
+        "gr-accordion-item native-ui overflow-hidden rounded-lg border border-[var(--gr-border)] bg-[var(--gr-surface)]",
         caller_class,
     );
     attrs.extend(attributes! { cx => class=(root_class) });
@@ -75,7 +75,7 @@ pub async fn accordion_item(
     Ok(view! {
         <section (attrs)>
             <h3 class="m-0">
-                button::button(variant: button::ButtonVariant::Ghost, attrs: attributes! { cx => id=(trigger_id.as_str()) type="button" class="group flex h-auto w-full justify-start gap-3 rounded-none border-0 bg-[#fafafa] px-4 py-3 text-left font-mono text-[#262626] hover:bg-[#f5f7fa]"
+                button::button(variant: button::ButtonVariant::Ghost, attrs: attributes! { cx => id=(trigger_id.as_str()) type="button" class="group flex h-auto w-full justify-start gap-3 rounded-none border-0 bg-[var(--gr-surface-muted)] px-4 py-3 text-left font-mono text-[var(--gr-fg)] hover:bg-[var(--gr-surface-muted)]"
                     aria-controls=(id)
                     :aria-expanded=$(if expanded { "true" } else { "false" })
                     @click=$(|_event: Event| {
@@ -87,19 +87,19 @@ pub async fn accordion_item(
                     }) },
                     <span class="min-w-0 flex-1">
                         <span class="block text-sm font-semibold leading-5">(title)</span>
-                        <span class="mt-1 block text-xs font-normal leading-[1.5] text-[#8c8c8c]">(description)</span>
+                        <span class="mt-1 block text-xs font-normal leading-[1.5] text-[var(--gr-fg-subtle)]">(description)</span>
                     </span>
                     if let Some(count) = selected_count {
-                        <span class="shrink-0 text-xs font-normal text-[#595959]">$(count.get()) (count_suffix)</span>
+                        <span class="shrink-0 text-xs font-normal text-[var(--gr-fg-muted)]">$(count.get()) (count_suffix)</span>
                     }
                     if let Some(badge) = badge {
-                        <span class="shrink-0 rounded bg-[#e6f4ff] px-[7px] py-[2px] text-[11px] font-semibold text-[#0958d9]">(badge)</span>
+                        <span class="shrink-0 rounded bg-[var(--gr-accent-soft)] px-[7px] py-[2px] text-[11px] font-semibold text-[var(--gr-accent-strong)]">(badge)</span>
                     }
                     icon(data: DOWN_OUTLINED, size: 14, attrs: attributes! { cx =>
                         :class=$(if expanded_for_icon {
-                            "shrink-0 rotate-180 text-[#8c8c8c] transition-transform duration-200"
+                            "shrink-0 rotate-180 text-[var(--gr-fg-subtle)] transition-transform duration-200"
                         } else {
-                            "shrink-0 text-[#8c8c8c] transition-transform duration-200"
+                            "shrink-0 text-[var(--gr-fg-subtle)] transition-transform duration-200"
                         })
                     })
                 )
@@ -107,7 +107,7 @@ pub async fn accordion_item(
             <div id=(id) class="gr-collapse" aria-labelledby=(trigger_id.as_str())
                 :data-state=$(if expanded_for_state { "open" } else { "closed" })
                 :aria-hidden=$(if expanded_for_hidden { "false" } else { "true" })>
-                <div class="gr-collapse-inner border-t border-[#f0f0f0]">(child)</div>
+                <div class="gr-collapse-inner border-t border-[var(--gr-border-subtle)]">(child)</div>
             </div>
         </section>
     })

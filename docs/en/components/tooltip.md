@@ -15,6 +15,7 @@ view! {
 - `id`: a page-unique DOM identifier provided by the caller.
 - `content`: complete plain text; the component renders it as text, never as HTML.
 - `child`: visible, non-interactive text or an icon. The wrapper can receive Tab focus, so do not nest a button or link.
+- `attrs`: optional attributes for the focusable wrapper; caller classes are appended.
 
 The tooltip uses the browser Popover top layer and is not clipped by a scrolling table. It starts above the trigger, flips below when needed, and shifts near viewport edges while keeping its arrow pointed at the trigger. Position is recalculated on scroll and resize.
 

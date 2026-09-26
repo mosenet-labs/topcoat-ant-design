@@ -60,10 +60,10 @@ pub async fn chat_bubble(
                 avatar::avatar_fallback((if is_user { "U" } else { "AI" }))
             )
             <div class="min-w-0 max-w-[min(76ch,88%)]">
-                <p class="gr-chat-role m-0 mb-1 text-[11px] font-semibold tracking-[0.08em] text-[#8c8c8c]">(role_label)</p>
+                <p class="gr-chat-role m-0 mb-1 text-[11px] font-semibold tracking-[0.08em] text-[var(--gr-fg-subtle)]">(role_label)</p>
                 <div class="gr-chat-content rounded-[14px] px-4 py-3 text-sm leading-6">(child)</div>
                 if let Some(status) = status {
-                    <p class="mb-0 mt-1.5 text-[11px] font-medium text-[#6b7c91]" role="status">(status.label(language))</p>
+                    <p class="mb-0 mt-1.5 text-[11px] font-medium text-[var(--gr-fg-muted)]" role="status">(status.label(language))</p>
                 }
             </div>
         </article>

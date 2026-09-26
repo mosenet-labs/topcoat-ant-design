@@ -1,12 +1,16 @@
 use topcoat::{
     Result,
-    view::{Child, View, component, view},
+    view::{Attributes, Child, View, class, component, view},
 };
 
 /// Host-owned actions such as copy, retry, and cancel beneath a message.
 #[component]
-pub async fn chat_actions(label: &str, #[default] child: Child<'_>) -> Result<impl View> {
+pub async fn chat_actions(
+    label: &str,
+    #[default] mut attrs: Attributes,
+    #[default] child: Child<'_>,
+) -> Result<impl View> {
     Ok(
-        view! { <div class="gr-chat-actions flex flex-wrap gap-2 pt-2" role="group" aria-label=(label)>(child)</div> },
+        view! { <div role="group" aria-label=(label) class=(class!("gr-chat-actions flex flex-wrap gap-2 pt-2", attrs.remove("class"))) (attrs)>(child)</div> },
     )
 }

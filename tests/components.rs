@@ -2,15 +2,16 @@ use topcoat::{
     Result,
     context::Cx,
     icon::icon,
-    runtime::{Event, signal},
+    runtime::{Event, expr, signal},
     view::{View, ViewExt, attributes, component, view},
 };
 use topcoat_ant_design::{
     AccordionItemConfig, DEFAULT_FONT, DateTimeRangeConfig, DialogConfig, NotificationTone,
-    STYLESHEET, accordion_item, collapse, collapse_trigger_attributes, data_table,
-    date_time_range_filter, dialog, dialog_close_attributes, dialog_trigger_attributes,
-    embedded_stylesheet, icons::PROJECT_OUTLINED, notification, popconfirm,
-    popconfirm_trigger_attributes, table_page_size_select, table_pagination,
+    STYLESHEET, accordion_item, chat_actions, chat_conversation_item, chat_prompt, chat_source,
+    chat_think, collapse, collapse_trigger_attributes, data_table, date_time_range_filter, dialog,
+    dialog_close_attributes, dialog_trigger_attributes, embedded_stylesheet,
+    icons::PROJECT_OUTLINED, notification, popconfirm, popconfirm_trigger_attributes, tab_link,
+    table_page_size_select, table_pagination, tooltip,
 };
 
 #[component]
@@ -110,6 +111,59 @@ fn stylesheet_contains_reversible_collapse_motion() {
         stylesheet.contains("prefers-reduced-motion"),
         "{stylesheet}"
     );
+}
+
+#[test]
+fn custom_stylesheet_includes_light_and_dark_theme_tokens() {
+    let stylesheet = embedded_stylesheet();
+    assert!(stylesheet.contains("--gr-surface:"));
+    assert!(stylesheet.contains(".native-ui.dark"));
+    assert!(stylesheet.contains("var(--gr-accent)"));
+}
+
+#[component]
+async fn custom_components_fixture(cx: &Cx) -> Result<impl View> {
+    let open = signal(cx, || true);
+    Ok(view! {
+        chat_actions(label: "Actions", attrs: attributes! { class="extra-actions" data-audit="actions" },
+            <button type="button">"Copy"</button>
+        )
+        chat_source(title: "Documentation", href: "https://example.com", attrs: attributes! { class="extra-source" data-audit="source" })
+        chat_prompt(title: "Try this", attrs: attributes! { class="extra-prompt" data-audit="prompt" })
+        chat_think(id: "audit-think", open: &open, attrs: attributes! { class="extra-think" }, "Reasoning")
+        chat_conversation_item(title: "Draft", href: "/chat/new", active: expr!(open.get()), attrs: attributes! { class="extra-conversation" })
+        tab_link(href: "/details", active: expr!(open.get()), attrs: attributes! { class="extra-tab" }, "Details")
+        tooltip(id: "audit-tooltip", content: "Hint", attrs: attributes! { class="extra-tooltip" }, <span>"Hint"</span>)
+        date_time_range_filter(
+            config: DateTimeRangeConfig::new("audit-range", "", ""),
+            from_attrs: attributes! { data-audit="from" },
+            to_attrs: attributes! { data-audit="to" },
+        )
+    })
+}
+
+#[tokio::test]
+async fn custom_components_forward_attributes_and_accept_reactive_active_state() {
+    let cx = &Cx::default();
+    let html = view! { cx => custom_components_fixture() }
+        .single()
+        .await
+        .unwrap()
+        .render(cx);
+
+    for marker in [
+        "extra-actions",
+        "extra-source",
+        "extra-prompt",
+        "extra-think",
+        "extra-conversation",
+        "extra-tab",
+        "extra-tooltip",
+        "data-audit=\"from\"",
+        "data-audit=\"to\"",
+    ] {
+        assert!(html.contains(marker), "missing {marker}: {html}");
+    }
 }
 
 #[tokio::test]

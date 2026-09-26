@@ -79,7 +79,7 @@ pub async fn dialog(
     let prevent_cancel = busy.clone();
     let caller_class = attrs.remove("class");
     let root_class = class!(
-        "native-ui gr-dialog m-auto max-h-[calc(100dvh_-_48px)] w-[min(580px,calc(100%_-_32px))] overflow-hidden rounded-[10px] border border-[#f0f0f0] bg-white p-0 text-left font-mono text-[#262626] shadow-[0_18px_60px_rgba(0,0,0,0.2)]",
+        "native-ui gr-dialog m-auto max-h-[calc(100dvh_-_48px)] w-[min(580px,calc(100%_-_32px))] overflow-hidden rounded-[10px] border border-[var(--gr-border-subtle)] bg-[var(--gr-surface)] p-0 text-left font-mono text-[var(--gr-fg)] shadow-[0_18px_60px_var(--gr-shadow-color)]",
         caller_class,
     );
     attrs.extend(attributes! { cx =>
@@ -137,14 +137,14 @@ pub async fn dialog(
     // 缩小父级 ThenView 的状态，避免嵌套弹窗渲染时产生大型栈临时值。
     Ok(view! {
         <dialog (attrs)>
-            <header class="gr-dialog-header flex shrink-0 items-start justify-between gap-4 border-b border-[#f0f0f0] px-6 pb-[18px] pt-[22px] max-[640px]:px-[18px]">
+            <header class="gr-dialog-header flex shrink-0 items-start justify-between gap-4 border-b border-[var(--gr-border-subtle)] px-6 pb-[18px] pt-[22px] max-[640px]:px-[18px]">
                 <div class="min-w-0">
                     if let Some(eyebrow) = eyebrow {
-                        <p class="m-0 text-xs font-bold tracking-[0.08em] text-[#8c8c8c]">(eyebrow)</p>
+                        <p class="m-0 text-xs font-bold tracking-[0.08em] text-[var(--gr-fg-subtle)]">(eyebrow)</p>
                     }
                     <h2 class="mb-0 mt-1 text-xl font-semibold leading-7" id=(title_id.as_str())>if let Some(title) = title { $(title.get()) } else { (static_title) }</h2>
                 </div>
-                button::button(variant: button::ButtonVariant::Ghost, size: button::ButtonSize::Icon, attrs: attributes! { cx => class="size-8 shrink-0 bg-transparent p-0 text-[rgba(0,0,0,0.45)] hover:text-[rgba(0,0,0,0.88)]" type="button" (close) :disabled=$(busy.get()) aria-label=(language.select("Close", "关闭")) },
+                button::button(variant: button::ButtonVariant::Ghost, size: button::ButtonSize::Icon, attrs: attributes! { cx => class="size-8 shrink-0 bg-transparent p-0 text-[var(--gr-fg-subtle)] hover:text-[var(--gr-fg)]" type="button" (close) :disabled=$(busy.get()) aria-label=(language.select("Close", "关闭")) },
                     icon(data: CLOSE_OUTLINED, size: 16)
                 )
             </header>

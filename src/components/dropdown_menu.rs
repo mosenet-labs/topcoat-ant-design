@@ -34,7 +34,7 @@ pub async fn dropdown_menu(
     let close_id = id.to_owned();
     let caller_class = attrs.remove("class");
     let panel_class = class!(
-        "gr-dropdown-menu fixed inset-auto m-0 mt-1.5 min-w-[180px] rounded-lg border border-[#f0f0f0] bg-white p-1.5 font-mono text-[13px] text-[#262626] shadow-lg",
+        "gr-dropdown-menu fixed inset-auto m-0 mt-1.5 min-w-[180px] rounded-lg border border-[var(--gr-border-subtle)] bg-[var(--gr-surface)] p-1.5 font-mono text-[13px] text-[var(--gr-fg)] shadow-lg",
         caller_class,
     );
     let semantics = attributes! { cx =>

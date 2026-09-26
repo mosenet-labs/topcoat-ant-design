@@ -1,7 +1,7 @@
 use pulldown_cmark::{CowStr, Event, Options, Parser, Tag, TagEnd, html};
 use topcoat::{
     Result,
-    view::{Unescaped, View, component, view},
+    view::{Attributes, Unescaped, View, class, component, view},
 };
 
 /// Render untrusted chat Markdown with escaped raw HTML and safe link targets.
@@ -44,9 +44,11 @@ pub fn render_chat_markdown(source: &str) -> String {
 
 /// Message content renderer for Markdown supplied by a user or model.
 #[component]
-pub async fn chat_markdown(source: &str) -> Result<impl View> {
+pub async fn chat_markdown(source: &str, #[default] mut attrs: Attributes) -> Result<impl View> {
     let rendered = render_chat_markdown(source);
-    Ok(view! { <div class="gr-chat-markdown">(Unescaped::new_unchecked(rendered))</div> })
+    Ok(
+        view! { <div class=(class!("gr-chat-markdown", attrs.remove("class"))) (attrs)>(Unescaped::new_unchecked(rendered))</div> },
+    )
 }
 
 #[cfg(test)]

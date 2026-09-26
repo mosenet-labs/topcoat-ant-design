@@ -1,6 +1,7 @@
 use topcoat::{
     Result,
     context::Cx,
+    runtime::Expr,
     view::{Attributes, Child, View, attributes, class, component, view},
 };
 
@@ -38,7 +39,7 @@ pub async fn tabs(
 pub async fn tab_link(
     cx: &Cx,
     href: &str,
-    active: bool,
+    #[into] active: Expr<bool>,
     #[default] mut attrs: Attributes,
     #[default] child: Child<'_>,
 ) -> Result<impl View> {

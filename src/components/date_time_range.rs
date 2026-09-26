@@ -48,6 +48,8 @@ pub async fn date_time_range_filter(
     cx: &Cx,
     config: DateTimeRangeConfig<'_>,
     #[default] language: UiLanguage,
+    #[default] from_attrs: Attributes,
+    #[default] to_attrs: Attributes,
     #[default] mut attrs: Attributes,
 ) -> Result<impl View> {
     let DateTimeRangeConfig {
@@ -86,12 +88,12 @@ pub async fn date_time_range_filter(
                 <div class="gr-date-range-fields">
                     label::label(attrs: attributes! { for=(from_id.as_str()) },
                         <span>(language.select("Start time", "开始时间"))</span>
-                        input::input(attrs: attributes! { id=(from_id.as_str()) name=(from_name) type="datetime-local" value=(from) })
+                        input::input(attrs: attributes! { (from_attrs) id=(from_id.as_str()) name=(from_name) type="datetime-local" value=(from) })
                     )
                     <span class="gr-date-range-separator" aria-hidden="true">"→"</span>
                     label::label(attrs: attributes! { for=(to_id.as_str()) },
                         <span>(language.select("End time", "结束时间"))</span>
-                        input::input(attrs: attributes! { id=(to_id.as_str()) name=(to_name) type="datetime-local" value=(to) })
+                        input::input(attrs: attributes! { (to_attrs) id=(to_id.as_str()) name=(to_name) type="datetime-local" value=(to) })
                     )
                 </div>
                 <div class="gr-date-range-quick" aria-label=(language.select("Quick date ranges", "快捷时间范围"))>
@@ -102,7 +104,7 @@ pub async fn date_time_range_filter(
                 <footer class="gr-date-range-actions">
                     button::button(variant: button::ButtonVariant::Outline, attrs: attributes! { cx => class="gr-button gr-button-default" type="button" @click=$(move |_e: Event| {
                         let _from = clear_from.to_owned(); let _to = clear_to.to_owned();
-                        raw!("document.getElementById(${_from}.dehydrate()).value=''; document.getElementById(${_to}.dehydrate()).value=''", ());
+                        raw!("(() => { const update = id => { const input = document.getElementById(id); if (!(input instanceof HTMLInputElement)) return; input.value = ''; input.dispatchEvent(new Event('input', { bubbles: true })); input.dispatchEvent(new Event('change', { bubbles: true })); }; update(${_from}.dehydrate()); update(${_to}.dehydrate()); })()", ());
                     }) }, (language.select("Clear", "清除")))
                     button::button(attrs: attributes! { class="gr-button gr-button-primary" type="submit" }, (language.select("Apply", "应用")))
                 </footer>
@@ -134,7 +136,7 @@ fn recent_range_attributes(cx: &Cx, from_id: String, to_id: String, days: f64) -
     attributes! { cx =>
         @click=$(move |_e: Event| {
             let _from = from_id.to_owned(); let _to = to_id.to_owned(); let _days = days;
-            raw!("(() => { const pad = value => String(value).padStart(2, '0'); const format = date => date.getFullYear() + '-' + pad(date.getMonth()+1) + '-' + pad(date.getDate()) + 'T' + pad(date.getHours()) + ':' + pad(date.getMinutes()); const end = new Date(); const start = new Date(end.getTime() - ${_days}.dehydrate() * 86400000); document.getElementById(${_from}.dehydrate()).value = format(start); document.getElementById(${_to}.dehydrate()).value = format(end); })()", ());
+            raw!("(() => { const pad = value => String(value).padStart(2, '0'); const format = date => date.getFullYear() + '-' + pad(date.getMonth()+1) + '-' + pad(date.getDate()) + 'T' + pad(date.getHours()) + ':' + pad(date.getMinutes()); const update = (id, value) => { const input = document.getElementById(id); if (!(input instanceof HTMLInputElement)) return; input.value = value; input.dispatchEvent(new Event('input', { bubbles: true })); input.dispatchEvent(new Event('change', { bubbles: true })); }; const end = new Date(); const start = new Date(end.getTime() - ${_days}.dehydrate() * 86400000); update(${_from}.dehydrate(), format(start)); update(${_to}.dehydrate(), format(end)); })()", ());
         })
     }
 }

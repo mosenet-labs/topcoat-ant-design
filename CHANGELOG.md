@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+- Align custom component attribute forwarding and reactive active state with native UI conventions.
+- Theme custom components with light and dark design tokens.
+- Keep date-range input observers in sync when shortcuts or Clear set values.
+
 ## 0.2.0-dev.1
 
 Development release from the `test` branch.

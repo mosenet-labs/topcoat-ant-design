@@ -1,15 +1,20 @@
 use topcoat::{
     Result,
-    view::{Child, View, attributes, component, view},
+    view::{Attributes, Child, View, attributes, class, component, view},
 };
 
 use crate::native_ui::accordion;
 
 /// Expandable list of references used while preparing a response.
 #[component]
-pub async fn chat_sources(label: &str, #[default] child: Child<'_>) -> Result<impl View> {
+pub async fn chat_sources(
+    label: &str,
+    #[default] mut attrs: Attributes,
+    #[default] child: Child<'_>,
+) -> Result<impl View> {
+    let root_class = class!("native-ui gr-chat-sources", attrs.remove("class"));
     Ok(view! {
-        accordion::accordion_item(attrs: attributes! { class="native-ui gr-chat-sources" open="open" },
+        accordion::accordion_item(attrs: attributes! { class=(root_class) open="open" (attrs) },
             accordion::accordion_trigger(attrs: attributes! { class="gr-chat-sources-trigger" }, (label))
             accordion::accordion_content(
                 <ul class="gr-chat-sources-list" aria-label=(label)>(child)</ul>
@@ -26,6 +31,7 @@ pub async fn chat_source(
     href: &str,
     #[default] summary: Option<&str>,
     #[default] activity: Option<&str>,
+    #[default] mut attrs: Attributes,
 ) -> Result<impl View> {
     let safe_href = if (href.starts_with("https://") || href.starts_with("http://"))
         && !href.chars().any(char::is_control)
@@ -35,7 +41,7 @@ pub async fn chat_source(
         None
     };
     Ok(view! {
-        <li class="gr-chat-source">
+        <li class=(class!("gr-chat-source", attrs.remove("class"))) (attrs)>
             if let Some(summary) = summary {
                 <div class="gr-chat-source-summary">(summary)</div>
             }

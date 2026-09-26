@@ -72,15 +72,15 @@ pub async fn form_field(
 
     Ok(view! {
         field::field(attrs: attrs,
-            field::field_label(attrs: attributes! { for=(id) class="text-[#262626]" },
+            field::field_label(attrs: attributes! { for=(id) class="text-[var(--gr-fg)]" },
                 (label)
-                if required { <span class="ml-1 text-[#ff4d4f]" aria-hidden="true">"*"</span> }
+                if required { <span class="ml-1 text-[var(--gr-error)]" aria-hidden="true">"*"</span> }
             )
             (child)
             if let Some(message) = error {
-                field::field_error(attrs: attributes! { id=(help_id.as_str()) class="text-xs leading-5 text-[#ff4d4f]" }, (message))
+                field::field_error(attrs: attributes! { id=(help_id.as_str()) class="text-xs leading-5 text-[var(--gr-error)]" }, (message))
             } else if let Some(message) = hint {
-                field::field_description(attrs: attributes! { id=(help_id.as_str()) class="text-xs leading-5 text-[#8c8c8c]" }, (message))
+                field::field_description(attrs: attributes! { id=(help_id.as_str()) class="text-xs leading-5 text-[var(--gr-fg-subtle)]" }, (message))
             }
         )
     })
