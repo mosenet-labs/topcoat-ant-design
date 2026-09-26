@@ -21,7 +21,7 @@ For a published version:
 
 ```toml
 [dependencies]
-topcoat-ant-design = "=0.2.0-dev.1"
+topcoat-ant-design = "=0.2.0"
 ```
 
 For local component development:
@@ -34,7 +34,7 @@ topcoat-ant-design = { path = "../topcoat-ant-design" }
 The default feature is sufficient to render components. Enable `router` only when the host uses selective route discovery and must explicitly register font routes:
 
 ```toml
-topcoat-ant-design = { version = "=0.2.0-dev.1", features = ["router"] }
+topcoat-ant-design = { version = "=0.2.0", features = ["router"] }
 ```
 
 ## CSS, fonts, and assets
@@ -107,7 +107,7 @@ Built-in component labels default to English. Pass `language: UiLanguage::Chines
 
 All 31 Topcoat 0.9.0 registry components are re-exported directly from `topcoat_ant_design`; their modules also remain available under `topcoat_ant_design::ui`. For example, `use topcoat_ant_design::{button, ButtonVariant, dialog, dialog_content};`. The upstream registry state is recorded in [components.toml](components.toml).
 
-This root-level API is currently available from this checkout. The published `0.2.0-dev.1` predates this change; use the path dependency above until a new version is published.
+This root-level API is available in version `0.2.0` and later.
 
 The official implementations replace the former local Accordion, Dialog, Dropdown Menu, Tabs, and Tooltip components. Use their official root-level names and composition APIs. Distinct composites such as `data_table`, `drawer`, `popconfirm`, and `notification` remain in the library; Drawer is built on the official Sheet.
 

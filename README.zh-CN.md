@@ -37,7 +37,7 @@ AI 组件覆盖消息、输入、会话导航、Markdown、过程详情、来源
 
 ```toml
 [dependencies]
-topcoat-ant-design = "=0.2.0-dev.1"
+topcoat-ant-design = "=0.2.0"
 ```
 
 在发布前或开发组件库时，可以使用本地路径：
@@ -50,7 +50,7 @@ topcoat-ant-design = { path = "../topcoat-ant-design" }
 默认 feature 已足够渲染组件。只有宿主采用选择性路由发现并需要显式注册字体时，才启用 `router`：
 
 ```toml
-topcoat-ant-design = { version = "=0.2.0-dev.1", features = ["router"] }
+topcoat-ant-design = { version = "=0.2.0", features = ["router"] }
 ```
 
 ## 接入样式与字体
@@ -70,7 +70,7 @@ Ok(view! {
 使用完整 `.discover()` 的应用会同时发现 Fontsource 字体路由，不需要额外注册。只发现部分路由的应用可启用 `router` feature，并调用一次扩展：
 
 ```toml
-topcoat-ant-design = { version = "=0.2.0-dev.1", features = ["router"] }
+topcoat-ant-design = { version = "=0.2.0", features = ["router"] }
 ```
 
 ```rust,ignore
@@ -99,7 +99,7 @@ let router = topcoat::router::module_router!()
 
 Topcoat 0.9.0 官方 registry 的全部 31 个组件直接从 `topcoat_ant_design` 导出，也可通过 `topcoat_ant_design::ui` 下的对应模块访问。例如 `use topcoat_ant_design::{button, ButtonVariant, dialog, dialog_content};`。官方组件的来源记录在 [components.toml](components.toml)。
 
-根目录直接导出的 API 目前仅在此源码版本中提供。已发布的 `0.2.0-dev.1` 尚未包含该改动；新版本发布前请使用上文的本地 path 依赖。
+根目录直接导出的 API 自 `0.2.0` 版本起可用。
 
 原有的 Accordion、Dialog、Dropdown Menu、Tabs、Tooltip 自定义实现已由官方组件替换，直接使用根目录导出的官方名称及组合 API。`data_table`、`drawer`、`popconfirm`、`notification` 等具有独立功能的复合组件继续保留；Drawer 内部使用官方 Sheet。
 
