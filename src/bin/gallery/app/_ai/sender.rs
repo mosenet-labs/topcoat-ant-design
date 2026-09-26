@@ -61,10 +61,10 @@ pub(in crate::app) async fn sender_page(cx: &Cx) -> Result<impl View> {
             title: locale.select("Compose and send", "编写并发送"),
             description: locale.select("Enter a message to see the local submit behavior. No model is contacted.", "输入消息，体验本地发送行为；不会请求模型。"),
             source: EXAMPLE_SOURCE,
-            <div class="grid gap-4 bg-[#f8faff] p-6 max-[520px]:p-4">
+            <div class="grid gap-4 bg-background p-6 max-[520px]:p-4">
                 chat_sender(id: "gallery-sender-draft", draft: &draft, submit_attrs: submit, language: locale.ui())
-                <p class="m-0 rounded-lg border border-[#d9e9ff] bg-white p-4 text-sm text-[#334155]" (latest_message)>
-                    <span class="mb-1 block text-xs font-semibold text-[#1677ff]">(locale.select("Last sent message", "最近发送的消息"))</span>
+                <p class="m-0 rounded-lg border border-border bg-card p-4 text-sm text-foreground" (latest_message)>
+                    <span class="mb-1 block text-xs font-semibold text-primary">(locale.select("Last sent message", "最近发送的消息"))</span>
                     $(submitted.get())
                 </p>
             </div>

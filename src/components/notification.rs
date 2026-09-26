@@ -11,7 +11,7 @@ use topcoat::{
 use crate::icons::{
     CHECK_CIRCLE_FILLED, CLOSE_CIRCLE_FILLED, CLOSE_OUTLINED, INFO_CIRCLE_FILLED, WARNING_FILLED,
 };
-use crate::{UiLanguage, native_ui::button};
+use crate::{UiLanguage, ui::button};
 
 /// Visual and accessibility tone of a notification.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -96,7 +96,7 @@ pub async fn notification(
     // Topcoat UI 组件允许调用方补充根元素属性，并合并而不是覆盖公共样式。
     let caller_class = attrs.remove("class");
     let notification_class = class!(
-        "native-ui gr-notification group relative grid min-h-[92px] grid-cols-[32px_minmax(0,1fr)] gap-3 overflow-hidden rounded-lg border border-[var(--gr-border-subtle)] bg-[var(--gr-surface)] px-[18px] pb-4 pt-[18px] font-mono text-[var(--gr-fg)] shadow-lg pointer-events-auto animate-[gr-notification-enter_180ms_ease-out]",
+        "gr-notification group relative grid min-h-[92px] grid-cols-[32px_minmax(0,1fr)] gap-3 overflow-hidden rounded-lg border border-[var(--gr-border-subtle)] bg-[var(--gr-surface)] px-[18px] pb-4 pt-[18px] font-mono text-[var(--gr-fg)] shadow-lg pointer-events-auto animate-[gr-notification-enter_180ms_ease-out]",
         tone.class_name(),
         caller_class,
     );

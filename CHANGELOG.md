@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Export all 31 official Topcoat UI components from the crate root and replace the local Accordion, Dialog, Dropdown Menu, Tabs, and Tooltip implementations.
+- Rebuild the Gallery shell with official sidebar controls and shared light and dark theme tokens.
+- Apply the Ant Design light and dark tokens to official components through the shared stylesheet without a wrapper class or separate feature.
 - Align custom component attribute forwarding and reactive active state with native UI conventions.
 - Theme custom components with light and dark design tokens.
 - Keep date-range input observers in sync when shortcuts or Clear set values.

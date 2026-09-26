@@ -210,7 +210,7 @@ pub async fn dropdown_menu_label(
     Ok(view! {
         <p
             class=(class!(
-                "px-2 py-1.5 text-xs font-medium text-muted-foreground",
+                "m-0 px-2 py-1.5 text-xs font-medium text-muted-foreground",
                 attrs.remove("class"),
             ))
             (attrs)

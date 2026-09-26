@@ -148,39 +148,39 @@ pub(super) async fn chat_flow(cx: &Cx, session: &str) -> Result<impl View> {
             title: locale.select("Chat composition", "聊天界面组合"),
             description: locale.select("Send several messages, then advance, finish, fail, cancel, or retry a local reply.", "连续发送消息，再通过本地按钮推进、完成、失败、取消或重试回复。"),
             source: EXAMPLE_SOURCE,
-            <div class="grid min-h-[650px] grid-cols-[210px_minmax(0,1fr)] bg-[#f8faff] max-[720px]:grid-cols-1">
-                <aside class="flex flex-col border-r border-[#e7edf6] bg-[#fbfcff] p-4 max-[720px]:border-b max-[720px]:border-r-0" aria-label=(locale.select("Conversations", "会话"))>
-                    <div class="mb-5 flex items-center gap-2 px-2 py-1"><span class="grid size-8 place-items-center rounded-[9px] bg-[#1677ff] text-[11px] font-bold text-white">"AI"</span><span class="text-sm font-bold text-[#1f3451]">"Topcoat X"</span></div>
-                    <p class="mb-2 mt-0 px-2 text-[10px] font-bold uppercase tracking-[0.13em] text-[#9aa6b6]">(locale.select("Workspace", "工作区"))</p>
+            <div class="grid min-h-[650px] grid-cols-[210px_minmax(0,1fr)] bg-background max-[720px]:grid-cols-1">
+                <aside class="flex flex-col border-r border-border bg-background p-4 max-[720px]:border-b max-[720px]:border-r-0" aria-label=(locale.select("Conversations", "会话"))>
+                    <div class="mb-5 flex items-center gap-2 px-2 py-1"><span class="grid size-8 place-items-center rounded-[9px] bg-primary text-[11px] font-bold text-primary-foreground">"AI"</span><span class="text-sm font-bold text-foreground">"Topcoat X"</span></div>
+                    <p class="mb-2 mt-0 px-2 text-[10px] font-bold uppercase tracking-[0.13em] text-muted-foreground">(locale.select("Workspace", "工作区"))</p>
                     chat_conversation_list(label: locale.select("Demo conversations", "示例会话"),
                         chat_conversation_item(title: locale.select("Designing a Chat interface", "设计 Chat 界面"), href: design_url.as_str(), active: session == "design")
                         chat_conversation_item(title: locale.select("Component boundaries", "组件边界"), href: notes_url.as_str(), active: session == "notes")
                         chat_conversation_item(title: locale.select("New conversation", "新建会话"), href: new_url.as_str(), active: session == "new")
                     )
-                    <p class="mt-auto border-t border-[#e8edf5] px-2 pt-4 text-[11px] leading-5 text-[#8b98aa] max-[720px]:hidden">(locale.select("Routes select sample conversations. Messages on this page stay in browser memory.", "路由切换示例会话；本页新消息仅保留在浏览器内存中。"))</p>
+                    <p class="mt-auto border-t border-border px-2 pt-4 text-[11px] leading-5 text-muted-foreground max-[720px]:hidden">(locale.select("Routes select sample conversations. Messages on this page stay in browser memory.", "路由切换示例会话；本页新消息仅保留在浏览器内存中。"))</p>
                 </aside>
                 <section class="flex min-h-[650px] min-w-0 flex-col max-[720px]:min-h-[560px]" aria-label=(locale.select("Chat preview", "聊天预览"))>
-                    <header class="flex min-h-[70px] items-center justify-between gap-4 border-b border-[#e7edf6] bg-white/90 px-6 max-[520px]:px-4">
-                        <div><p class="m-0 text-[11px] font-bold uppercase tracking-[0.12em] text-[#1677ff]">"CHAT / 01"</p><h2 class="m-0 mt-1 text-base font-semibold text-[#233449]">(match session { "notes" => locale.select("Component boundaries", "组件边界"), "new" => locale.select("New conversation", "新建会话"), _ => locale.select("Designing a Chat interface", "设计 Chat 界面") })</h2></div>
-                        <span class="rounded-full border border-[#dbe7f6] bg-[#f8faff] px-3 py-1 text-[11px] font-medium text-[#6a7b91]">(locale.select("Local preview", "本地预览"))</span>
+                    <header class="flex min-h-[70px] items-center justify-between gap-4 border-b border-border bg-card/90 px-6 max-[520px]:px-4">
+                        <div><p class="m-0 text-[11px] font-bold uppercase tracking-[0.12em] text-primary">"CHAT / 01"</p><h2 class="m-0 mt-1 text-base font-semibold text-foreground">(match session { "notes" => locale.select("Component boundaries", "组件边界"), "new" => locale.select("New conversation", "新建会话"), _ => locale.select("Designing a Chat interface", "设计 Chat 界面") })</h2></div>
+                        <span class="rounded-full border border-border bg-background px-3 py-1 text-[11px] font-medium text-muted-foreground">(locale.select("Local preview", "本地预览"))</span>
                     </header>
                     <div class="min-h-0 flex-1 overflow-y-auto px-6 py-7 max-[520px]:px-4" id="gallery-chat-scroll">
                         message_region(messages: $(messages), draft: $(draft), busy: $(busy), language: $(language.clone()))
                     </div>
-                    <div class="border-t border-[#e7edf6] bg-white/80 px-5 pb-5 pt-4 max-[520px]:px-4">
+                    <div class="border-t border-border bg-card/80 px-5 pb-5 pt-4 max-[520px]:px-4">
                         chat_sender(id: "gallery-chat-draft", draft: &draft, submit_attrs: submit, busy: Some(&busy), max_length: Some(2000), language: locale.ui(),
                             <div class="flex items-center gap-2 px-4 pt-3">
-                                <button type="button" class="rounded-md border border-[#dbe8f7] bg-[#f8fbff] px-2 py-1 text-xs text-[#315a85]" @click=$(|_e| attached.toggle())>(locale.select("Attach sample file", "添加示例文件"))</button>
+                                <button type="button" class="rounded-md border border-border bg-background px-2 py-1 text-xs text-primary" @click=$(|_e| attached.toggle())>(locale.select("Attach sample file", "添加示例文件"))</button>
                                 <div :hidden=$(!attached.get())>
                                     chat_attachment_tray(label: locale.select("Selected attachments", "已选附件"),
                                         chat_file(name: "example.txt", detail: locale.select("Local example · no upload", "本地示例 · 未上传"),
-                                            <button type="button" class="text-xs text-[#cf1322]" aria-label=(locale.select("Remove example file", "移除示例文件")) @click=$(|_e| attached.set(false))>"×"</button>
+                                            <button type="button" class="text-xs text-[var(--gr-error)]" aria-label=(locale.select("Remove example file", "移除示例文件")) @click=$(|_e| attached.set(false))>"×"</button>
                                         )
                                     )
                                 </div>
                             </div>
                         )
-                        <p class="mb-0 mt-2.5 text-center text-[11px] text-[#9ba7b6]">(locale.select("Demo procedure · no model or file service", "示例过程函数 · 不连接模型或文件服务"))</p>
+                        <p class="mb-0 mt-2.5 text-center text-[11px] text-muted-foreground">(locale.select("Demo procedure · no model or file service", "示例过程函数 · 不连接模型或文件服务"))</p>
                     </div>
                 </section>
             </div>
@@ -222,9 +222,9 @@ pub(in crate::app) async fn message_region(
     Ok(view! {
         if rendered.is_empty() {
             <div class="mx-auto flex min-h-[340px] max-w-[620px] flex-col justify-center py-6">
-                <span class="mb-5 grid size-12 place-items-center rounded-2xl bg-[#e6f4ff] text-lg font-bold text-[#1677ff]">"AI"</span>
-                <h3 class="m-0 text-[25px] font-semibold tracking-[-0.03em] text-[#233449]">(locale.select("What shall we explore?", "今天想探索什么？"))</h3>
-                <p class="mb-7 mt-2 text-sm leading-6 text-[#667085]">(locale.select("Choose a starting point or write your own message below.", "选择一个起点，或在下方输入自己的消息。"))</p>
+                <span class="mb-5 grid size-12 place-items-center rounded-2xl bg-[var(--gr-accent-soft)] text-lg font-bold text-primary">"AI"</span>
+                <h3 class="m-0 text-[25px] font-semibold tracking-[-0.03em] text-foreground">(locale.select("What shall we explore?", "今天想探索什么？"))</h3>
+                <p class="mb-7 mt-2 text-sm leading-6 text-muted-foreground">(locale.select("Choose a starting point or write your own message below.", "选择一个起点，或在下方输入自己的消息。"))</p>
                 chat_prompts(label: locale.select("Suggested prompts", "建议输入"),
                     chat_prompt(title: first_prompt.as_str(), attrs: first_attrs)
                     chat_prompt(title: second_prompt.as_str(), attrs: second_attrs)
@@ -334,10 +334,10 @@ async fn demo_message(
             }
             if pending {
                 <p class="m-0" :hidden=$(live_content.get().is_empty())>$(live_content.get())</p>
-                <p class="m-0 text-[#8c8c8c]" :hidden=$(!live_content.get().is_empty())>(waiting_label.as_str())</p>
-                <p class="mb-0 mt-2 text-[11px] font-medium text-[#6b7c91]" role="status">$(if live_status.get() == "sending" { sending_label.clone() } else { streaming_label.clone() })</p>
+                <p class="m-0 text-muted-foreground" :hidden=$(!live_content.get().is_empty())>(waiting_label.as_str())</p>
+                <p class="mb-0 mt-2 text-[11px] font-medium text-muted-foreground" role="status">$(if live_status.get() == "sending" { sending_label.clone() } else { streaming_label.clone() })</p>
             } else if message.content.is_empty() {
-                <p class="m-0 text-[#8c8c8c]">(waiting_label.as_str())</p>
+                <p class="m-0 text-muted-foreground">(waiting_label.as_str())</p>
             } else {
                 chat_markdown(source: message.content.as_str())
             }

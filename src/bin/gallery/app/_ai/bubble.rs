@@ -36,13 +36,13 @@ pub(in crate::app) async fn bubble_page(cx: &Cx) -> Result<impl View> {
             title: locale.select("User and assistant bubbles", "用户与助手消息气泡"),
             description: locale.select("Compare the two roles and the content slot.", "对比两种角色布局，并查看内容槽位的用法。"),
             source: EXAMPLE_SOURCE,
-            <div class="grid gap-6 bg-[#f8faff] p-6 max-[520px]:p-4">
+            <div class="grid gap-6 bg-background p-6 max-[520px]:p-4">
                 chat_bubble(role: ChatBubbleRole::User, language: locale.ui(),
                     (locale.select("How do I compose a Chat interface?", "怎样组合 Chat 聊天界面？"))
                 )
                 chat_bubble(role: ChatBubbleRole::Assistant, language: locale.ui(),
                     <p class="m-0">(locale.select("Start with a bubble, message list, and sender.", "先从消息气泡、消息列表和输入区开始。"))</p>
-                    <span class="mt-2 inline-block rounded-md bg-white/70 px-2 py-1 text-xs text-[#3173bc]">(locale.select("Rich content slot", "丰富内容槽位"))</span>
+                    <span class="mt-2 inline-block rounded-md bg-card/70 px-2 py-1 text-xs text-primary">(locale.select("Rich content slot", "丰富内容槽位"))</span>
                 )
             </div>
         )

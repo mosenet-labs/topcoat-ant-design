@@ -132,7 +132,7 @@ pub async fn dialog_title(
 ) -> Result<impl View> {
     Ok(view! {
         <h2
-            class=(class!("text-lg leading-none font-semibold", attrs.remove("class")))
+            class=(class!("m-0 text-lg leading-none font-semibold", attrs.remove("class")))
             (attrs)
         >
             (child)
@@ -148,7 +148,7 @@ pub async fn dialog_description(
 ) -> Result<impl View> {
     Ok(view! {
         <p
-            class=(class!("text-sm text-muted-foreground", attrs.remove("class")))
+            class=(class!("m-0 text-sm text-muted-foreground", attrs.remove("class")))
             (attrs)
         >
             (child)

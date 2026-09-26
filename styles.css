@@ -2,7 +2,7 @@
 
 @import "tailwindcss/theme.css" layer(theme);
 @import "tailwindcss/utilities.css" layer(utilities) source(none);
-@import "./assets/topcoat-ui-neutral-scoped.css";
+@import "./assets/topcoat-ant-design-theme.css";
 @import "./assets/topcoat-ant-design-tokens.css";
 
 @source "./src/**/*.rs";
@@ -306,14 +306,8 @@
 .gr-notification *,
 .gr-popconfirm,
 .gr-popconfirm *,
-.gr-dropdown-menu,
-.gr-dropdown-menu *,
 .gr-collapse,
 .gr-collapse *,
-.gr-dialog,
-.gr-dialog *,
-.gr-tabs,
-.gr-tabs *,
 .gr-drawer,
 .gr-drawer *,
 .gr-data-table,
@@ -323,20 +317,6 @@
 .gr-table-page-size,
 .gr-table-page-size * {
   box-sizing: border-box;
-}
-
-.gr-dialog::backdrop {
-  background: rgb(0 0 0 / 45%);
-}
-
-.gr-dialog[open] {
-  display: flex;
-  flex-direction: column;
-  animation: gr-dialog-enter 180ms cubic-bezier(.2, 0, 0, 1);
-}
-
-.gr-dialog[open]::backdrop {
-  animation: gr-dialog-backdrop-enter 180ms ease-out;
 }
 
 .gr-data-table {
@@ -421,36 +401,6 @@
   }
 }
 
-.gr-drawer {
-  visibility: hidden;
-  pointer-events: none;
-  transition: visibility 0s linear 220ms;
-}
-
-.gr-drawer[data-state="open"] {
-  visibility: visible;
-  pointer-events: auto;
-  transition-delay: 0s;
-}
-
-.gr-drawer-mask {
-  opacity: 0;
-  transition: opacity 200ms ease;
-}
-
-.gr-drawer-panel {
-  transform: translateX(100%);
-  transition: transform 220ms cubic-bezier(.2, 0, 0, 1);
-}
-
-.gr-drawer[data-state="open"] > .gr-drawer-mask {
-  opacity: 1;
-}
-
-.gr-drawer[data-state="open"] > .gr-drawer-panel {
-  transform: translateX(0);
-}
-
 /* 0fr/1fr 网格轨道支持未知内容高度，适合由 Topcoat signal 双向切换。 */
 .gr-collapse {
   @apply grid grid-rows-[0fr] opacity-0;
@@ -508,40 +458,6 @@
 }
 
 .gr-popconfirm:popover-open {
-  animation: gr-popconfirm-enter 140ms ease-out;
-}
-
-.gr-dropdown-menu {
-  position-area: bottom span-left;
-  position-try-fallbacks: flip-block, flip-inline;
-}
-
-.gr-dropdown-menu form {
-  @apply m-0 block w-full;
-}
-
-.gr-dropdown-menu button {
-  @apply flex min-h-9 w-full items-center justify-between gap-3 rounded-md border-0 bg-transparent px-3 py-2 text-left font-mono text-[13px] leading-5 text-[var(--gr-fg)];
-}
-
-.gr-dropdown-menu button:not(:disabled) {
-  @apply cursor-pointer;
-}
-
-.gr-dropdown-menu button:hover:not(:disabled) {
-  @apply bg-[var(--gr-accent-soft)] text-[var(--gr-accent)];
-}
-
-.gr-dropdown-menu button:disabled {
-  @apply cursor-default text-[var(--gr-fg-subtle)];
-}
-
-.gr-dropdown-menu button:focus-visible {
-  outline: 2px solid var(--gr-accent-border);
-  outline-offset: -2px;
-}
-
-.gr-dropdown-menu:popover-open {
   animation: gr-popconfirm-enter 140ms ease-out;
 }
 
@@ -606,13 +522,6 @@
     transform: translate(-50%, -50%);
   }
 
-  .gr-dropdown-menu {
-    top: 50%;
-    left: 50%;
-    margin: 0;
-    transform: translate(-50%, -50%);
-  }
-
   .gr-popconfirm-arrow {
     display: none;
   }
@@ -652,42 +561,14 @@
   }
 }
 
-@keyframes gr-dialog-enter {
-  from {
-    opacity: 0;
-    transform: scale(.96);
-  }
-
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-@keyframes gr-dialog-backdrop-enter {
-  from {
-    background: rgb(0 0 0 / 0%);
-  }
-
-  to {
-    background: rgb(0 0 0 / 45%);
-  }
-}
-
 @media (prefers-reduced-motion: reduce) {
   .gr-notification,
-  .gr-popconfirm:popover-open,
-  .gr-dropdown-menu:popover-open,
-  .gr-dialog[open],
-  .gr-dialog[open]::backdrop {
+  .gr-popconfirm:popover-open {
     animation-duration: 1ms;
   }
 
   .gr-collapse,
   .gr-collapse-inner,
-  .gr-drawer,
-  .gr-drawer-mask,
-  .gr-drawer-panel,
   .gr-chat-sender-form,
   .gr-chat-send-button,
   .gr-chat-think-trigger,
@@ -697,36 +578,3 @@
   }
   .gr-chat-thought-step-spinner { animation: none; }
 }
-
-.gr-tooltip-trigger { display: inline-block; max-width: 100%; }
-.gr-tooltip-trigger:focus-visible { outline: 2px solid var(--gr-accent-border); outline-offset: 3px; border-radius: 3px; }
-.gr-tooltip {
-  position: fixed;
-  inset: auto;
-  margin: 0;
-  box-sizing: border-box;
-  width: max-content;
-  max-width: min(420px, calc(100vw - 16px));
-  padding: 7px 10px;
-  border: 0;
-  border-radius: 6px;
-  background: var(--gr-fg);
-  color: var(--gr-surface);
-  font: 12px/1.6 var(--font-mono);
-  white-space: normal;
-  overflow: visible;
-  overflow-wrap: anywhere;
-  text-align: left;
-  box-shadow: 0 3px 10px var(--gr-shadow-color);
-}
-.gr-tooltip-arrow {
-  position: absolute;
-  left: var(--gr-tooltip-arrow-x, 50%);
-  top: -4px;
-  width: 8px;
-  height: 8px;
-  background: var(--gr-fg);
-  transform: translateX(-50%) rotate(45deg);
-  pointer-events: none;
-}
-.gr-tooltip[data-placement="top"] .gr-tooltip-arrow { top: auto; bottom: -4px; }

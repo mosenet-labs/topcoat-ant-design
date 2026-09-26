@@ -43,13 +43,6 @@ fn main() {
     )
     .expect("write component Tailwind stylesheet hash");
 
-    #[cfg(feature = "native-ui")]
-    topcoat::tailwind::BuildConfig::new()
-        .input("native-ui.css")
-        .output(out.join("topcoat-native-ui.css"))
-        .render()
-        .expect("render native UI Tailwind stylesheet");
-
     #[cfg(feature = "gallery")]
     build_gallery(&out);
 
@@ -59,12 +52,8 @@ fn main() {
     println!("cargo:rerun-if-changed=icons/ant-design.json");
     println!("cargo:rerun-if-changed=styles.css");
     println!("cargo:rerun-if-changed=src/components");
-    #[cfg(feature = "native-ui")]
-    {
-        println!("cargo:rerun-if-changed=native-ui.css");
-        println!("cargo:rerun-if-changed=assets/topcoat-ui-neutral-scoped.css");
-        println!("cargo:rerun-if-changed=src/native_ui");
-    }
+    println!("cargo:rerun-if-changed=assets/topcoat-ant-design-theme.css");
+    println!("cargo:rerun-if-changed=src/ui");
     #[cfg(feature = "gallery")]
     println!("cargo:rerun-if-changed=src/bin/gallery");
 }

@@ -1,6 +1,5 @@
 /* Custom component colors follow the same theme switch as the native UI. */
-:root,
-.native-ui {
+:root {
   --gr-surface: #fff;
   --gr-surface-muted: #fafafa;
   --gr-fg: #262626;
@@ -26,9 +25,7 @@
   --gr-shadow-color: rgb(0 0 0 / 20%);
 }
 
-:root.dark,
-.dark .native-ui,
-.native-ui.dark {
+.dark {
   --gr-surface: #20252c;
   --gr-surface-muted: #292f38;
   --gr-fg: #eef2f6;

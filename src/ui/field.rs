@@ -207,7 +207,7 @@ pub async fn field_description(
     Ok(view! {
         <p
             class=(class!(
-                "text-sm leading-relaxed text-muted-foreground [&_a]:underline [&_a]:underline-offset-4",
+                "m-0 text-sm leading-relaxed text-muted-foreground [&_a]:underline [&_a]:underline-offset-4",
                 attrs.remove("class"),
             ))
             (attrs)

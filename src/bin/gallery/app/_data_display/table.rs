@@ -49,10 +49,10 @@ pub(in crate::app) async fn table_page(cx: &Cx) -> Result<impl View> {
                 data_table(label: text(locale, "GitLab 项目示例"), density: DataTableDensity::Compact, attrs: attributes! { class="min-w-[720px]" },
                     <thead><tr><th>(text(locale, "项目"))</th><th>(text(locale, "所属实例"))</th><th>"Webhook"</th><th>(text(locale, "最近事件"))</th></tr></thead>
                     <tbody>
-                        <tr :hidden=$(if page_size.get() == "2" { page.get() != "1" } else { false })><td><strong>"devops/gitlab-review"</strong></td><td>"gl"</td><td><span class="rounded bg-[#f6ffed] px-1.5 py-0.5 text-xs text-[#389e0d]">(text(locale, "已生效"))</span></td><td>"2026-09-15 17:49"</td></tr>
-                        <tr :hidden=$(if page_size.get() == "2" { page.get() != "1" } else { false })><td><strong>"platform/console"</strong></td><td>"gl1"</td><td><span class="rounded bg-[#fffbe6] px-1.5 py-0.5 text-xs text-[#d48806]">(text(locale, "待验证"))</span></td><td>(text(locale, "尚无事件"))</td></tr>
-                        <tr :hidden=$(if page_size.get() == "2" { page.get() != "2" } else { false })><td><strong>"security/rules"</strong></td><td>"gl"</td><td><span class="rounded bg-[#f6ffed] px-1.5 py-0.5 text-xs text-[#389e0d]">(text(locale, "已生效"))</span></td><td>"2026-09-15 16:48"</td></tr>
-                        <tr :hidden=$(if page_size.get() == "2" { page.get() != "2" } else { false })><td><strong>"devops/runner"</strong></td><td>"gl1"</td><td><span class="rounded bg-[#fafafa] px-1.5 py-0.5 text-xs text-[#8c8c8c]">(text(locale, "未配置"))</span></td><td>(text(locale, "尚无事件"))</td></tr>
+                        <tr :hidden=$(if page_size.get() == "2" { page.get() != "1" } else { false })><td><strong>"devops/gitlab-review"</strong></td><td>"gl"</td><td><span class="rounded bg-[var(--gr-success-soft)] px-1.5 py-0.5 text-xs text-[var(--gr-success)]">(text(locale, "已生效"))</span></td><td>"2026-09-15 17:49"</td></tr>
+                        <tr :hidden=$(if page_size.get() == "2" { page.get() != "1" } else { false })><td><strong>"platform/console"</strong></td><td>"gl1"</td><td><span class="rounded bg-[var(--gr-warning-soft)] px-1.5 py-0.5 text-xs text-[var(--gr-warning)]">(text(locale, "待验证"))</span></td><td>(text(locale, "尚无事件"))</td></tr>
+                        <tr :hidden=$(if page_size.get() == "2" { page.get() != "2" } else { false })><td><strong>"security/rules"</strong></td><td>"gl"</td><td><span class="rounded bg-[var(--gr-success-soft)] px-1.5 py-0.5 text-xs text-[var(--gr-success)]">(text(locale, "已生效"))</span></td><td>"2026-09-15 16:48"</td></tr>
+                        <tr :hidden=$(if page_size.get() == "2" { page.get() != "2" } else { false })><td><strong>"devops/runner"</strong></td><td>"gl1"</td><td><span class="rounded bg-background px-1.5 py-0.5 text-xs text-muted-foreground">(text(locale, "未配置"))</span></td><td>(text(locale, "尚无事件"))</td></tr>
                     </tbody>
                 )
                 table_pagination(summary: text(locale, "共 4 个项目"), label: text(locale, "组件示例分页"),
@@ -71,7 +71,7 @@ pub(in crate::app) async fn table_page(cx: &Cx) -> Result<impl View> {
             component_example(id: "table-default-preview", title: text(locale, "默认密度"), description: text(locale, "适合单元格包含说明文字或操作入口的管理表格。"), source: default_source,
                 data_table(label: text(locale, "默认密度示例"),
                     <thead><tr><th>(text(locale, "账号"))</th><th>(text(locale, "角色"))</th><th>(text(locale, "状态"))</th></tr></thead>
-                    <tbody><tr><td><strong>"demo-admin"</strong><br><small class="text-[#8c8c8c]">"demo.admin@example.com"</small></td><td>(text(locale, "管理员"))</td><td>(text(locale, "启用"))</td></tr></tbody>
+                    <tbody><tr><td><strong>"demo-admin"</strong><br><small class="text-muted-foreground">"demo.admin@example.com"</small></td><td>(text(locale, "管理员"))</td><td>(text(locale, "启用"))</td></tr></tbody>
                 )
             )
             markdown_document(source: document)

@@ -56,16 +56,16 @@ pub(in crate::app) async fn collapse_page(cx: &Cx) -> Result<impl View> {
         <div class="grid gap-6">
             component_example(id: "collapse-preview", title: text(locale, "组件预览"), description: text(locale, "可以连续快速点击，观察动画从当前位置自然反向。"), source: example_source,
                 <div class="grid grid-cols-2 gap-5 p-6 max-[760px]:grid-cols-1">
-                    <article class="overflow-hidden rounded-lg border border-[#d9d9d9] bg-white">
-                        <button id="collapse-basic-trigger" class="flex min-h-12 w-full cursor-pointer items-center justify-between border-0 bg-[#fafafa] px-4 py-3 font-mono text-sm font-semibold text-[#262626] hover:bg-[#f5f5f5]" type="button" (basic_trigger)><span>(text(locale, "基础折叠"))</span>icon(data: DOWN_OUTLINED, size: 16, attrs: basic_chevron)</button>
+                    <article class="overflow-hidden rounded-lg border border-border bg-card">
+                        <button id="collapse-basic-trigger" class="flex min-h-12 w-full cursor-pointer items-center justify-between border-0 bg-background px-4 py-3 font-mono text-sm font-semibold text-foreground hover:bg-background" type="button" (basic_trigger)><span>(text(locale, "基础折叠"))</span>icon(data: DOWN_OUTLINED, size: 16, attrs: basic_chevron)</button>
                         collapse(id: "collapse-basic-content", open: &basic_open, attrs: basic_panel,
-                            <div class="border-t border-[#edf0f4] px-4 py-4"><p class="m-0 text-sm leading-6 text-[#595959]">(text(locale, "内容高度无需预先计算。Grid 轨道会从 0fr 过渡到 1fr，关闭时按同一路径反向执行。"))</p></div>
+                            <div class="border-t border-border px-4 py-4"><p class="m-0 text-sm leading-6 text-muted-foreground">(text(locale, "内容高度无需预先计算。Grid 轨道会从 0fr 过渡到 1fr，关闭时按同一路径反向执行。"))</p></div>
                         )
                     </article>
-                    <article class="overflow-hidden rounded-lg border border-[#d9d9d9] bg-white">
-                        <button id="collapse-detail-trigger" class="flex min-h-12 w-full cursor-pointer items-center justify-between border-0 bg-[#fafafa] px-4 py-3 font-mono text-sm font-semibold text-[#262626] hover:bg-[#f5f5f5]" type="button" (detail_trigger)><span>(text(locale, "多段内容"))</span>icon(data: DOWN_OUTLINED, size: 16, attrs: detail_chevron)</button>
+                    <article class="overflow-hidden rounded-lg border border-border bg-card">
+                        <button id="collapse-detail-trigger" class="flex min-h-12 w-full cursor-pointer items-center justify-between border-0 bg-background px-4 py-3 font-mono text-sm font-semibold text-foreground hover:bg-background" type="button" (detail_trigger)><span>(text(locale, "多段内容"))</span>icon(data: DOWN_OUTLINED, size: 16, attrs: detail_chevron)</button>
                         collapse(id: "collapse-detail-content", open: &detail_open, attrs: detail_panel,
-                            <div class="border-t border-[#edf0f4] px-4 py-4"><ul class="my-0 grid gap-2 pl-5 text-sm leading-6 text-[#595959]"><li>(text(locale, "透明度与高度同步过渡。"))</li><li>(text(locale, "关闭后内容不可见且不会响应鼠标。"))</li><li>(text(locale, "系统减少动态效果时自动取消过渡。"))</li></ul><button class="mt-4 h-8 cursor-pointer rounded-md border border-[#d9d9d9] bg-white px-3 font-mono text-sm text-[#262626] hover:border-[#1677ff] hover:text-[#1677ff]" type="button">(text(locale, "内部操作"))</button></div>
+                            <div class="border-t border-border px-4 py-4"><ul class="my-0 grid gap-2 pl-5 text-sm leading-6 text-muted-foreground"><li>(text(locale, "透明度与高度同步过渡。"))</li><li>(text(locale, "关闭后内容不可见且不会响应鼠标。"))</li><li>(text(locale, "系统减少动态效果时自动取消过渡。"))</li></ul><button class="mt-4 h-8 cursor-pointer rounded-md border border-border bg-card px-3 font-mono text-sm text-foreground hover:border-primary hover:text-primary" type="button">(text(locale, "内部操作"))</button></div>
                         )
                     </article>
                 </div>

@@ -3,7 +3,7 @@ use topcoat::{
     view::{Attributes, Child, View, attributes, class, component, view},
 };
 
-use crate::native_ui::accordion;
+use crate::ui::accordion;
 
 /// Expandable list of references used while preparing a response.
 #[component]
@@ -12,7 +12,7 @@ pub async fn chat_sources(
     #[default] mut attrs: Attributes,
     #[default] child: Child<'_>,
 ) -> Result<impl View> {
-    let root_class = class!("native-ui gr-chat-sources", attrs.remove("class"));
+    let root_class = class!("gr-chat-sources", attrs.remove("class"));
     Ok(view! {
         accordion::accordion_item(attrs: attributes! { class=(root_class) open="open" (attrs) },
             accordion::accordion_trigger(attrs: attributes! { class="gr-chat-sources-trigger" }, (label))

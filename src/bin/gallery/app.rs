@@ -7,16 +7,22 @@ mod _guide;
 mod _motion;
 mod _native;
 mod _navigation;
+mod _overview;
+pub(in crate::app) use _overview::overview_content;
 
 use topcoat::{
     Result,
     asset::{AssetConfig, RouterBuilderAssetExt},
     context::Cx,
     router::{Router, Slot, href, layout, page, request::uri},
-    runtime::RouterBuilderRuntimeExt,
-    view::{View, class, component, view},
+    runtime::{Event, RouterBuilderRuntimeExt, signal},
+    view::{View, attributes, class, component, view},
 };
-use topcoat_ant_design::{RouterBuilderUiExt, head_assets};
+use topcoat_ant_design::{
+    RouterBuilderUiExt, SidebarCollapsible, SidebarVariant, button, head_assets, sidebar,
+    sidebar_content, sidebar_header, sidebar_inset, sidebar_menu_button, sidebar_provider,
+    sidebar_trigger,
+};
 
 use crate::{assets::GALLERY_STYLESHEET, locale::Locale};
 
@@ -51,22 +57,17 @@ pub(crate) fn router(app_assets: AssetConfig) -> Router {
 
 #[component]
 async fn gallery_nav_link(href: &str, badge: &str, label: &str, active: bool) -> Result<impl View> {
-    let link_class = class!(
-        "group flex min-h-10 items-center gap-3 rounded-md px-3 py-2 text-sm font-medium no-underline transition-colors duration-150",
-        "bg-[#e6f4ff] text-[#0958d9]" if active,
-        "text-[#595959] hover:bg-[#f5f5f5] hover:text-[#262626]" if !active,
-    );
     let badge_class = class!(
         "grid size-7 shrink-0 place-items-center rounded-md border text-[11px] font-bold",
-        "border-[#91caff] bg-white text-[#1677ff]" if active,
-        "border-[#e5e7eb] bg-[#fafafa] text-[#8c8c8c] group-hover:border-[#d9d9d9]" if !active,
+        "border-primary bg-primary text-primary-foreground" if active,
+        "border-sidebar-border bg-background text-muted-foreground" if !active,
     );
 
     Ok(view! {
-        <a class=(link_class) href=(href) aria-current=(active.then_some("page"))>
+        sidebar_menu_button(href: Some(href), active: active, attrs: attributes! { class="min-h-10 gap-3 px-3 py-2 text-sidebar-foreground" },
             <span class=(badge_class) aria-hidden="true">(badge)</span>
             <span>(label)</span>
-        </a>
+        )
     })
 }
 
@@ -78,10 +79,10 @@ pub(in crate::app) async fn page_header(
     description: &str,
 ) -> Result<impl View> {
     Ok(view! {
-        <header class="mb-8 border-b border-[#e8eaee] pb-7">
-            <p class="m-0 text-xs font-bold tracking-[0.12em] text-[#1677ff]">(eyebrow)</p>
-            <h1 class="mb-3 mt-2 text-[clamp(30px,5vw,42px)] font-bold leading-[1.15] tracking-[-0.025em]">(title)</h1>
-            <p class="m-0 max-w-[760px] text-[15px] leading-7 text-[#595959]">(description)</p>
+        <header class="mb-8 border-b border-border pb-7">
+            <p class="m-0 text-xs font-bold tracking-[0.12em] text-primary">(eyebrow)</p>
+            <h1 class="mb-3 mt-2 text-[clamp(30px,5vw,42px)] font-bold leading-[1.15] tracking-[-0.025em] text-foreground">(title)</h1>
+            <p class="m-0 max-w-[760px] text-[15px] leading-7 text-muted-foreground">(description)</p>
         </header>
     })
 }
@@ -90,6 +91,11 @@ pub(in crate::app) async fn page_header(
 #[layout]
 async fn gallery_layout(cx: &Cx, slot: Slot<'_>) -> Result<impl View> {
     let locale = Locale::current(cx);
+    let sidebar_open = signal(cx, || true);
+    let mobile_open = signal(cx, || false);
+    let dark = signal(cx, || false);
+    let light_theme_label = locale.select("Light theme", "浅色主题");
+    let dark_theme_label = locale.select("Dark theme", "深色主题");
     let english_url = uri(cx).path();
     let chinese_url = format!("{}?lang=zh", uri(cx).path());
     let overview_link = href!(_guide::overview_page);
@@ -158,7 +164,7 @@ async fn gallery_layout(cx: &Cx, slot: Slot<'_>) -> Result<impl View> {
     } else if icons_active {
         text(locale, "Icons 图标")
     } else if native_ui_active {
-        locale.select("Topcoat native UI", "Topcoat 原生 UI")
+        locale.select("Official Topcoat components", "Topcoat 官方组件")
     } else if chat_active {
         locale.select("Chat interface", "Chat 聊天界面")
     } else if bubble_active {
@@ -241,42 +247,52 @@ async fn gallery_layout(cx: &Cx, slot: Slot<'_>) -> Result<impl View> {
 
     Ok(view! {
         <!DOCTYPE html>
-        <html lang=(locale.html_lang())>
+        <html lang=(locale.html_lang()) :class=$(if dark.get() { "dark" } else { "" })>
             <head>
                 <meta charset="utf-8">
                 <meta name="viewport" content="width=device-width, initial-scale=1">
-                <meta name="color-scheme" content="light">
+                <meta name="color-scheme" content="light dark">
                 <title>(document_title) " · Topcoat Ant Design"</title>
                 head_assets()
                 <link rel="stylesheet" href=(GALLERY_STYLESHEET)>
                 topcoat::runtime::script()
                 topcoat::dev::script(status_indicator: false)
             </head>
-            <body class="m-0 min-w-80 bg-[#f5f7fa] font-mono text-[#262626] antialiased">
-                <div class=(if native_ui_active { "min-h-screen" } else { "min-h-screen min-[900px]:grid min-[900px]:grid-cols-[248px_minmax(0,1fr)]" })>
-                    <aside class=(class!("border-b border-[#edf0f4] bg-white min-[900px]:sticky min-[900px]:top-0 min-[900px]:h-screen min-[900px]:overflow-y-auto min-[900px]:border-b-0 min-[900px]:border-r", "hidden" if native_ui_active))>
-                        <div class="border-b border-[#edf0f4] px-6 py-6">
-                            <a class="flex items-center gap-3 text-[#262626] no-underline" href=(getting_started_url.as_str())>
-                                <span class="grid size-9 place-items-center rounded-lg bg-[#1677ff] text-sm font-bold text-white shadow-[0_4px_12px_rgba(22,119,255,0.22)]">"AD"</span>
-                                <span><strong class="block text-[15px] font-semibold leading-5">"Topcoat Ant Design"</strong><small class="mt-0.5 block text-xs text-[#8c8c8c]">"Topcoat components"</small></span>
-                            </a>
-                            <nav class="mt-5 flex gap-2" aria-label=(text(locale, "语言"))>
-                                <a class="rounded-md border border-[#d9d9d9] px-3 py-1 text-xs text-[#262626] no-underline aria-[current=page]:border-[#1677ff] aria-[current=page]:bg-[#e6f4ff] aria-[current=page]:text-[#0958d9]" href=(english_url) data-language-switch="" aria-current=(if locale == Locale::En { Some("page") } else { None })>"English"</a>
-                                <a class="rounded-md border border-[#d9d9d9] px-3 py-1 text-xs text-[#262626] no-underline aria-[current=page]:border-[#1677ff] aria-[current=page]:bg-[#e6f4ff] aria-[current=page]:text-[#0958d9]" href=(chinese_url.as_str()) data-language-switch="" aria-current=(if locale == Locale::Zh { Some("page") } else { None })>"中文"</a>
-                            </nav>
-                        </div>
-                        <nav class="grid gap-6 px-4 py-5 max-[899px]:grid-cols-3 max-[640px]:grid-cols-1" aria-label=(text(locale, "组件导航"))>
+            <body class="m-0 min-w-80 bg-background font-mono text-foreground antialiased">
+                if native_ui_active {
+                    <main class="min-h-screen">(slot)</main>
+                } else {
+                    sidebar_provider(attrs: attributes! { class="gallery-shell" },
+                        sidebar(
+                            open: $(sidebar_open.get()),
+                            mobile_open: $(mobile_open.get()),
+                            variant: SidebarVariant::Sidebar,
+                            collapsible: SidebarCollapsible::Offcanvas,
+                            sheet_attrs: attributes! { id="gallery-sidebar" aria-label=(text(locale, "组件导航")) },
+                            sidebar_header(attrs: attributes! { class="[&]:h-auto gap-4 px-5 py-5" },
+                                <a class="flex items-center gap-3 text-sidebar-foreground no-underline" href=(getting_started_url.as_str())>
+                                    <span class="grid size-9 place-items-center rounded-lg bg-primary text-sm font-bold text-primary-foreground shadow-sm">"AD"</span>
+                                    <span><strong class="block text-[15px] font-semibold leading-5">"Topcoat Ant Design"</strong><small class="mt-0.5 block text-xs text-muted-foreground">"Topcoat components"</small></span>
+                                </a>
+                                <nav class="flex gap-2" aria-label=(text(locale, "语言"))>
+                                    <a class="rounded-md border border-border px-3 py-1 text-xs text-sidebar-foreground no-underline aria-[current=page]:border-primary aria-[current=page]:bg-sidebar-accent aria-[current=page]:text-sidebar-accent-foreground" href=(english_url) data-language-switch="" aria-current=(if locale == Locale::En { Some("page") } else { None })>"English"</a>
+                                    <a class="rounded-md border border-border px-3 py-1 text-xs text-sidebar-foreground no-underline aria-[current=page]:border-primary aria-[current=page]:bg-sidebar-accent aria-[current=page]:text-sidebar-accent-foreground" href=(chinese_url.as_str()) data-language-switch="" aria-current=(if locale == Locale::Zh { Some("page") } else { None })>"中文"</a>
+                                </nav>
+                                button(attrs: attributes! { type="button" class="md:hidden" @click=$(|_e: Event| mobile_open.set(false)) }, (locale.select("Close navigation", "关闭导航")))
+                            )
+                            sidebar_content(
+                                <nav class="grid gap-6 px-4 py-5" aria-label=(text(locale, "组件导航"))>
                             <section>
-                                <p class="mb-2 mt-0 px-3 text-[11px] font-bold tracking-[0.1em] text-[#8c8c8c]">(text(locale, "开始"))</p>
+                                <p class="mb-2 mt-0 px-3 text-[11px] font-bold tracking-[0.1em] text-muted-foreground">(text(locale, "开始"))</p>
                                 <div class="grid gap-1">
                                     gallery_nav_link(href: getting_started_url.as_str(), badge: "→", label: text(locale, "快速开始"), active: getting_started_active)
                                     gallery_nav_link(href: overview_url.as_str(), badge: "01", label: text(locale, "组件概览"), active: overview_active)
                                     gallery_nav_link(href: icons_url.as_str(), badge: "I", label: text(locale, "Icons 图标"), active: icons_active)
-                                    gallery_nav_link(href: native_ui_url.as_str(), badge: "UI", label: locale.select("Topcoat native UI", "Topcoat 原生 UI"), active: native_ui_active)
+                                    gallery_nav_link(href: native_ui_url.as_str(), badge: "UI", label: locale.select("Official Topcoat components", "Topcoat 官方组件"), active: native_ui_active)
                                 </div>
                             </section>
                             <section class="max-[899px]:hidden">
-                                <p class="mb-2 mt-0 px-3 text-[11px] font-bold tracking-[0.1em] text-[#8c8c8c]">(locale.select("AI Components", "AI 组件"))</p>
+                                <p class="mb-2 mt-0 px-3 text-[11px] font-bold tracking-[0.1em] text-muted-foreground">(locale.select("AI Components", "AI 组件"))</p>
                                 <div class="grid gap-1">
                                     gallery_nav_link(href: chat_url.as_str(), badge: "AI", label: locale.select("Chat interface", "Chat 聊天界面"), active: chat_active)
                                     gallery_nav_link(href: bubble_url.as_str(), badge: "B", label: "ChatBubble", active: bubble_active)
@@ -288,9 +304,9 @@ async fn gallery_layout(cx: &Cx, slot: Slot<'_>) -> Result<impl View> {
                                 </div>
                             </section>
                             <section class="min-[900px]:hidden">
-                                <details class="rounded-lg border border-[#e8eaee] bg-white open:shadow-sm">
-                                    <summary class="cursor-pointer px-3 py-3 text-[11px] font-bold uppercase tracking-[0.1em] text-[#595959]">(locale.select("AI Components", "AI 组件"))</summary>
-                                    <div class="grid gap-1 border-t border-[#edf0f4] p-2">
+                                <details class="rounded-lg border border-border bg-card open:shadow-sm">
+                                    <summary class="cursor-pointer px-3 py-3 text-[11px] font-bold uppercase tracking-[0.1em] text-muted-foreground">(locale.select("AI Components", "AI 组件"))</summary>
+                                    <div class="grid gap-1 border-t border-border p-2">
                                         gallery_nav_link(href: chat_url.as_str(), badge: "AI", label: locale.select("Chat interface", "Chat 聊天界面"), active: chat_active)
                                         gallery_nav_link(href: bubble_url.as_str(), badge: "B", label: "ChatBubble", active: bubble_active)
                                         gallery_nav_link(href: message_list_url.as_str(), badge: "L", label: "ChatMessageList", active: message_list_active)
@@ -302,7 +318,7 @@ async fn gallery_layout(cx: &Cx, slot: Slot<'_>) -> Result<impl View> {
                                 </details>
                             </section>
                             <section>
-                                <p class="mb-2 mt-0 px-3 text-[11px] font-bold tracking-[0.1em] text-[#8c8c8c]">(text(locale, "反馈"))</p>
+                                <p class="mb-2 mt-0 px-3 text-[11px] font-bold tracking-[0.1em] text-muted-foreground">(text(locale, "反馈"))</p>
                                 <div class="grid gap-1">
                                     gallery_nav_link(href: notification_url.as_str(), badge: "N", label: "Notification", active: notification_active)
                                     gallery_nav_link(href: tag_url.as_str(), badge: "Ta", label: text(locale, "Tag 标签"), active: tag_active)
@@ -313,30 +329,41 @@ async fn gallery_layout(cx: &Cx, slot: Slot<'_>) -> Result<impl View> {
                                 </div>
                             </section>
                             <section>
-                                <p class="mb-2 mt-0 px-3 text-[11px] font-bold tracking-[0.1em] text-[#8c8c8c]">(text(locale, "导航"))</p>
+                                <p class="mb-2 mt-0 px-3 text-[11px] font-bold tracking-[0.1em] text-muted-foreground">(text(locale, "导航"))</p>
                                 gallery_nav_link(href: dropdown_menu_url.as_str(), badge: "Dd", label: locale.select("Dropdown Menu", "Dropdown 下拉菜单"), active: dropdown_menu_active)
                                 gallery_nav_link(href: tabs_url.as_str(), badge: "T", label: "Tabs", active: tabs_active)
                             </section>
                             <section>
-                                <p class="mb-2 mt-0 px-3 text-[11px] font-bold tracking-[0.1em] text-[#8c8c8c]">(text(locale, "数据录入"))</p>
+                                <p class="mb-2 mt-0 px-3 text-[11px] font-bold tracking-[0.1em] text-muted-foreground">(text(locale, "数据录入"))</p>
                                 gallery_nav_link(href: form_field_url.as_str(), badge: "F", label: "FormField", active: form_field_active)
                                 gallery_nav_link(href: date_time_range_url.as_str(), badge: "R", label: "DateTimeRange", active: date_time_range_active)
                             </section>
                             <section>
-                                <p class="mb-2 mt-0 px-3 text-[11px] font-bold tracking-[0.1em] text-[#8c8c8c]">(text(locale, "数据展示"))</p>
+                                <p class="mb-2 mt-0 px-3 text-[11px] font-bold tracking-[0.1em] text-muted-foreground">(text(locale, "数据展示"))</p>
                                 gallery_nav_link(href: table_url.as_str(), badge: "Tb", label: "Table", active: table_active)
                             </section>
                             <section>
-                                <p class="mb-2 mt-0 px-3 text-[11px] font-bold tracking-[0.1em] text-[#8c8c8c]">(text(locale, "动效"))</p>
+                                <p class="mb-2 mt-0 px-3 text-[11px] font-bold tracking-[0.1em] text-muted-foreground">(text(locale, "动效"))</p>
                                 gallery_nav_link(href: collapse_url.as_str(), badge: "C", label: "Collapse", active: collapse_active)
                                 gallery_nav_link(href: accordion_url.as_str(), badge: "A", label: "Accordion", active: accordion_active)
                             </section>
-                        </nav>
-                    </aside>
-                    <main class=(if native_ui_active { "min-w-0" } else { "min-w-0 px-8 pb-20 pt-12 max-[640px]:px-4 max-[640px]:pt-8" })>
-                        <div class=(if native_ui_active { "w-full" } else { "mx-auto w-full max-w-[1080px]" })>(slot)</div>
-                    </main>
-                </div>
+                                </nav>
+                            )
+                        )
+                        sidebar_inset(
+                            sidebar_header(attrs: attributes! { class="[&]:h-16 [&]:bg-card px-6" },
+                                sidebar_trigger(open: $(sidebar_open.get()), attrs: attributes! { class="max-md:hidden" aria-controls="gallery-sidebar" @click=$(|_e: Event| sidebar_open.toggle()) })
+                                sidebar_trigger(open: $(mobile_open.get()), attrs: attributes! { class="md:hidden" aria-controls="gallery-sidebar" @click=$(|_e: Event| mobile_open.toggle()) })
+                                <span class="h-5 w-px bg-border" aria-hidden="true"></span>
+                                <span class="min-w-0 flex-1 truncate text-sm font-semibold text-foreground">(document_title)</span>
+                                button(attrs: attributes! { type="button" class="shrink-0" @click=$(|_e: Event| dark.toggle()) },
+                                    $(if dark.get() { light_theme_label } else { dark_theme_label })
+                                )
+                            )
+                            <div class="mx-auto w-full max-w-[1240px] px-8 pb-24 pt-12 max-[640px]:px-4 max-[640px]:pt-8">(slot)</div>
+                        )
+                    )
+                }
             </body>
         </html>
     })
@@ -347,59 +374,6 @@ async fn gallery_layout(cx: &Cx, slot: Slot<'_>) -> Result<impl View> {
 async fn home(cx: &Cx) -> Result<impl View> {
     let _ = cx;
     Ok(view! { _guide::getting_started_content() })
-}
-
-#[component]
-pub(in crate::app) async fn overview_content(cx: &Cx) -> Result<impl View> {
-    let locale = Locale::current(cx);
-    let ai_examples = [
-        ("/chat/states", locale.select("Message states", "消息状态")),
-        ("/chat/markdown", "ChatMarkdown"),
-        ("/chat/think", "ChatThink"),
-        ("/chat/thought-chain", "ChatThoughtChain"),
-        ("/chat/sources", "ChatSources"),
-        ("/chat/actions", "ChatActions"),
-        ("/chat/attachments", "ChatAttachmentTray"),
-        ("/chat/files", "ChatFile"),
-        ("/chat/prompts", "ChatPrompts"),
-        ("/chat/conversations", "ChatConversationList"),
-    ]
-    .map(|(path, label)| (locale.link(path), label));
-    Ok(view! {
-        page_header(
-            eyebrow: "COMPONENTS",
-            title: text(locale, "组件概览"),
-            description: text(locale, "独立浏览每个组件的真实样式、Topcoat 交互和共用的 API 文档。"),
-        )
-        <div class="grid gap-6">
-            <a class="group flex items-center justify-between gap-6 rounded-xl border border-[#91caff] bg-[#e6f4ff] p-6 text-[#262626] no-underline shadow-sm transition-[border-color,box-shadow,transform] duration-200 hover:-translate-y-0.5 hover:border-[#1677ff] hover:shadow-md max-[620px]:block" href=(locale.link(&href!(home).resolve(cx)))><div><span class="text-xs font-bold tracking-[0.1em] text-[#0958d9]">(text(locale, "第一次使用"))</span><h2 class="mb-2 mt-2 text-xl font-semibold">(text(locale, "先完成五步接入"))</h2><p class="m-0 text-sm leading-6 text-[#595959]">(text(locale, "查看依赖、页面资源、AssetBundle、Router 和第一个组件的完整示例。"))</p></div><span class="shrink-0 text-sm font-semibold text-[#1677ff] max-[620px]:mt-5 max-[620px]:inline-block">(text(locale, "打开快速开始 →"))</span></a>
-            <a class="group flex items-center justify-between gap-6 rounded-xl border border-[#d5d5d5] bg-[#f7f6f3] p-6 text-[#272727] no-underline shadow-sm transition-[border-color,box-shadow,transform] duration-200 hover:-translate-y-0.5 hover:border-[#555] hover:shadow-md max-[620px]:block" href=(locale.link(&href!(_native::native_ui_page).resolve(cx)))><div><span class="text-xs font-bold tracking-[0.1em] text-[#777]">"TOPCOAT 0.9.0"</span><h2 class="mb-2 mt-2 text-xl font-semibold">(locale.select("Native UI · 31 components", "原生 UI · 31 个组件"))</h2><p class="m-0 text-sm leading-6 text-[#666]">(locale.select("Explore the official neutral theme, reactive controls, sidebar, forms and overlays.", "查看官方 neutral 主题、响应式控件、侧栏、表单与弹层。"))</p></div><span class="shrink-0 text-sm font-semibold text-[#333] max-[620px]:mt-5 max-[620px]:inline-block">(locale.select("Open showcase →", "打开展示页 →"))</span></a>
-            <section class="rounded-xl border border-[#dbe8f7] bg-[#f8fbff] p-5" aria-label=(locale.select("AI component examples", "AI 组件示例"))>
-                <h2 class="m-0 mb-3 text-base font-semibold text-[#233449]">(locale.select("AI component examples", "AI 组件示例"))</h2>
-                <div class="flex flex-wrap gap-2">
-                    for (url, label) in ai_examples {
-                        <a class="rounded-md border border-[#dbe8f7] bg-white px-3 py-1.5 text-xs font-medium text-[#0958d9] no-underline hover:border-[#91caff] hover:bg-[#e6f4ff] focus-visible:outline-2 focus-visible:outline-[#1677ff]" href=(url.as_str())>(label)</a>
-                    }
-                </div>
-            </section>
-            <section class="grid grid-cols-3 gap-5 max-[760px]:grid-cols-1">
-                <a class="group rounded-xl border border-[#cbdfff] bg-[#f6faff] p-6 text-[#262626] no-underline shadow-sm transition-[border-color,box-shadow,transform] duration-200 hover:-translate-y-0.5 hover:border-[#1677ff] hover:shadow-md" href=(locale.link(&href!(_ai::chat_page).resolve(cx)))><span class="mb-5 grid size-10 place-items-center rounded-lg bg-[#1677ff] text-xs font-bold text-white">"AI"</span><h2 class="m-0 text-lg font-semibold">(locale.select("Chat interface", "Chat 聊天界面"))</h2><p class="mb-0 mt-2 text-sm leading-6 text-[#595959]">(locale.select("Explore a composed AI conversation with reusable Topcoat components.", "用可复用的 Topcoat 组件查看完整聊天界面。"))</p><span class="mt-6 inline-block text-sm text-[#1677ff]">(text(locale, "查看组件 →"))</span></a>
-                <a class="group rounded-xl border border-[#e8eaee] bg-white p-6 text-[#262626] no-underline shadow-sm transition-[border-color,box-shadow,transform] duration-200 hover:-translate-y-0.5 hover:border-[#91caff] hover:shadow-md" href=(locale.link(&href!(_ai::bubble_page).resolve(cx)))><span class="mb-5 grid size-10 place-items-center rounded-lg bg-[#e6f4ff] font-bold text-[#1677ff]">"B"</span><h2 class="m-0 text-lg font-semibold">"ChatBubble"</h2><p class="mb-0 mt-2 text-sm leading-6 text-[#595959]">(locale.select("Compare user and assistant message bubbles.", "查看用户与助手消息气泡。"))</p><span class="mt-6 inline-block text-sm text-[#1677ff]">(text(locale, "查看组件 →"))</span></a>
-                <a class="group rounded-xl border border-[#e8eaee] bg-white p-6 text-[#262626] no-underline shadow-sm transition-[border-color,box-shadow,transform] duration-200 hover:-translate-y-0.5 hover:border-[#91caff] hover:shadow-md" href=(locale.link(&href!(_ai::message_list_page).resolve(cx)))><span class="mb-5 grid size-10 place-items-center rounded-lg bg-[#e6f4ff] font-bold text-[#1677ff]">"L"</span><h2 class="m-0 text-lg font-semibold">"ChatMessageList"</h2><p class="mb-0 mt-2 text-sm leading-6 text-[#595959]">(locale.select("See a labelled conversation region with messages.", "查看带标签的会话消息区域。"))</p><span class="mt-6 inline-block text-sm text-[#1677ff]">(text(locale, "查看组件 →"))</span></a>
-                <a class="group rounded-xl border border-[#e8eaee] bg-white p-6 text-[#262626] no-underline shadow-sm transition-[border-color,box-shadow,transform] duration-200 hover:-translate-y-0.5 hover:border-[#91caff] hover:shadow-md" href=(locale.link(&href!(_ai::sender_page).resolve(cx)))><span class="mb-5 grid size-10 place-items-center rounded-lg bg-[#e6f4ff] font-bold text-[#1677ff]">"S"</span><h2 class="m-0 text-lg font-semibold">"ChatSender"</h2><p class="mb-0 mt-2 text-sm leading-6 text-[#595959]">(locale.select("Try the browser-side draft and submit behavior.", "体验浏览器本地草稿和发送交互。"))</p><span class="mt-6 inline-block text-sm text-[#1677ff]">(text(locale, "查看组件 →"))</span></a>
-                <a class="group rounded-xl border border-[#e8eaee] bg-white p-6 text-[#262626] no-underline shadow-sm transition-[border-color,box-shadow,transform] duration-200 hover:-translate-y-0.5 hover:border-[#91caff] hover:shadow-md" href=(locale.link(&href!(_feedback::notification_page).resolve(cx)))><span class="mb-5 grid size-10 place-items-center rounded-lg bg-[#e6f4ff] font-bold text-[#1677ff]">"N"</span><h2 class="m-0 text-lg font-semibold">"Notification"</h2><p class="mb-0 mt-2 text-sm leading-6 text-[#595959]">(text(locale, "在视口右上角反馈操作结果，支持四种语义状态。"))</p><span class="mt-6 inline-block text-sm text-[#1677ff]">(text(locale, "查看组件 →"))</span></a>
-                <a class="group rounded-xl border border-[#e8eaee] bg-white p-6 text-[#262626] no-underline shadow-sm transition-[border-color,box-shadow,transform] duration-200 hover:-translate-y-0.5 hover:border-[#91caff] hover:shadow-md" href=(locale.link(&href!(_feedback::popconfirm_page).resolve(cx)))><span class="mb-5 grid size-10 place-items-center rounded-lg bg-[#fff7e6] font-bold text-[#d46b08]">"P"</span><h2 class="m-0 text-lg font-semibold">"Popconfirm"</h2><p class="mb-0 mt-2 text-sm leading-6 text-[#595959]">(text(locale, "贴近操作入口完成轻量确认，并处理边缘偏移和翻转。"))</p><span class="mt-6 inline-block text-sm text-[#1677ff]">(text(locale, "查看组件 →"))</span></a>
-                <a class="group rounded-xl border border-[#e8eaee] bg-white p-6 text-[#262626] no-underline shadow-sm transition-[border-color,box-shadow,transform] duration-200 hover:-translate-y-0.5 hover:border-[#91caff] hover:shadow-md" href=(locale.link(&href!(_feedback::dialog_page).resolve(cx)))><span class="mb-5 grid size-10 place-items-center rounded-lg bg-[#e6f4ff] font-bold text-[#1677ff]">"Di"</span><h2 class="m-0 text-lg font-semibold">"Dialog"</h2><p class="mb-0 mt-2 text-sm leading-6 text-[#595959]">(text(locale, "使用原生模态语义承载表单和集中操作。"))</p><span class="mt-6 inline-block text-sm text-[#1677ff]">(text(locale, "查看组件 →"))</span></a>
-                <a class="group rounded-xl border border-[#e8eaee] bg-white p-6 text-[#262626] no-underline shadow-sm transition-[border-color,box-shadow,transform] duration-200 hover:-translate-y-0.5 hover:border-[#91caff] hover:shadow-md" href=(locale.link(&href!(_motion::collapse_page).resolve(cx)))><span class="mb-5 grid size-10 place-items-center rounded-lg bg-[#f6ffed] font-bold text-[#389e0d]">"C"</span><h2 class="m-0 text-lg font-semibold">"Collapse"</h2><p class="mb-0 mt-2 text-sm leading-6 text-[#595959]">(text(locale, "为未知高度内容提供可逆的展开与收起过渡。"))</p><span class="mt-6 inline-block text-sm text-[#1677ff]">(text(locale, "查看组件 →"))</span></a>
-                <a class="group rounded-xl border border-[#e8eaee] bg-white p-6 text-[#262626] no-underline shadow-sm transition-[border-color,box-shadow,transform] duration-200 hover:-translate-y-0.5 hover:border-[#91caff] hover:shadow-md" href=(locale.link(&href!(_feedback::drawer_page).resolve(cx)))><span class="mb-5 grid size-10 place-items-center rounded-lg bg-[#f9f0ff] font-bold text-[#722ed1]">"D"</span><h2 class="m-0 text-lg font-semibold">"Drawer"</h2><p class="mb-0 mt-2 text-sm leading-6 text-[#595959]">(text(locale, "在当前列表上方查看完整记录详情。"))</p><span class="mt-6 inline-block text-sm text-[#1677ff]">(text(locale, "查看组件 →"))</span></a>
-                <a class="group rounded-xl border border-[#e8eaee] bg-white p-6 text-[#262626] no-underline shadow-sm transition-[border-color,box-shadow,transform] duration-200 hover:-translate-y-0.5 hover:border-[#91caff] hover:shadow-md" href=(locale.link(&href!(_navigation::dropdown_menu_page).resolve(cx)))><span class="mb-5 grid size-10 place-items-center rounded-lg bg-[#e6f4ff] font-bold text-[#1677ff]">"Dd"</span><h2 class="m-0 text-lg font-semibold">"Dropdown Menu"</h2><p class="mb-0 mt-2 text-sm leading-6 text-[#595959]">(locale.select("Group secondary actions beside their trigger.", "把次要操作收进触发按钮旁的菜单。"))</p><span class="mt-6 inline-block text-sm text-[#1677ff]">(text(locale, "查看组件 →"))</span></a>
-                <a class="group rounded-xl border border-[#e8eaee] bg-white p-6 text-[#262626] no-underline shadow-sm transition-[border-color,box-shadow,transform] duration-200 hover:-translate-y-0.5 hover:border-[#91caff] hover:shadow-md" href=(locale.link(&href!(_navigation::tabs_page).resolve(cx)))><span class="mb-5 grid size-10 place-items-center rounded-lg bg-[#e6f4ff] font-bold text-[#1677ff]">"T"</span><h2 class="m-0 text-lg font-semibold">"Tabs"</h2><p class="mb-0 mt-2 text-sm leading-6 text-[#595959]">(text(locale, "用真实路由组织对象详情页面。"))</p><span class="mt-6 inline-block text-sm text-[#1677ff]">(text(locale, "查看组件 →"))</span></a>
-                <a class="group rounded-xl border border-[#e8eaee] bg-white p-6 text-[#262626] no-underline shadow-sm transition-[border-color,box-shadow,transform] duration-200 hover:-translate-y-0.5 hover:border-[#91caff] hover:shadow-md" href=(locale.link(&href!(_data_display::table_page).resolve(cx)))><span class="mb-5 grid size-10 place-items-center rounded-lg bg-[#f9f0ff] font-bold text-[#722ed1]">"Tb"</span><h2 class="m-0 text-lg font-semibold">"Table"</h2><p class="mb-0 mt-2 text-sm leading-6 text-[#595959]">(text(locale, "用统一密度展示数据，并组合页码或游标分页。"))</p><span class="mt-6 inline-block text-sm text-[#1677ff]">(text(locale, "查看组件 →"))</span></a>
-                <a class="group rounded-xl border border-[#e8eaee] bg-white p-6 text-[#262626] no-underline shadow-sm transition-[border-color,box-shadow,transform] duration-200 hover:-translate-y-0.5 hover:border-[#91caff] hover:shadow-md" href=(locale.link(&href!(_data_entry::form_field_page).resolve(cx)))><span class="mb-5 grid size-10 place-items-center rounded-lg bg-[#fff7e6] font-bold text-[#d46b08]">"F"</span><h2 class="m-0 text-lg font-semibold">"FormField"</h2><p class="mb-0 mt-2 text-sm leading-6 text-[#595959]">(text(locale, "统一表单字段标签、说明与错误反馈。"))</p><span class="mt-6 inline-block text-sm text-[#1677ff]">(text(locale, "查看组件 →"))</span></a>
-                <a class="group rounded-xl border border-[#e8eaee] bg-white p-6 text-[#262626] no-underline shadow-sm transition-[border-color,box-shadow,transform] duration-200 hover:-translate-y-0.5 hover:border-[#91caff] hover:shadow-md" href=(locale.link(&href!(_data_entry::date_time_range_page).resolve(cx)))><span class="mb-5 grid size-10 place-items-center rounded-lg bg-[#e6f4ff] font-bold text-[#0958d9]">"R"</span><h2 class="m-0 text-lg font-semibold">"DateTimeRange"</h2><p class="mb-0 mt-2 text-sm leading-6 text-[#595959]">(text(locale, "在弹出层中选择开始和结束时间。"))</p><span class="mt-6 inline-block text-sm text-[#1677ff]">(text(locale, "查看组件 →"))</span></a>
-            </section>
-        </div>
-    })
 }
 
 #[cfg(test)]
@@ -423,8 +397,8 @@ mod tests {
         let body = to_bytes(response.into_body(), usize::MAX).await.unwrap();
         let html = String::from_utf8(body.to_vec()).unwrap();
         for marker in [
-            "31 native components",
-            "class=\"native-ui",
+            "31 official components",
+            "Ant Design theme",
             "Buttons",
             "Forms",
             "Sidebar",
@@ -486,9 +460,9 @@ mod tests {
         let body = to_bytes(response.into_body(), usize::MAX).await.unwrap();
         let html = String::from_utf8(body.to_vec()).unwrap();
         assert!(html.contains("Accordion"));
-        assert!(html.contains("gr-accordion-item"));
+        assert!(html.contains("<details"));
         assert!(html.contains("Show example code"));
-        assert!(html.contains("aria-controls=\"gallery-comment\""));
+        assert!(html.contains("name=\"gallery-accordion\""));
     }
 
     #[tokio::test]
@@ -649,8 +623,8 @@ mod tests {
                 assert!(html.contains("href=\"/dropdown-menu\""));
             }
             if path == "/dropdown-menu" {
-                assert!(html.contains("id=\"gallery-actions-menu\""));
-                assert!(html.contains("gr-dropdown-menu"));
+                assert!(html.contains("<details"));
+                assert!(html.contains("<summary"));
             }
             if matches!(path, "/chat" | "/chat/notes" | "/chat/new") {
                 assert!(html.contains("<title>Chat interface · Topcoat Ant Design</title>"));
@@ -740,7 +714,7 @@ mod tests {
             }
             if let Some(content_id) = tab_content_id {
                 let tabs = html.find("aria-label=\"Project details example\"").unwrap();
-                let tabs_end = tabs + html[tabs..].find("</nav>").unwrap();
+                let tabs_end = tabs + html[tabs..].find("</div>").unwrap();
                 let tabs_html = &html[tabs..tabs_end];
                 assert!(tabs_html.contains("href=\"/tabs/webhook\""));
                 assert!(

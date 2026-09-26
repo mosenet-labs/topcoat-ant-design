@@ -4,7 +4,7 @@ use topcoat::{
     view::{Attributes, Child, View, attributes, class, component, view},
 };
 
-use crate::native_ui::field;
+use crate::ui::field;
 
 /// Stable field ID, label, and supporting information.
 #[derive(Clone, Copy)]
@@ -66,7 +66,7 @@ pub async fn form_field(
         error,
     } = config;
     let caller_class = attrs.remove("class");
-    let root_class = class!("native-ui grid gap-2", caller_class);
+    let root_class = class!("grid gap-2", caller_class);
     let help_id = format!("{id}-help");
     attrs.extend(attributes! { cx => class=(root_class) });
 

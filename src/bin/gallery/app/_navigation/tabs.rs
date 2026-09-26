@@ -8,9 +8,9 @@ use topcoat::{
     Result,
     context::Cx,
     router::{Slot, error::redirect, href, layout, page, request::uri},
-    view::{View, view},
+    view::{View, attributes, view},
 };
-use topcoat_ant_design::{tab_link, tabs};
+use topcoat_ant_design::{tabs, tabs_content, tabs_list, tabs_trigger};
 
 use crate::{
     app::page_header,
@@ -53,12 +53,14 @@ async fn tabs_layout(cx: &Cx, slot: Slot<'_>) -> Result<impl View> {
         <div class="grid gap-6">
             component_example(id: "tabs-preview", title: text(locale, "组件预览"), description: text(locale, "切换页签后，路由、激活态和下方内容会一起更新。"), source: example_source,
                 <div class="p-6">
-                    tabs(label: text(locale, "项目详情示例"),
-                        tab_link(href: webhook_localized_url.as_str(), active: current_path == webhook_url.as_str(), (text(locale, "Webhook 配置")))
-                        tab_link(href: events_localized_url.as_str(), active: current_path == events_url.as_str(), (text(locale, "事件记录")))
-                        tab_link(href: permissions_localized_url.as_str(), active: current_path == permissions_url.as_str(), (text(locale, "访问权限")))
+                    tabs(attrs: attributes! { aria-label=(text(locale, "项目详情示例")) },
+                        tabs_list(
+                            tabs_trigger(active: current_path == webhook_url.as_str(), attrs: attributes! { href=(webhook_localized_url.as_str()) }, (text(locale, "Webhook 配置")))
+                            tabs_trigger(active: current_path == events_url.as_str(), attrs: attributes! { href=(events_localized_url.as_str()) }, (text(locale, "事件记录")))
+                            tabs_trigger(active: current_path == permissions_url.as_str(), attrs: attributes! { href=(permissions_localized_url.as_str()) }, (text(locale, "访问权限")))
+                        )
+                        tabs_content(attrs: attributes! { class="min-h-40 rounded-lg bg-background px-5 py-7" }, (slot))
                     )
-                    <div class="min-h-40 rounded-b-lg bg-[#fafafa] px-5 py-7">(slot)</div>
                 </div>
             )
             markdown_document(source: document)

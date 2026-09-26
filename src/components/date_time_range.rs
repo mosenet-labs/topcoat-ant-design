@@ -9,7 +9,7 @@ use topcoat::{
 use crate::icons::CALENDAR_OUTLINED;
 use crate::{
     UiLanguage,
-    native_ui::{button, input, label},
+    ui::{button, input, label},
 };
 
 #[derive(Clone, Copy, Debug)]
@@ -64,7 +64,7 @@ pub async fn date_time_range_filter(
     let anchor = format!("anchor-name: --gr-{id}");
     let panel_anchor = format!("position-anchor: --gr-{id}");
     let caller_class = attrs.remove("class");
-    let root_class = class!("native-ui gr-date-range", caller_class);
+    let root_class = class!("gr-date-range", caller_class);
     attrs.extend(attributes! { cx => class=(root_class) });
     let label = range_label(from, to, language);
     let clear_from = from_id.clone();

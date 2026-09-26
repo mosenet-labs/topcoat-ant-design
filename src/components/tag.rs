@@ -3,7 +3,7 @@ use topcoat::{
     view::{Attributes, Child, View, class, component, view},
 };
 
-use crate::native_ui::badge::{BadgeVariant, badge};
+use crate::ui::badge::{BadgeVariant, badge};
 
 /// Semantic tag color. The label must also state the status without relying on color.
 #[derive(Clone, Copy, Default)]
@@ -31,7 +31,7 @@ pub async fn tag(
         TagTone::Processing => "gr-tag-processing",
     };
     let caller_class = attrs.remove("class");
-    let root_class = class!("native-ui gr-tag", tone_class, caller_class);
+    let root_class = class!("gr-tag", tone_class, caller_class);
     Ok(
         view! { badge(variant: BadgeVariant::Outline, attrs: topcoat::view::attributes! { class=(root_class) (attrs) }, (child)) },
     )

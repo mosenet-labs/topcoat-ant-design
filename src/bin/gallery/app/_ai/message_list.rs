@@ -37,7 +37,7 @@ pub(in crate::app) async fn message_list_page(cx: &Cx) -> Result<impl View> {
             title: locale.select("Conversation messages", "会话消息"),
             description: locale.select("The caller provides the messages and keeps their data.", "调用方提供消息并管理会话数据。"),
             source: EXAMPLE_SOURCE,
-            <div class="bg-[#f8faff] p-6 max-[520px]:p-4">
+            <div class="bg-background p-6 max-[520px]:p-4">
                 chat_message_list(label: locale.select("Conversation messages", "会话消息"),
                     chat_bubble(role: ChatBubbleRole::User, language: locale.ui(),
                         (locale.select("What does the list own?", "消息列表负责什么？"))

@@ -1,56 +1,17 @@
-Provide route-based tabs for console detail pages.
+# Tabs
 
-`tabs` renders the navigation container and `tab_link` uses real links. The host route determines the active page, so refresh, browser history, and copied URLs all restore the correct content.
-
-## Parameters
-
-### `tabs`
-
-| Parameter | Type | Description |
-| --- | --- | --- |
-| `label` | `&str` | Accessible name of the navigation region. |
-| `attrs` | `Attributes` | Optional root `nav` attributes; caller and component classes are merged. |
-| `child` | `Child` | A set of `tab_link` items. |
-
-### `tab_link`
-
-| Parameter | Type | Description |
-| --- | --- | --- |
-| `href` | `&str` | Real route for this tab. |
-| `active` | `Expr<bool>` (accepts `bool`) | Whether this is the current page; may be reactive. |
-| `attrs` | `Attributes` | Optional link attributes. |
-| `child` | `Child` | Tab text or icon. |
-
-## Example
+The official Tabs support route links or browser state. The host supplies each trigger's `active` value and the matching panel content.
 
 ```rust,ignore
-use topcoat_ant_design::{tab_link, tabs};
-use topcoat::router::request::uri;
-use topcoat::view::view;
+use topcoat_ant_design::{tabs, tabs_list, tabs_trigger, tabs_content};
 
-let webhook_url = format!("/projects/{project_id}/webhook");
-let events_url = format!("/projects/{project_id}/events");
-let current_path = uri(cx).path();
-
-Ok(view! {
-    tabs(label: "Project details",
-        tab_link(
-            href: webhook_url.as_str(),
-            active: current_path == webhook_url,
-            "Webhook configuration",
+view! {
+    tabs(attrs: attributes! { aria-label="Project details" },
+        tabs_list(
+            tabs_trigger(active: true, attrs: attributes! { href="/project/overview" }, "Overview")
+            tabs_trigger(active: false, attrs: attributes! { href="/project/events" }, "Events")
         )
-        tab_link(
-            href: events_url.as_str(),
-            active: current_path == events_url,
-            "Event history",
-        )
+        tabs_content("Overview content")
     )
-})
+}
 ```
-
-## Behavior
-
-- Tabs are real `<a>` elements; routing is not hidden in temporary browser state.
-- The active link emits `aria-current="page"`.
-- Tabs may scroll horizontally on narrow screens.
-- The host sets `active` from the current Topcoat route.

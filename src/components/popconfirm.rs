@@ -7,7 +7,7 @@ use topcoat::{
 };
 
 use crate::icons::EXCLAMATION_CIRCLE_FILLED;
-use crate::{UiLanguage, native_ui::button};
+use crate::{UiLanguage, ui::button};
 
 /// Create the attributes for a Popconfirm trigger and declare it as a CSS anchor.
 ///
@@ -44,7 +44,7 @@ pub async fn popconfirm(
     let closing_id = id.to_owned();
     let caller_class = attrs.remove("class");
     let panel_class = class!(
-        "native-ui gr-popconfirm fixed inset-auto mx-4 mb-0 mt-2.5 w-[min(300px,calc(100vw_-_32px))] overflow-visible rounded-lg border border-[var(--gr-border-subtle)] bg-[var(--gr-surface)] px-4 pb-3 pt-3.5 font-mono text-[var(--gr-fg)] shadow-lg",
+        "gr-popconfirm fixed inset-auto mx-4 mb-0 mt-2.5 w-[min(300px,calc(100vw_-_32px))] overflow-visible rounded-lg border border-[var(--gr-border-subtle)] bg-[var(--gr-surface)] px-4 pb-3 pt-3.5 font-mono text-[var(--gr-fg)] shadow-lg",
         caller_class,
     );
     let semantics = attributes! { cx =>

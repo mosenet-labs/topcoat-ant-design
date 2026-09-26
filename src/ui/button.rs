@@ -38,11 +38,11 @@ impl ButtonVariant {
                  hover:bg-foreground/10 active:bg-foreground/15",
             ),
             Self::Outline => class!(
-                "border-border text-foreground hover:bg-foreground/5 \
+                "border-border bg-transparent text-foreground hover:bg-foreground/5 \
                  active:bg-foreground/10",
             ),
             Self::Ghost => class!(
-                "border-transparent text-foreground hover:bg-foreground/5 active:bg-foreground/10",
+                "border-transparent bg-transparent text-foreground hover:bg-foreground/5 active:bg-foreground/10",
             ),
             Self::Destructive => class!(
                 "border-transparent bg-destructive text-destructive-foreground shadow-xs \

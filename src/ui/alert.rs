@@ -81,7 +81,7 @@ pub async fn alert_title(
     Ok(view! {
         <p
             class=(class!(
-                "col-start-2 font-medium tracking-tight",
+                "col-start-2 m-0 font-medium tracking-tight",
                 attrs.remove("class"),
             ))
             (attrs)

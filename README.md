@@ -99,21 +99,19 @@ Ok(view! {
 })
 ```
 
-Popconfirm uses a trusted stable ID to associate its trigger and bubble; provide the business action in the child confirm button. [Dropdown Menu](docs/en/components/dropdown-menu.md) groups compact actions in a browser popover. Collapse shares one signal between its trigger attributes and content. Tabs use real links and a host-provided `active` state. Drawer accepts a `Signal<bool>` and can navigate to a close URL through `DrawerConfig::with_close_href`. Each component has an [English guide](docs/en/components/) and a [Chinese guide](docs/components/).
+Popconfirm uses a trusted stable ID to associate its trigger and bubble; provide the business action in the child confirm button. The official [Dropdown Menu](docs/en/components/dropdown-menu.md) groups actions in a native `<details>` control. Collapse shares one signal between its trigger attributes and content. Official Tabs use real links and a host-provided `active` state. Drawer composes the official Sheet, accepts a `Signal<bool>`, and can navigate to a close URL through `DrawerConfig::with_close_href`. Each component has an [English guide](docs/en/components/) and a [Chinese guide](docs/components/).
 
-Built-in component labels default to English. Pass `language: UiLanguage::ChineseSimplified` to components that provide their own controls, such as Notification, Popconfirm, Dialog, Drawer, Accordion, and DateTimeRange, when the host page is in Chinese.
+Built-in component labels default to English. Pass `language: UiLanguage::ChineseSimplified` to composed components that provide their own controls, such as Notification, Popconfirm, Drawer, and DateTimeRange, when the host page is in Chinese.
 
 ## Topcoat native UI
 
-All 31 native Topcoat 0.9.0 registry components are available under `topcoat_ant_design::native_ui`. Their original sources and neutral theme are recorded in [components.toml](components.toml). Ant Design components reuse these native primitives for fields, badges, tables, tabs, buttons, avatars, and other controls while retaining their public APIs.
+All 31 Topcoat 0.9.0 registry components are re-exported directly from `topcoat_ant_design`; their modules also remain available under `topcoat_ant_design::ui`. For example, `use topcoat_ant_design::{button, ButtonVariant, dialog, dialog_content};`. The upstream registry state is recorded in [components.toml](components.toml).
 
-The custom Collapse, Accordion, Dialog, Drawer, Dropdown Menu, Tooltip, Popconfirm, and Notification shells remain where they provide signal control, modal behavior, route-aware dismissal, viewport positioning, or toast lifecycles beyond the corresponding native primitives.
+This root-level API is currently available from this checkout. The published `0.2.0-dev.1` predates this change; use the path dependency above until a new version is published.
 
-The regular `head_assets()` includes the native styles. Wrap direct native components in an element with `class="native-ui"` to apply the scoped neutral theme. For a standalone native stylesheet, enable the `native-ui` feature and call `topcoat_ant_design::native_ui::head_assets()` instead:
+The official implementations replace the former local Accordion, Dialog, Dropdown Menu, Tabs, and Tooltip components. Use their official root-level names and composition APIs. Distinct composites such as `data_table`, `drawer`, `popconfirm`, and `notification` remain in the library; Drawer is built on the official Sheet.
 
-```toml
-topcoat-ant-design = { version = "=0.2.0-dev.1", features = ["native-ui"] }
-```
+The regular `head_assets()` includes all component styles and the project font. Official and local components share the Ant Design color tokens in the same stylesheet. No wrapper class or extra Cargo feature is needed. Put `class="dark"` on an ancestor to use dark colors.
 
 The Gallery includes an interactive [Topcoat native UI showcase](http://127.0.0.1:3100/topcoat-ui) with light and dark themes, sidebar, fields, dialogs, tables, and other controls.
 

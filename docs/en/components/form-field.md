@@ -9,12 +9,10 @@ form_field(
     config: FormFieldConfig::new("automation-name", "Automation name")
         .required()
         .with_hint("Used to identify this automation in the project."),
-    <input
-        id="automation-name"
-        name="name"
-        required
+    input(attrs: attributes! {
+        id="automation-name" name="name" required=""
         aria-describedby="automation-name-help"
-    >
+    })
 )
 ```
 
@@ -24,11 +22,9 @@ Use `with_error` for a server validation error. The error replaces the hint and 
 form_field(
     config: FormFieldConfig::new("command-name", "Command")
         .with_error("Use lowercase letters, digits, hyphens, or underscores."),
-    <input
-        id="command-name"
-        name="command"
-        aria-invalid="true"
+    input(attrs: attributes! {
+        id="command-name" name="command" aria-invalid="true"
         aria-describedby="command-name-help"
-    >
+    })
 )
 ```

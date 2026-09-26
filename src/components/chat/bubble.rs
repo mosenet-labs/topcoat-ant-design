@@ -6,7 +6,7 @@ use topcoat::{
 };
 
 use super::message::ChatMessageStatus;
-use crate::{UiLanguage, native_ui::avatar};
+use crate::{UiLanguage, ui::avatar};
 
 /// Which side of a conversation a message belongs to.
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize, Deserialize)]
@@ -56,7 +56,7 @@ pub async fn chat_bubble(
 
     Ok(view! {
         <article (attrs)>
-            avatar::avatar(size: avatar::AvatarSize::Sm, attrs: attributes! { class="native-ui gr-chat-avatar" aria-hidden="true" },
+            avatar::avatar(size: avatar::AvatarSize::Sm, attrs: attributes! { class="gr-chat-avatar" aria-hidden="true" },
                 avatar::avatar_fallback((if is_user { "U" } else { "AI" }))
             )
             <div class="min-w-0 max-w-[min(76ch,88%)]">

@@ -1,4 +1,4 @@
-use topcoat_ant_design::native_ui as components;
+use topcoat_ant_design::ui as components;
 
 use crate::locale::Locale;
 use components::{
@@ -134,9 +134,9 @@ pub(in crate::app) async fn native_ui_page(cx: &Cx) -> Result<impl View> {
     let mobile_open = signal(cx, || false);
 
     Ok(view! {
-        <div :class=$(if dark.get() { "native-ui dark relative min-h-screen overflow-x-clip bg-background text-foreground" } else { "native-ui relative min-h-screen overflow-x-clip bg-background text-foreground" })>
+        <div :class=$(if dark.get() { "dark relative min-h-screen overflow-x-clip bg-background text-foreground" } else { "relative min-h-screen overflow-x-clip bg-background text-foreground" })>
             <div class="flex flex-wrap items-center justify-between gap-3 border-b border-border bg-card px-6 py-3 text-sm text-muted-foreground">
-                <span>"Topcoat 0.9.0 · 31 native components · neutral theme"</span>
+                <span>"Topcoat 0.9.0 · 31 official components · Ant Design theme"</span>
                 <a class="font-medium text-foreground hover:underline" href=(gallery_url.as_str())>(locale.select("← Back to Ant Design Gallery", "← 返回 Ant Design Gallery"))</a>
             </div>
                 sidebar_provider(
@@ -239,7 +239,7 @@ pub(in crate::app) async fn native_ui_page(cx: &Cx) -> Result<impl View> {
                                     <h2 id="native-registry-heading" class="m-0 text-lg font-semibold">"Complete registry"</h2>
                                     <span class="text-xs text-muted-foreground">"Topcoat 0.9.0 · 31 / 31"</span>
                                 </div>
-                                <p class="mb-4 mt-2 text-sm text-muted-foreground">"All native modules are included. Composite controls show their primitives in context."</p>
+                                <p class="mb-4 mt-2 text-sm text-muted-foreground">"All official components are included. Composite controls show their primitives in context."</p>
                                 <div class="flex flex-wrap gap-2">
                                     for name in REGISTRY_COMPONENTS {
                                         <span class="rounded-md border border-border bg-background px-2.5 py-1 font-mono text-xs text-foreground">(name)</span>

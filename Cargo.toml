@@ -11,10 +11,8 @@ license = "MIT"
 
 [features]
 default = []
-native-ui = []
 router = ["topcoat/router"]
 gallery = [
-    "native-ui",
     "router",
     "dep:tokio",
     "dep:topcoat-asset",

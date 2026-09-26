@@ -3,7 +3,7 @@ use topcoat::{
     view::{Attributes, Child, View, attributes, class, component, view},
 };
 
-use crate::{UiLanguage, native_ui::spinner};
+use crate::{UiLanguage, ui::spinner};
 
 /// Visual state of one process step.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -42,7 +42,7 @@ pub async fn chat_thought_chain(
     #[default] child: Child<'_>,
 ) -> Result<impl View> {
     Ok(
-        view! { <ol aria-label=(label) class=(class!("native-ui gr-chat-thought-chain", attrs.remove("class"))) (attrs)>(child)</ol> },
+        view! { <ol aria-label=(label) class=(class!("gr-chat-thought-chain", attrs.remove("class"))) (attrs)>(child)</ol> },
     )
 }
 
@@ -57,7 +57,7 @@ pub async fn chat_thought_step(
 ) -> Result<impl View> {
     let state = status.map_or("default", ChatThoughtStatus::as_str);
     Ok(view! {
-        <li data-status=(state) class=(class!("native-ui gr-chat-thought-step", attrs.remove("class"))) (attrs)>
+        <li data-status=(state) class=(class!("gr-chat-thought-step", attrs.remove("class"))) (attrs)>
             <span class="gr-chat-thought-step-marker" aria-hidden="true">
                 if status.is_none() { <span class="gr-chat-thought-step-number"></span> }
                 else if status == Some(ChatThoughtStatus::Loading) { spinner::spinner(label: ChatThoughtStatus::Loading.label(language), attrs: attributes! { class="gr-chat-thought-step-spinner" }) }

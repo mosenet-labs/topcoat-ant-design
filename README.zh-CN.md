@@ -10,7 +10,7 @@
 - [Notification](https://docs.rs/topcoat-ant-design/latest/topcoat_ant_design/struct.notification.html)：页面右上角的操作结果通知；
 - [Popconfirm](https://docs.rs/topcoat-ant-design/latest/topcoat_ant_design/struct.popconfirm.html)：按钮附近的轻量二次确认气泡；
 - [Dropdown Menu](docs/components/dropdown-menu.md)：按钮附近的紧凑操作菜单；
-- [Dialog](https://docs.rs/topcoat-ant-design/latest/topcoat_ant_design/struct.dialog.html)：承载表单与集中操作的原生模态对话框；
+- [Dialog](https://docs.rs/topcoat-ant-design/latest/topcoat_ant_design/struct.dialog.html)：承载表单与集中操作的官方对话框结构；
 - [Tag](https://docs.rs/topcoat-ant-design/latest/topcoat_ant_design/struct.tag.html)：展示状态和分类；
 - [Tooltip](https://docs.rs/topcoat-ant-design/latest/topcoat_ant_design/struct.tooltip.html)：提供悬停和键盘聚焦时的文字提示；
 - [Collapse](https://docs.rs/topcoat-ant-design/latest/topcoat_ant_design/struct.collapse.html)：未知高度内容的展开与收起动效；
@@ -97,15 +97,13 @@ let router = topcoat::router::module_router!()
 
 ## Topcoat 原生 UI 组件
 
-Topcoat 0.9.0 官方 registry 的全部 31 个原生组件默认可从 `topcoat_ant_design::native_ui` 使用。源码及 neutral 主题的版本哈希记录在 [components.toml](components.toml)。本项目的 Ant Design 组件已在保持公开接口的前提下复用官方字段、徽标、表格、标签页、按钮、头像等基础组件。
+Topcoat 0.9.0 官方 registry 的全部 31 个组件直接从 `topcoat_ant_design` 导出，也可通过 `topcoat_ant_design::ui` 下的对应模块访问。例如 `use topcoat_ant_design::{button, ButtonVariant, dialog, dialog_content};`。官方组件的来源记录在 [components.toml](components.toml)。
 
-Collapse、Accordion、Dialog、Drawer、Dropdown Menu、Tooltip、Popconfirm 和 Notification 仍保留项目自己的交互外壳，用于信号控制、模态行为、按路由关闭、视口定位或通知生命周期等官方基础组件未覆盖的能力。
+根目录直接导出的 API 目前仅在此源码版本中提供。已发布的 `0.2.0-dev.1` 尚未包含该改动；新版本发布前请使用上文的本地 path 依赖。
 
-常规 `head_assets()` 已加载原生组件样式。直接使用原生组件时，用 `class="native-ui"` 包裹组件区域即可应用限定作用域的 neutral 主题。若只需独立的原生组件样式，可以启用 `native-ui` feature 并调用 `topcoat_ant_design::native_ui::head_assets()`：
+原有的 Accordion、Dialog、Dropdown Menu、Tabs、Tooltip 自定义实现已由官方组件替换，直接使用根目录导出的官方名称及组合 API。`data_table`、`drawer`、`popconfirm`、`notification` 等具有独立功能的复合组件继续保留；Drawer 内部使用官方 Sheet。
 
-```toml
-topcoat-ant-design = { version = "=0.2.0-dev.1", features = ["native-ui"] }
-```
+常规 `head_assets()` 同时加载官方及自定义组件样式和项目字体。它们共用当前库的 Ant Design 主题变量，不需要额外包裹类或 Cargo feature。祖先元素设置 `class="dark"` 可切换深色主题。
 
 运行 Gallery 后打开 [Topcoat 原生组件展示页](http://127.0.0.1:3100/topcoat-ui)，可以直接试用明暗主题、Sidebar、表单字段、弹层、表格等组件。
 
@@ -191,7 +189,7 @@ Ok(view! {
 
 组件样式使用 `0fr`/`1fr` 网格轨道完成双向高度过渡，并同步处理透明度、可见性和 `prefers-reduced-motion`。
 
-Tabs 由 `tabs` 和 `tab_link` 组成。宿主根据当前 Topcoat 路由传入 `active`，组件输出真实链接与 `aria-current`。Drawer 接收 `DrawerConfig` 和 `Signal<bool>`；由查询参数控制详情时，可以通过 `DrawerConfig::with_close_href` 设置不含详情参数的关闭地址。
+Tabs 由官方 `tabs`、`tabs_list`、`tabs_trigger` 和 `tabs_content` 组成。宿主根据当前 Topcoat 路由传入 `active`，组件输出真实链接与 `aria-current`。Drawer 接收 `DrawerConfig` 和 `Signal<bool>`；由查询参数控制详情时，可以通过 `DrawerConfig::with_close_href` 设置不含详情参数的关闭地址。
 
 ## 公开接口
 
@@ -200,16 +198,16 @@ Tabs 由 `tabs` 和 `tab_link` 组成。宿主根据当前 Topcoat 路由传入 
 | `icons` | 提供编译期校验的 Ant Design `IconData` 常量 | 无 |
 | `notification`、`NotificationTone` | 展示页面级操作反馈 | 无 |
 | `popconfirm`、`popconfirm_trigger_attributes` | 建立确认气泡及其触发关系 | 无 |
-| `dropdown_menu`、`dropdown_menu_trigger_attributes` | 建立操作菜单及其触发关系 | 无 |
+| `dropdown_menu`、`dropdown_menu_trigger`、`dropdown_menu_content` | 组合官方操作菜单 | 无 |
 | `collapse`、`collapse_trigger_attributes` | 建立可访问的折叠内容及触发关系 | 无 |
-| `tabs`、`tab_link` | 建立路由型详情页签 | 无 |
+| `tabs`、`tabs_list`、`tabs_trigger`、`tabs_content` | 建立路由型详情页签 | 无 |
 | `drawer` | 展示可关闭的右侧详情面板 | 无 |
 | `head_assets` | 在根布局加载组件 CSS 和默认字体 | 无 |
 | `RouterBuilderUiExt` | 为选择性发现的 Router 注册字体路由 | `router` |
 
 ## 浏览组件
 
-组件内置按钮和无障碍标签默认使用英文。中文页面可向 Notification、Popconfirm、Dialog、Drawer、Accordion 和 DateTimeRange 传入 `language: UiLanguage::ChineseSimplified`。
+复合组件的内置按钮和无障碍标签默认使用英文。中文页面可向 Notification、Popconfirm、Drawer 和 DateTimeRange 传入 `language: UiLanguage::ChineseSimplified`。
 
 在仓库根目录运行：
 

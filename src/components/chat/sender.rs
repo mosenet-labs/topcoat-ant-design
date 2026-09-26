@@ -7,7 +7,7 @@ use topcoat::{
 
 use crate::{
     UiLanguage,
-    native_ui::{button, label, textarea},
+    ui::{button, label, textarea},
 };
 
 /// Chat input with a browser-owned draft and caller-owned submit behavior.
@@ -30,7 +30,7 @@ pub async fn chat_sender(
     let draft = draft.clone();
     let busy = busy.cloned().unwrap_or_else(|| signal(cx, || false));
     let caller_class = attrs.remove("class");
-    let root_class = class!("native-ui gr-chat-sender", caller_class);
+    let root_class = class!("gr-chat-sender", caller_class);
     attrs.extend(attributes! { cx => class=(root_class) });
     let form_class = class!("gr-chat-sender-form", submit_attrs.remove("class"));
     let default_placeholder = language.select(
