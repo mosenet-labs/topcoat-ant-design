@@ -1,7 +1,9 @@
 use topcoat::{
     Result,
-    view::{Attributes, Child, View, component, view},
+    view::{Attributes, Child, View, attributes, component, view},
 };
+
+use crate::native_ui::button::{ButtonVariant, button};
 
 /// Suggested starting points for an empty conversation.
 #[component]
@@ -14,7 +16,11 @@ pub async fn chat_prompts(label: &str, #[default] child: Child<'_>) -> Result<im
 /// One suggestion. The caller supplies the click handler through `attrs`.
 #[component]
 pub async fn chat_prompt(title: &str, #[default] attrs: Attributes) -> Result<impl View> {
-    Ok(
-        view! { <button class="rounded-xl border border-[#dbe8f7] bg-white px-4 py-4 text-left text-sm font-medium text-[#315a85] shadow-sm hover:border-[#91caff] hover:bg-[#f8fbff] focus-visible:outline-2 focus-visible:outline-[#1677ff]" type="button" (attrs)>(title)</button> },
-    )
+    Ok(view! {
+        button(variant: ButtonVariant::Outline, attrs: attributes! {
+            class="native-ui rounded-xl border-[#dbe8f7] bg-white px-4 py-4 text-left text-[#315a85] shadow-sm hover:border-[#91caff] hover:bg-[#f8fbff]"
+            type="button"
+            (attrs)
+        }, (title))
+    })
 }

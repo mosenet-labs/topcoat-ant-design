@@ -1,13 +1,22 @@
-@layer theme, components, utilities;
+@layer theme, base, components, utilities;
 
 @import "tailwindcss/theme.css" layer(theme);
 @import "tailwindcss/utilities.css" layer(utilities) source(none);
+@import "./assets/topcoat-ui-neutral-scoped.css";
 
 @source "./src/**/*.rs";
 
 @theme {
   --font-mono: "JetBrains Mono", "Noto Sans SC", "PingFang SC", "Microsoft YaHei", ui-monospace, SFMono-Regular, monospace;
 }
+
+/* Ant Design status colors on the official Topcoat badge structure. */
+.gr-tag { border-radius: 4px; padding-inline: 7px; line-height: 20px; }
+.gr-tag-default { border-color: #d9d9d9; background: #fafafa; color: #595959; }
+.gr-tag-success { border-color: #b7eb8f; background: #f6ffed; color: #389e0d; }
+.gr-tag-warning { border-color: #ffe58f; background: #fffbe6; color: #ad6800; }
+.gr-tag-error { border-color: #ffccc7; background: #fff2f0; color: #cf1322; }
+.gr-tag-processing { border-color: #91caff; background: #e6f4ff; color: #0958d9; }
 
 .gr-chat-bubble,
 .gr-chat-bubble *,
@@ -25,7 +34,10 @@
   color: #1677ff;
   background: #e6f4ff;
   border: 1px solid #bae0ff;
+  border-radius: 10px;
 }
+
+.gr-chat-avatar > span { background: transparent; color: inherit; }
 
 .gr-chat-bubble-user .gr-chat-avatar {
   color: #595959;
@@ -230,8 +242,7 @@
 .gr-chat-thought-step[data-status="success"] .gr-chat-thought-step-marker { color: #52c41a; }
 .gr-chat-thought-step[data-status="error"] .gr-chat-thought-step-marker { color: #ff4d4f; }
 .gr-chat-thought-step[data-status="abort"] .gr-chat-thought-step-marker { color: #8c8c8c; }
-.gr-chat-thought-step-spinner { width: 9px; height: 9px; border: 1.5px solid transparent; border-top-color: currentColor; border-right-color: currentColor; border-radius: 50%; animation: gr-chat-thought-spin 800ms linear infinite; }
-@keyframes gr-chat-thought-spin { to { transform: rotate(360deg); } }
+.gr-chat-thought-step-spinner { width: 13px; height: 13px; }
 .gr-chat-action {
   border: 1px solid #dbe8f7;
   border-radius: 6px;
@@ -278,8 +289,6 @@
 .gr-chat-sources-trigger::marker { content: ""; }
 .gr-chat-sources-trigger:hover { color: #374151; }
 .gr-chat-sources-trigger:focus-visible { border-radius: 4px; outline: 2px solid #1677ff; outline-offset: 3px; }
-.gr-chat-sources-caret { display: inline-flex; align-items: center; line-height: 1; transform: rotate(-90deg); transition: transform 160ms; }
-.gr-chat-sources[open] .gr-chat-sources-caret { transform: rotate(0); }
 .gr-chat-sources-list { display: grid; gap: 8px; margin: 8px 0 0; padding: 0; }
 .gr-chat-source { overflow: hidden; border: 1px solid #e5e7eb; border-radius: 12px; background: #fff; list-style: none; }
 .gr-chat-source-summary { padding: 12px 15px; border-bottom: 1px solid #e5e7eb; color: #73777f; font-size: 13px; line-height: 1.5; }
@@ -329,10 +338,6 @@
   animation: gr-dialog-backdrop-enter 180ms ease-out;
 }
 
-.gr-data-table-scroll {
-  @apply w-full min-w-0 overflow-x-auto;
-}
-
 .gr-data-table {
   @apply w-full border-collapse whitespace-nowrap bg-white text-left text-sm text-[#262626];
 }
@@ -367,7 +372,13 @@
 
 .gr-table-pagination nav {
   @apply flex items-center gap-2;
+  width: auto;
+  margin-inline: 0;
+  flex: 1;
+  justify-content: flex-end;
 }
+
+.gr-table-pagination-summary { white-space: nowrap; }
 
 .gr-table-page-size {
   @apply inline-flex items-center gap-2 whitespace-nowrap text-[13px] text-[#595959];
@@ -679,7 +690,6 @@
   .gr-chat-send-button,
   .gr-chat-think-trigger,
   .gr-chat-think-caret,
-  .gr-chat-sources-caret,
   .gr-chat-conversation-item {
     transition: none;
   }

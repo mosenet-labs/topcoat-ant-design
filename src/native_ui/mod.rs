@@ -30,6 +30,7 @@ pub mod textarea;
 pub mod toggle;
 pub mod tooltip;
 
+#[cfg(feature = "native-ui")]
 use topcoat::{
     Result,
     asset::{Asset, asset},
@@ -38,6 +39,7 @@ use topcoat::{
 
 /// Standalone stylesheet for the vendored Topcoat components.
 /// Wrap native components in an element with the `native-ui` class to apply the neutral theme.
+#[cfg(feature = "native-ui")]
 pub const STYLESHEET: Asset = asset!(
     concat!(env!("OUT_DIR"), "/topcoat-native-ui.css"),
     rename: "topcoat-native-ui-css",
@@ -45,6 +47,7 @@ pub const STYLESHEET: Asset = asset!(
 
 /// Add the native UI stylesheet to a Topcoat document head.
 #[component]
+#[cfg(feature = "native-ui")]
 pub async fn head_assets() -> Result<impl View> {
     Ok(view! { <link rel="stylesheet" href=(STYLESHEET)> })
 }

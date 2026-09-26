@@ -97,15 +97,19 @@ let router = topcoat::router::module_router!()
 
 ## Topcoat 原生 UI 组件
 
-启用 `native-ui` feature 后，可以通过 `topcoat_ant_design::native_ui` 使用 Topcoat 0.9.0 官方 registry 的全部 31 个原生组件。它们与本项目的 Ant Design 同名组件分处不同模块，源码及 neutral 主题的版本哈希记录在 [components.toml](components.toml)。
+Topcoat 0.9.0 官方 registry 的全部 31 个原生组件默认可从 `topcoat_ant_design::native_ui` 使用。源码及 neutral 主题的版本哈希记录在 [components.toml](components.toml)。本项目的 Ant Design 组件已在保持公开接口的前提下复用官方字段、徽标、表格、标签页、按钮、头像等基础组件。
+
+Collapse、Accordion、Dialog、Drawer、Dropdown Menu、Tooltip、Popconfirm 和 Notification 仍保留项目自己的交互外壳，用于信号控制、模态行为、按路由关闭、视口定位或通知生命周期等官方基础组件未覆盖的能力。
+
+常规 `head_assets()` 已加载原生组件样式。直接使用原生组件时，用 `class="native-ui"` 包裹组件区域即可应用限定作用域的 neutral 主题。若只需独立的原生组件样式，可以启用 `native-ui` feature 并调用 `topcoat_ant_design::native_ui::head_assets()`：
 
 ```toml
 topcoat-ant-design = { version = "0.1.2", features = ["native-ui"] }
 ```
 
-按模块导入组件，在页面 `<head>` 中调用 `topcoat_ant_design::native_ui::head_assets()`，并用 `class="native-ui"` 包裹原生组件区域。原生样式已包含所有 31 个组件需要的 Tailwind 工具类，neutral 主题仅作用于这个区域。运行 Gallery 后打开 [Topcoat 原生组件展示页](http://127.0.0.1:3100/topcoat-ui)，可以直接试用明暗主题、Sidebar、表单字段、弹层、表格等组件。
+运行 Gallery 后打开 [Topcoat 原生组件展示页](http://127.0.0.1:3100/topcoat-ui)，可以直接试用明暗主题、Sidebar、表单字段、弹层、表格等组件。
 
-原始源码来自 Topcoat 官方 `v0.9.0` 标签对应的提交 `96e8f9e0932ea883ced2859d462e9d6d3f52ea59`，见[上游许可证](assets/topcoat-upstream-LICENSE)。目前 crates.io 缺少 `topcoat-ui-registry 0.9.0`，因此项目直接导入官方 registry 源码，不依赖 Topcoat 的 `ui` Cargo feature。
+原始源码来自 Topcoat 官方 `v0.9.0` 标签对应的提交 `96e8f9e0932ea883ced2859d462e9d6d3f52ea59`，见[上游许可证](assets/topcoat-upstream-LICENSE)。项目直接导入官方 registry 源码，不依赖 Topcoat 的 `ui` Cargo feature。
 
 ## 接入图标
 

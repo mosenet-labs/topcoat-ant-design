@@ -1,9 +1,9 @@
 use topcoat::{
     Result,
-    view::{Child, View, component, view},
+    view::{Child, View, attributes, component, view},
 };
 
-use crate::UiLanguage;
+use crate::{UiLanguage, native_ui::spinner};
 
 /// Visual state of one process step.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -37,7 +37,7 @@ impl ChatThoughtStatus {
 /// Ordered steps in a user-visible process summary.
 #[component]
 pub async fn chat_thought_chain(label: &str, #[default] child: Child<'_>) -> Result<impl View> {
-    Ok(view! { <ol class="gr-chat-thought-chain" aria-label=(label)>(child)</ol> })
+    Ok(view! { <ol class="native-ui gr-chat-thought-chain" aria-label=(label)>(child)</ol> })
 }
 
 /// A single step inside `chat_thought_chain`.
@@ -50,10 +50,10 @@ pub async fn chat_thought_step(
 ) -> Result<impl View> {
     let state = status.map_or("default", ChatThoughtStatus::as_str);
     Ok(view! {
-        <li class="gr-chat-thought-step" data-status=(state)>
+        <li class="native-ui gr-chat-thought-step" data-status=(state)>
             <span class="gr-chat-thought-step-marker" aria-hidden="true">
                 if status.is_none() { <span class="gr-chat-thought-step-number"></span> }
-                else if status == Some(ChatThoughtStatus::Loading) { <span class="gr-chat-thought-step-spinner"></span> }
+                else if status == Some(ChatThoughtStatus::Loading) { spinner::spinner(label: ChatThoughtStatus::Loading.label(language), attrs: attributes! { class="gr-chat-thought-step-spinner" }) }
                 else if status == Some(ChatThoughtStatus::Success) { "✓" }
                 else if status == Some(ChatThoughtStatus::Error) { "×" }
                 else { "−" }

@@ -6,8 +6,8 @@ use topcoat::{
     view::{Attributes, Child, View, attributes, class, component, view},
 };
 
-use crate::UiLanguage;
 use crate::icons::CLOSE_OUTLINED;
+use crate::{UiLanguage, native_ui::button};
 
 /// Stable drawer ID, title, and optional close route.
 #[derive(Clone, Copy)]
@@ -54,7 +54,7 @@ pub async fn drawer(
     } = config;
     let title_id = format!("{id}-title");
     let caller_class = attrs.remove("class");
-    let root_class = class!("gr-drawer fixed inset-0 z-[1200]", caller_class,);
+    let root_class = class!("native-ui gr-drawer fixed inset-0 z-[1200]", caller_class,);
     let open = open.clone();
     let close_from_backdrop = open.clone();
     let close_from_button = open.clone();
@@ -92,7 +92,7 @@ pub async fn drawer(
                     if let Some(close_href) = close_href {
                         <a class="inline-flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-md text-[rgba(0,0,0,0.45)] no-underline transition-colors duration-200 hover:bg-[rgba(0,0,0,0.06)] hover:text-[rgba(0,0,0,0.88)] focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[#91caff]" href=(close_href) aria-label=(language.select("Close", "关闭"))>icon(data: CLOSE_OUTLINED, size: 16)</a>
                     } else {
-                        <button class="inline-flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-md border-0 bg-transparent p-0 text-[rgba(0,0,0,0.45)] transition-colors duration-200 hover:bg-[rgba(0,0,0,0.06)] hover:text-[rgba(0,0,0,0.88)] focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[#91caff]" type="button" aria-label=(language.select("Close", "关闭")) @click=$(|_e| close_from_button.set(false))>icon(data: CLOSE_OUTLINED, size: 16)</button>
+                        button::button(variant: button::ButtonVariant::Ghost, size: button::ButtonSize::Icon, attrs: attributes! { cx => class="size-8 shrink-0 bg-transparent p-0 text-[rgba(0,0,0,0.45)] hover:text-[rgba(0,0,0,0.88)]" type="button" aria-label=(language.select("Close", "关闭")) @click=$(|_e: Event| close_from_button.set(false)) }, icon(data: CLOSE_OUTLINED, size: 16))
                     }
                 </header>
                 <div class="min-h-0 flex-1 overflow-y-auto px-6 py-5">(child)</div>

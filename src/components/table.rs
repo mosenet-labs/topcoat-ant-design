@@ -4,6 +4,8 @@ use topcoat::{
     view::{Attributes, Child, View, attributes, class, component, view},
 };
 
+use crate::native_ui::{label, pagination, select, table};
+
 /// Display density of a data table.
 #[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
 pub enum DataTableDensity {
@@ -28,7 +30,7 @@ pub async fn data_table(
 ) -> Result<impl View> {
     let caller_class = attrs.remove("class");
     let table_class = class!(
-        "gr-data-table",
+        "native-ui gr-data-table",
         "gr-data-table-compact" if density == DataTableDensity::Compact,
         caller_class,
     );
@@ -37,11 +39,7 @@ pub async fn data_table(
         aria-label=(label)
     });
 
-    Ok(view! {
-        <div class="gr-data-table-scroll">
-            <table (attrs)>(child)</table>
-        </div>
-    })
+    Ok(view! { table::table(attrs: attrs, (child)) })
 }
 
 /// Table pagination area. The caller supplies real links or Topcoat buttons as children.
@@ -56,7 +54,7 @@ pub async fn table_pagination(
     #[default] child: Child<'_>,
 ) -> Result<impl View> {
     let caller_class = attrs.remove("class");
-    let root_class = class!("gr-table-pagination", caller_class);
+    let root_class = class!("native-ui gr-table-pagination", caller_class);
     attrs.extend(attributes! { cx =>
         class=(root_class)
     });
@@ -64,7 +62,7 @@ pub async fn table_pagination(
     Ok(view! {
         <footer (attrs)>
             <span class="gr-table-pagination-summary">(summary)</span>
-            <nav aria-label=(label)>(child)</nav>
+            pagination::pagination(attrs: attributes! { aria-label=(label) }, (child))
         </footer>
     })
 }
@@ -90,9 +88,9 @@ pub async fn table_page_size_select(
     });
 
     Ok(view! {
-        <label class="gr-table-page-size" for=(id)>
+        label::label(attrs: attributes! { class="gr-table-page-size native-ui" for=(id) },
             <span>(label)</span>
-            <select (attrs)>(child)</select>
-        </label>
+            select::select(attrs: attrs, (child))
+        )
     })
 }

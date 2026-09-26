@@ -6,8 +6,8 @@ use topcoat::{
     view::{Attributes, Child, View, ViewExt, attributes, class, component, view},
 };
 
-use crate::UiLanguage;
 use crate::icons::CLOSE_OUTLINED;
+use crate::{UiLanguage, native_ui::button};
 
 /// Stable dialog ID, title, and optional eyebrow.
 #[derive(Clone, Copy)]
@@ -79,7 +79,7 @@ pub async fn dialog(
     let prevent_cancel = busy.clone();
     let caller_class = attrs.remove("class");
     let root_class = class!(
-        "gr-dialog m-auto max-h-[calc(100dvh_-_48px)] w-[min(580px,calc(100%_-_32px))] overflow-hidden rounded-[10px] border border-[#f0f0f0] bg-white p-0 text-left font-mono text-[#262626] shadow-[0_18px_60px_rgba(0,0,0,0.2)]",
+        "native-ui gr-dialog m-auto max-h-[calc(100dvh_-_48px)] w-[min(580px,calc(100%_-_32px))] overflow-hidden rounded-[10px] border border-[#f0f0f0] bg-white p-0 text-left font-mono text-[#262626] shadow-[0_18px_60px_rgba(0,0,0,0.2)]",
         caller_class,
     );
     attrs.extend(attributes! { cx =>
@@ -144,9 +144,9 @@ pub async fn dialog(
                     }
                     <h2 class="mb-0 mt-1 text-xl font-semibold leading-7" id=(title_id.as_str())>if let Some(title) = title { $(title.get()) } else { (static_title) }</h2>
                 </div>
-                <button class="inline-flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-md border-0 bg-transparent p-0 text-[rgba(0,0,0,0.45)] transition-colors duration-200 hover:bg-[rgba(0,0,0,0.06)] hover:text-[rgba(0,0,0,0.88)] focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[#91caff]" type="button" (close) :disabled=$(busy.get()) aria-label=(language.select("Close", "关闭"))>
+                button::button(variant: button::ButtonVariant::Ghost, size: button::ButtonSize::Icon, attrs: attributes! { cx => class="size-8 shrink-0 bg-transparent p-0 text-[rgba(0,0,0,0.45)] hover:text-[rgba(0,0,0,0.88)]" type="button" (close) :disabled=$(busy.get()) aria-label=(language.select("Close", "关闭")) },
                     icon(data: CLOSE_OUTLINED, size: 16)
-                </button>
+                )
             </header>
             (child)
         </dialog>

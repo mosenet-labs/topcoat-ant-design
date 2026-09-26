@@ -4,7 +4,6 @@ mod components;
 pub mod icons;
 mod language;
 /// Topcoat 0.9.0 native UI components, vendored from its official registry.
-#[cfg(feature = "native-ui")]
 pub mod native_ui;
 mod theme;
 

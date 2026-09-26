@@ -6,8 +6,11 @@ use topcoat::{
     view::{Attributes, View, attributes, class, component, view},
 };
 
-use crate::UiLanguage;
 use crate::icons::CALENDAR_OUTLINED;
+use crate::{
+    UiLanguage,
+    native_ui::{button, input, label},
+};
 
 #[derive(Clone, Copy, Debug)]
 pub struct DateTimeRangeConfig<'a> {
@@ -59,7 +62,7 @@ pub async fn date_time_range_filter(
     let anchor = format!("anchor-name: --gr-{id}");
     let panel_anchor = format!("position-anchor: --gr-{id}");
     let caller_class = attrs.remove("class");
-    let root_class = class!("gr-date-range", caller_class);
+    let root_class = class!("native-ui gr-date-range", caller_class);
     attrs.extend(attributes! { cx => class=(root_class) });
     let label = range_label(from, to, language);
     let clear_from = from_id.clone();
@@ -76,26 +79,32 @@ pub async fn date_time_range_filter(
 
     Ok(view! {
         <span (attrs)>
-            <button class="gr-date-range-trigger" type="button" popovertarget=(id) popovertargetaction="toggle" aria-haspopup="dialog" aria-controls=(id) style=(anchor)>
+            button::button(variant: button::ButtonVariant::Outline, attrs: attributes! { class="gr-date-range-trigger" type="button" popovertarget=(id) popovertargetaction="toggle" aria-haspopup="dialog" aria-controls=(id) style=(anchor) },
                 <span class="gr-date-range-calendar" aria-hidden="true">icon(data: CALENDAR_OUTLINED, size: 16)</span><span>(label)</span>
-            </button>
+            )
             <aside id=(id) class="gr-date-range-panel" popover="auto" role="dialog" aria-label=(language.select("Select date range", "选择时间范围")) style=(panel_anchor)>
                 <div class="gr-date-range-fields">
-                    <label for=(from_id.as_str())><span>(language.select("Start time", "开始时间"))</span><input id=(from_id.as_str()) name=(from_name) type="datetime-local" value=(from)></label>
+                    label::label(attrs: attributes! { for=(from_id.as_str()) },
+                        <span>(language.select("Start time", "开始时间"))</span>
+                        input::input(attrs: attributes! { id=(from_id.as_str()) name=(from_name) type="datetime-local" value=(from) })
+                    )
                     <span class="gr-date-range-separator" aria-hidden="true">"→"</span>
-                    <label for=(to_id.as_str())><span>(language.select("End time", "结束时间"))</span><input id=(to_id.as_str()) name=(to_name) type="datetime-local" value=(to)></label>
+                    label::label(attrs: attributes! { for=(to_id.as_str()) },
+                        <span>(language.select("End time", "结束时间"))</span>
+                        input::input(attrs: attributes! { id=(to_id.as_str()) name=(to_name) type="datetime-local" value=(to) })
+                    )
                 </div>
                 <div class="gr-date-range-quick" aria-label=(language.select("Quick date ranges", "快捷时间范围"))>
-                    <button type="button" (quick_day)>(language.select("Last 24 hours", "最近 24 小时"))</button>
-                    <button type="button" (quick_week)>(language.select("Last 7 days", "最近 7 天"))</button>
-                    <button type="button" (quick_month)>(language.select("Last 30 days", "最近 30 天"))</button>
+                    button::button(variant: button::ButtonVariant::Ghost, attrs: attributes! { type="button" (quick_day) }, (language.select("Last 24 hours", "最近 24 小时")))
+                    button::button(variant: button::ButtonVariant::Ghost, attrs: attributes! { type="button" (quick_week) }, (language.select("Last 7 days", "最近 7 天")))
+                    button::button(variant: button::ButtonVariant::Ghost, attrs: attributes! { type="button" (quick_month) }, (language.select("Last 30 days", "最近 30 天")))
                 </div>
                 <footer class="gr-date-range-actions">
-                    <button class="gr-button gr-button-default" type="button" @click=$(move |_e: Event| {
+                    button::button(variant: button::ButtonVariant::Outline, attrs: attributes! { cx => class="gr-button gr-button-default" type="button" @click=$(move |_e: Event| {
                         let _from = clear_from.to_owned(); let _to = clear_to.to_owned();
                         raw!("document.getElementById(${_from}.dehydrate()).value=''; document.getElementById(${_to}.dehydrate()).value=''", ());
-                    })>(language.select("Clear", "清除"))</button>
-                    <button class="gr-button gr-button-primary" type="submit">(language.select("Apply", "应用"))</button>
+                    }) }, (language.select("Clear", "清除")))
+                    button::button(attrs: attributes! { class="gr-button gr-button-primary" type="submit" }, (language.select("Apply", "应用")))
                 </footer>
             </aside>
         </span>

@@ -4,6 +4,8 @@ use topcoat::{
     view::{Attributes, Child, View, attributes, class, component, view},
 };
 
+use crate::native_ui::tabs as native_tabs;
+
 #[doc = include_str!(concat!(
     env!("CARGO_MANIFEST_DIR"),
     "/docs/en/components/tabs.md"
@@ -16,17 +18,18 @@ pub async fn tabs(
     #[default] child: Child<'_>,
 ) -> Result<impl View> {
     let caller_class = attrs.remove("class");
-    let root_class = class!(
-        "gr-tabs flex min-h-12 items-end gap-7 overflow-x-auto border-b border-[#f0f0f0] font-mono",
-        caller_class,
-    );
+    let root_class = class!("gr-tabs", caller_class);
     attrs.extend(attributes! { cx =>
         class=(root_class)
         aria-label=(label)
     });
 
     Ok(view! {
-        <nav (attrs)>(child)</nav>
+        native_tabs::tabs(attrs: attributes! { class="native-ui" },
+            <nav (attrs)>
+                native_tabs::tabs_list((child))
+            </nav>
+        )
     })
 }
 
@@ -40,21 +43,13 @@ pub async fn tab_link(
     #[default] child: Child<'_>,
 ) -> Result<impl View> {
     let caller_class = attrs.remove("class");
-    let link_class = class!(
-        "gr-tab-link relative inline-flex min-h-12 shrink-0 items-center border-b-2 px-0.5 pt-0.5 text-sm font-medium no-underline transition-colors duration-200 focus-visible:rounded-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#91caff]",
-        "border-[#1677ff] text-[#1677ff]" if active,
-        "border-transparent text-[#595959] hover:text-[#1677ff]" if !active,
-        caller_class,
-    );
+    let link_class = class!("gr-tab-link", caller_class);
     attrs.extend(attributes! { cx =>
         class=(link_class)
         href=(href)
-        if active {
-            aria-current="page"
-        }
     });
 
     Ok(view! {
-        <a (attrs)>(child)</a>
+        native_tabs::tabs_trigger(active: active, attrs: attrs, (child))
     })
 }

@@ -1,19 +1,20 @@
 use topcoat::{
     Result,
-    icon::icon,
-    view::{Child, View, component, view},
+    view::{Child, View, attributes, component, view},
 };
 
-use crate::icons::DOWN_OUTLINED;
+use crate::native_ui::accordion;
 
 /// Expandable list of references used while preparing a response.
 #[component]
 pub async fn chat_sources(label: &str, #[default] child: Child<'_>) -> Result<impl View> {
     Ok(view! {
-        <details class="gr-chat-sources" open="open">
-            <summary class="gr-chat-sources-trigger"><span>(label)</span><span class="gr-chat-sources-caret" aria-hidden="true">icon(data: DOWN_OUTLINED, size: 14)</span></summary>
-            <ul class="gr-chat-sources-list" aria-label=(label)>(child)</ul>
-        </details>
+        accordion::accordion_item(attrs: attributes! { class="native-ui gr-chat-sources" open="open" },
+            accordion::accordion_trigger(attrs: attributes! { class="gr-chat-sources-trigger" }, (label))
+            accordion::accordion_content(
+                <ul class="gr-chat-sources-list" aria-label=(label)>(child)</ul>
+            )
+        )
     })
 }
 

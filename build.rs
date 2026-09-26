@@ -15,12 +15,11 @@ fn main() {
         .icon_set("ant-design")
         .stage()
         .expect("stage Ant Design Iconify set");
-    #[cfg(feature = "native-ui")]
     topcoat::icon::iconify::BuildConfig::new()
         .cache_dir("icons")
         .icon_set("lucide")
         .stage()
-        .expect("stage Lucide Iconify set for native UI gallery");
+        .expect("stage Lucide Iconify set for official UI components");
 
     // UI crate 自己生成组件样式，宿主只需把公开的 Asset 加入最终资源包。
     let component_stylesheet_path = if env::var_os("DOCS_RS").is_some() {

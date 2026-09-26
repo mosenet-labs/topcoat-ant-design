@@ -5,7 +5,10 @@ use topcoat::{
     view::{Attributes, Child, View, attributes, class, component, view},
 };
 
-use crate::UiLanguage;
+use crate::{
+    UiLanguage,
+    native_ui::{button, label, textarea},
+};
 
 /// Chat input with a browser-owned draft and caller-owned submit behavior.
 ///
@@ -27,7 +30,7 @@ pub async fn chat_sender(
     let draft = draft.clone();
     let busy = busy.cloned().unwrap_or_else(|| signal(cx, || false));
     let caller_class = attrs.remove("class");
-    let root_class = class!("gr-chat-sender", caller_class);
+    let root_class = class!("native-ui gr-chat-sender", caller_class);
     attrs.extend(attributes! { cx => class=(root_class) });
     let default_placeholder = language.select(
         "Ask a question or describe a task...",
@@ -41,8 +44,8 @@ pub async fn chat_sender(
         <div (attrs)>
             <form class="gr-chat-sender-form" (submit_attrs)>
                 (child)
-                <label class="sr-only" for=(id)>(input_label)</label>
-                <textarea
+                label::label(attrs: attributes! { class="sr-only" for=(id) }, (input_label))
+                textarea::textarea(attrs: attributes! { cx =>
                     class="gr-chat-sender-input"
                     id=(id)
                     name="message"
@@ -61,10 +64,12 @@ pub async fn chat_sender(
                             }
                         }
                     })
-                ></textarea>
+                })
                 <div class="gr-chat-sender-actions">
                     <span>(language.select("Enter to send · Shift+Enter for a new line", "回车发送 · Shift+回车换行"))</span>
-                    <button class="gr-chat-send-button" type="submit" :disabled=$(if busy.get() { true } else { draft.get().trim().is_empty() }) aria-label=(send_label)>(language.select("Send", "发送"))<span aria-hidden="true">"↗"</span></button>
+                    button::button(attrs: attributes! { cx => class="gr-chat-send-button" type="submit" :disabled=$(if busy.get() { true } else { draft.get().trim().is_empty() }) aria-label=(send_label) },
+                        (language.select("Send", "发送"))<span aria-hidden="true">"↗"</span>
+                    )
                 </div>
             </form>
         </div>

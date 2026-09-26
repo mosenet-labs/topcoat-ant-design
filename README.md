@@ -105,15 +105,19 @@ Built-in component labels default to English. Pass `language: UiLanguage::Chines
 
 ## Topcoat native UI
 
-The optional `native-ui` feature exports all 31 native Topcoat 0.9.0 registry components under `topcoat_ant_design::native_ui`. Their original sources and neutral theme are recorded in [components.toml](components.toml). This namespace stays separate from the Ant Design components with similar names.
+All 31 native Topcoat 0.9.0 registry components are available under `topcoat_ant_design::native_ui`. Their original sources and neutral theme are recorded in [components.toml](components.toml). Ant Design components reuse these native primitives for fields, badges, tables, tabs, buttons, avatars, and other controls while retaining their public APIs.
+
+The custom Collapse, Accordion, Dialog, Drawer, Dropdown Menu, Tooltip, Popconfirm, and Notification shells remain where they provide signal control, modal behavior, route-aware dismissal, viewport positioning, or toast lifecycles beyond the corresponding native primitives.
+
+The regular `head_assets()` includes the native styles. Wrap direct native components in an element with `class="native-ui"` to apply the scoped neutral theme. For a standalone native stylesheet, enable the `native-ui` feature and call `topcoat_ant_design::native_ui::head_assets()` instead:
 
 ```toml
 topcoat-ant-design = { version = "0.1.2", features = ["native-ui"] }
 ```
 
-Import a component from its module, load `topcoat_ant_design::native_ui::head_assets()` in the document head, and wrap native components in an element with `class="native-ui"` to apply the scoped neutral theme. The native stylesheet includes the utilities used by all 31 components. The Gallery includes an interactive [Topcoat native UI showcase](http://127.0.0.1:3100/topcoat-ui) with light and dark themes, sidebar, fields, dialogs, tables, and other controls.
+The Gallery includes an interactive [Topcoat native UI showcase](http://127.0.0.1:3100/topcoat-ui) with light and dark themes, sidebar, fields, dialogs, tables, and other controls.
 
-The sources were copied from the official Topcoat `v0.9.0` registry at commit `96e8f9e0932ea883ced2859d462e9d6d3f52ea59`; see [upstream license](assets/topcoat-upstream-LICENSE). The crates.io release currently lacks `topcoat-ui-registry 0.9.0`, so this project vendors the registry sources directly and does not require Topcoat's `ui` Cargo feature.
+The sources were copied from the official Topcoat `v0.9.0` registry at commit `96e8f9e0932ea883ced2859d462e9d6d3f52ea59`; see [upstream license](assets/topcoat-upstream-LICENSE). This project vendors the registry sources directly and does not require Topcoat's `ui` Cargo feature.
 
 ## Browse the Gallery
 

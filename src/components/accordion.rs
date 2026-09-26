@@ -8,6 +8,7 @@ use topcoat::{
 
 use crate::UiLanguage;
 use crate::icons::DOWN_OUTLINED;
+use crate::native_ui::button;
 
 /// Title, description, and optional badge for an accordion item.
 #[derive(Clone, Copy)]
@@ -66,7 +67,7 @@ pub async fn accordion_item(
     let count_suffix = language.select(" enabled", " 项已启用");
     let caller_class = attrs.remove("class");
     let root_class = class!(
-        "gr-accordion-item overflow-hidden rounded-lg border border-[#d9d9d9] bg-white",
+        "gr-accordion-item native-ui overflow-hidden rounded-lg border border-[#d9d9d9] bg-white",
         caller_class,
     );
     attrs.extend(attributes! { cx => class=(root_class) });
@@ -74,7 +75,7 @@ pub async fn accordion_item(
     Ok(view! {
         <section (attrs)>
             <h3 class="m-0">
-                <button id=(trigger_id.as_str()) type="button" class="group flex w-full cursor-pointer items-center gap-3 border-0 bg-[#fafafa] px-4 py-3 text-left font-mono text-[#262626] transition-colors duration-150 hover:bg-[#f5f7fa] focus-visible:relative focus-visible:z-10 focus-visible:outline-2 focus-visible:outline-[#91caff]"
+                button::button(variant: button::ButtonVariant::Ghost, attrs: attributes! { cx => id=(trigger_id.as_str()) type="button" class="group flex h-auto w-full justify-start gap-3 rounded-none border-0 bg-[#fafafa] px-4 py-3 text-left font-mono text-[#262626] hover:bg-[#f5f7fa]"
                     aria-controls=(id)
                     :aria-expanded=$(if expanded { "true" } else { "false" })
                     @click=$(|_event: Event| {
@@ -83,7 +84,7 @@ pub async fn accordion_item(
                         } else {
                             current.set(active_id.to_owned());
                         }
-                    })>
+                    }) },
                     <span class="min-w-0 flex-1">
                         <span class="block text-sm font-semibold leading-5">(title)</span>
                         <span class="mt-1 block text-xs font-normal leading-[1.5] text-[#8c8c8c]">(description)</span>
@@ -101,7 +102,7 @@ pub async fn accordion_item(
                             "shrink-0 text-[#8c8c8c] transition-transform duration-200"
                         })
                     })
-                </button>
+                )
             </h3>
             <div id=(id) class="gr-collapse" aria-labelledby=(trigger_id.as_str())
                 :data-state=$(if expanded_for_state { "open" } else { "closed" })
