@@ -129,6 +129,8 @@ Open `http://127.0.0.1:3100/` for the English Quick Start page, or `http://127.0
 
 Open `http://127.0.0.1:3100/chat` for the Chat interface preview. `/chat/new` demonstrates multiple turns, request states, and a validated demo procedure; it does not contact a model.
 
+Open `http://127.0.0.1:3100/chat/live` in two tabs to see Topcoat 0.9 server push update the existing Chat components in both. This is a shared Gallery demo room with no model or persistence.
+
 Open `/bubble`, `/message-list`, and `/sender` for individual Chat component examples and expandable source code.
 
 Open `http://127.0.0.1:3100/dropdown-menu` for the interactive Dropdown Menu example.

@@ -23,6 +23,8 @@
 
 AI 组件覆盖消息、输入、会话导航、Markdown、过程详情、来源、操作、附件和建议输入。Gallery 的「AI 组件」分类同时展示独立示例与完整 Chat 界面。
 
+在两个标签页打开 `http://127.0.0.1:3100/chat/live?lang=zh`，可以看到 Topcoat 0.9 的服务端推送如何实时更新现有 Chat 组件。此页面是共享的 Gallery 示例会话，不连接模型，也不持久化消息。
+
 当前范围与验收结果见 [AI 组件需求记录](docs/ai-components.md)。
 分阶段开发任务的完成状态见 [Chat 组件开发待办清单](docs/chat-todo.md)。
 公共 API 和宿主接入边界见 [Chat 组件文档](docs/components/chat.md)。

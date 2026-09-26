@@ -44,6 +44,7 @@ fn theme_is_dark(cx: &Cx) -> bool {
 /// `module_router!` 发现模块路由；静态资源、过程函数与 shard 通过 `.route()` 注册。
 pub(crate) fn router(app_assets: AssetConfig) -> Router {
     topcoat::router::module_router!()
+        .app_context(_ai::chat::live::LiveChatRoom::default())
         .route(crate::assets::component_css)
         .route(crate::assets::gallery_css)
         .route(crate::assets::topcoat_runtime_js)
@@ -52,6 +53,8 @@ pub(crate) fn router(app_assets: AssetConfig) -> Router {
         .route(_ai::chat::flow::gallery_reply)
         .route(_ai::chat::flow::gallery_action)
         .route(_ai::chat::flow::message_region)
+        .route(_ai::chat::live::send_live_message)
+        .route(_ai::chat::live::live_message_region)
         .page(_ai::extras::chat_states_page)
         .page(_ai::extras::chat_markdown_page)
         .page(_ai::extras::chat_think_page)
@@ -129,6 +132,7 @@ async fn gallery_layout(cx: &Cx, slot: Slot<'_>) -> Result<impl View> {
     let form_field_link = href!(_data_entry::form_field_page);
     let date_time_range_link = href!(_data_entry::date_time_range_page);
     let chat_link = href!(_ai::chat_page);
+    let chat_live_link = href!(_ai::chat_live_page);
     let bubble_link = href!(_ai::bubble_page);
     let message_list_link = href!(_ai::message_list_page);
     let sender_link = href!(_ai::sender_page);
@@ -154,6 +158,7 @@ async fn gallery_layout(cx: &Cx, slot: Slot<'_>) -> Result<impl View> {
     let chat_active = chat_link.is_current(cx)
         || href!(_ai::chat_notes_page).is_current(cx)
         || href!(_ai::chat_new_page).is_current(cx);
+    let chat_live_active = chat_live_link.is_current(cx);
     let bubble_active = bubble_link.is_current(cx);
     let message_list_active = message_list_link.is_current(cx);
     let sender_active = sender_link.is_current(cx);
@@ -178,6 +183,8 @@ async fn gallery_layout(cx: &Cx, slot: Slot<'_>) -> Result<impl View> {
         text(locale, "Icons 图标")
     } else if native_ui_active {
         locale.select("Official Topcoat components", "Topcoat 官方组件")
+    } else if chat_live_active {
+        locale.select("Live Chat", "实时 Chat")
     } else if chat_active {
         locale.select("Chat interface", "Chat 聊天界面")
     } else if bubble_active {
@@ -236,6 +243,7 @@ async fn gallery_layout(cx: &Cx, slot: Slot<'_>) -> Result<impl View> {
     let form_field_url = locale.link(&form_field_link.resolve(cx));
     let date_time_range_url = locale.link(&date_time_range_link.resolve(cx));
     let chat_url = locale.link(&chat_link.resolve(cx));
+    let chat_live_url = locale.link(&chat_live_link.resolve(cx));
     let bubble_url = locale.link(&bubble_link.resolve(cx));
     let message_list_url = locale.link(&message_list_link.resolve(cx));
     let sender_url = locale.link(&sender_link.resolve(cx));
@@ -316,6 +324,7 @@ async fn gallery_layout(cx: &Cx, slot: Slot<'_>) -> Result<impl View> {
                                 <p class="mb-2 mt-0 px-3 text-[11px] font-bold tracking-[0.1em] text-muted-foreground">(locale.select("AI Components", "AI 组件"))</p>
                                 <div class="grid gap-1">
                                     gallery_nav_link(href: chat_url.as_str(), badge: "AI", label: locale.select("Chat interface", "Chat 聊天界面"), active: chat_active)
+                                    gallery_nav_link(href: chat_live_url.as_str(), badge: "↗", label: locale.select("Live Chat", "实时 Chat"), active: chat_live_active)
                                     gallery_nav_link(href: bubble_url.as_str(), badge: "B", label: "ChatBubble", active: bubble_active)
                                     gallery_nav_link(href: message_list_url.as_str(), badge: "L", label: "ChatMessageList", active: message_list_active)
                                     gallery_nav_link(href: sender_url.as_str(), badge: "S", label: "ChatSender", active: sender_active)
@@ -329,6 +338,7 @@ async fn gallery_layout(cx: &Cx, slot: Slot<'_>) -> Result<impl View> {
                                     <summary class="cursor-pointer px-3 py-3 text-[11px] font-bold uppercase tracking-[0.1em] text-muted-foreground">(locale.select("AI Components", "AI 组件"))</summary>
                                     <div class="grid gap-1 border-t border-border p-2">
                                         gallery_nav_link(href: chat_url.as_str(), badge: "AI", label: locale.select("Chat interface", "Chat 聊天界面"), active: chat_active)
+                                        gallery_nav_link(href: chat_live_url.as_str(), badge: "↗", label: locale.select("Live Chat", "实时 Chat"), active: chat_live_active)
                                         gallery_nav_link(href: bubble_url.as_str(), badge: "B", label: "ChatBubble", active: bubble_active)
                                         gallery_nav_link(href: message_list_url.as_str(), badge: "L", label: "ChatMessageList", active: message_list_active)
                                         gallery_nav_link(href: sender_url.as_str(), badge: "S", label: "ChatSender", active: sender_active)
@@ -530,6 +540,54 @@ mod tests {
     }
 
     #[tokio::test]
+    async fn live_chat_procedure_updates_the_server_rendered_chat_components() {
+        use crate::app::_ai::chat::live::{live_message_region, send_live_message};
+
+        assert_eq!(
+            send_live_message.path().to_matchit_path(),
+            "/_gallery/chat/live/send"
+        );
+        assert_eq!(
+            live_message_region.path().to_matchit_path(),
+            "/_gallery/chat/live/messages"
+        );
+
+        let router = router(crate::assets::config().expect("Gallery assets should be valid"));
+        let response = router
+            .handle(
+                Request::builder()
+                    .method("POST")
+                    .uri("/_gallery/chat/live/send")
+                    .header("content-type", "application/json")
+                    .body(Body::from(r#"["Shared hello","en"]"#))
+                    .unwrap(),
+            )
+            .await;
+        assert_eq!(response.status(), StatusCode::OK);
+
+        let response = router
+            .handle(
+                Request::builder()
+                    .uri("/chat/live")
+                    .body(Body::empty())
+                    .unwrap(),
+            )
+            .await;
+        assert_eq!(response.status(), StatusCode::OK);
+        let html = String::from_utf8(
+            to_bytes(response.into_body(), usize::MAX)
+                .await
+                .unwrap()
+                .to_vec(),
+        )
+        .unwrap();
+        assert!(html.contains("Shared hello"));
+        assert!(html.contains("gr-chat-bubble"));
+        assert!(html.contains("gr-chat-message-list"));
+        assert!(html.contains("gr-chat-sender"));
+    }
+
+    #[tokio::test]
     async fn accordion_gallery_shows_the_component_and_shared_usage_document() {
         let router = router(crate::assets::config().expect("Gallery assets should be valid"));
         let response = router
@@ -642,6 +700,7 @@ mod tests {
             ("/chat", "Chat interface", None),
             ("/chat/notes", "Chat interface", None),
             ("/chat/new", "Chat interface", None),
+            ("/chat/live", "Live Chat", None),
             ("/bubble", "ChatBubble", None),
             ("/message-list", "ChatMessageList", None),
             ("/sender", "ChatSender", None),
@@ -714,6 +773,10 @@ mod tests {
                 assert!(html.contains("<title>Chat interface · Topcoat Ant Design</title>"));
                 assert!(html.contains("gr-chat-sender"));
                 assert!(html.contains("AI Components"));
+            }
+            if path == "/chat/live" {
+                assert!(html.contains("<title>Live Chat · Topcoat Ant Design</title>"));
+                assert!(html.contains("gr-chat-sender"));
             }
             if matches!(path, "/chat" | "/chat/notes") {
                 assert!(html.contains("gr-chat-bubble"));

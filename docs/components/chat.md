@@ -55,11 +55,14 @@ view! {
 
 - `/chat`、`/chat/notes`：两个通过真实路由切换的示例会话。
 - `/chat/new`：空会话、建议输入、多轮消息和状态操作。
+- `/chat/live`：将 `chat_message_list`、`chat_bubble` 和 `chat_sender` 与 Topcoat 0.9 服务端推送组合成共享示例会话；在两个标签页打开可观察同步更新。
 - `/bubble`、`/message-list`、`/sender`：基础组件独立示例。
 - `/chat/states`、`/chat/markdown`、`/chat/think`、`/chat/thought-chain`、`/chat/sources`、`/chat/actions`、`/chat/attachments`、`/chat/files`、`/chat/prompts`、`/chat/conversations`：内容和导航组件示例。
 
 Gallery 的 `gallery_reply` 与 `gallery_action` 是有输入校验的演示 `#[procedure]`。它们不调用模型，也不保存会话；取消与重试只确认示例操作。发送时，页面先追加用户消息和 `Sending` 状态的助手消息。分段按钮只修改当前助手气泡的浏览器 signal；完成、失败或取消时，才把最终内容和状态提交到消息列表 shard。新消息追加、会话列表和历史的局部刷新由宿主按同样方式接入。
 Gallery 使用 Topcoat 0.9 的显式端点路径：`/_gallery/chat/reply`、`/_gallery/chat/action` 和 `/_gallery/chat/messages`，便于检查请求与路由注册。新消息追加、会话列表和历史的局部刷新由宿主按同样方式接入。
+
+实时示例会话在 Gallery 应用上下文中保存有上限的消息列表。发送 `#[procedure]` 校验并保存消息，然后通知订阅者；`#[shard]` 先订阅再读取消息，使用 `emit!` 渲染现有 Chat 组件，并通过 `connected(cx)` 让已连接的标签页持续接收 `live!` 更新。首次 HTTP 渲染不会等待下一条消息。示例会话由访问同一 Gallery 进程的所有人共享，重启后清空，请勿输入隐私信息。对应端点为 `/_gallery/chat/live/send` 和 `/_gallery/chat/live/messages`。
 
 实际应用应以宿主的 `#[procedure]` 或端点处理发送、重试、鉴权与参数校验，并以流式端点更新当前助手消息。取消操作还需要停止宿主的真实请求。路由表达当前会话；服务端负责会话历史和持久化。不要把浏览器传来的消息内容、角色、状态或 ID 当作已验证的服务端事实。
 

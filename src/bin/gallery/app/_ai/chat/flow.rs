@@ -109,6 +109,7 @@ pub(super) async fn chat_flow(cx: &Cx, session: &str) -> Result<impl View> {
     let design_url = locale.link("/chat");
     let notes_url = locale.link("/chat/notes");
     let new_url = locale.link("/chat/new");
+    let live_url = locale.link("/chat/live");
     let submit = attributes! { cx =>
         @submit=$(|event: Event| {
             event.prevent_default();
@@ -156,6 +157,7 @@ pub(super) async fn chat_flow(cx: &Cx, session: &str) -> Result<impl View> {
                         chat_conversation_item(title: locale.select("Designing a Chat interface", "设计 Chat 界面"), href: design_url.as_str(), active: session == "design")
                         chat_conversation_item(title: locale.select("Component boundaries", "组件边界"), href: notes_url.as_str(), active: session == "notes")
                         chat_conversation_item(title: locale.select("New conversation", "新建会话"), href: new_url.as_str(), active: session == "new")
+                        chat_conversation_item(title: locale.select("Live shared room", "实时共享会话"), href: live_url.as_str(), active: false)
                     )
                     <p class="mt-auto border-t border-border px-2 pt-4 text-[11px] leading-5 text-muted-foreground max-[720px]:hidden">(locale.select("Routes select sample conversations. Messages on this page stay in browser memory.", "路由切换示例会话；本页新消息仅保留在浏览器内存中。"))</p>
                 </aside>
