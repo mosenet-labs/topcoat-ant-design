@@ -99,7 +99,7 @@ Ok(view! {
 })
 ```
 
-Popconfirm uses a trusted stable ID to associate its trigger and bubble; provide the business action in the child confirm button. The official [Dropdown Menu](docs/en/components/dropdown-menu.md) groups actions in a native `<details>` control. Collapse shares one signal between its trigger attributes and content. Official Tabs use real links and a host-provided `active` state. Drawer composes the official Sheet, accepts a `Signal<bool>`, and can navigate to a close URL through `DrawerConfig::with_close_href`. Each component has an [English guide](docs/en/components/) and a [Chinese guide](docs/components/).
+Popconfirm uses a trusted stable ID to associate its trigger and bubble; provide the business action in the child confirm button. The official [Dropdown Menu](docs/en/components/dropdown-menu.md) groups actions in a native `<details>` control. For forms that require a modal with focus trapping and for menus inside scrollable tables, use the separate [Native Dialog](docs/en/components/native-dialog.md) and [Anchored Menu](docs/en/components/anchored-menu.md) extensions. Collapse shares one signal between its trigger attributes and content. Official Tabs use real links and a host-provided `active` state. Drawer composes the official Sheet, accepts a `Signal<bool>`, and can navigate to a close URL through `DrawerConfig::with_close_href`. Each component has an [English guide](docs/en/components/) and a [Chinese guide](docs/components/).
 
 Built-in component labels default to English. Pass `language: UiLanguage::ChineseSimplified` to composed components that provide their own controls, such as Notification, Popconfirm, Drawer, and DateTimeRange, when the host page is in Chinese.
 

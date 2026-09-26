@@ -15,6 +15,7 @@ pub use ui::{
     tooltip::*,
 };
 
+pub use components::anchored_menu::{anchored_menu, anchored_menu_trigger_attributes};
 pub use components::chat::{
     ChatBubbleRole, ChatMessage, ChatMessageStatus, ChatThoughtStatus, chat_actions,
     chat_attachment_tray, chat_bubble, chat_conversation_item, chat_conversation_list, chat_file,
@@ -25,6 +26,10 @@ pub use components::collapse::{collapse, collapse_trigger_attributes};
 pub use components::date_time_range::{DateTimeRangeConfig, date_time_range_filter};
 pub use components::drawer::{DrawerConfig, drawer};
 pub use components::form_field::{FormFieldConfig, form_field};
+pub use components::native_dialog::{
+    NativeDialogConfig, native_dialog, native_dialog_close_attributes,
+    native_dialog_trigger_attributes,
+};
 pub use components::notification::{NotificationTone, notification};
 pub use components::popconfirm::{popconfirm, popconfirm_trigger_attributes};
 pub use components::table::{

@@ -11,6 +11,8 @@
 - [Popconfirm](https://docs.rs/topcoat-ant-design/latest/topcoat_ant_design/struct.popconfirm.html)：按钮附近的轻量二次确认气泡；
 - [Dropdown Menu](docs/components/dropdown-menu.md)：按钮附近的紧凑操作菜单；
 - [Dialog](https://docs.rs/topcoat-ant-design/latest/topcoat_ant_design/struct.dialog.html)：承载表单与集中操作的官方对话框结构；
+- [Native Dialog](docs/components/native-dialog.md)：支持焦点约束与 Escape 关闭的模态表单；
+- [Anchored Menu](docs/components/anchored-menu.md)：在表格滚动区域上方展开的操作菜单；
 - [Tag](https://docs.rs/topcoat-ant-design/latest/topcoat_ant_design/struct.tag.html)：展示状态和分类；
 - [Tooltip](https://docs.rs/topcoat-ant-design/latest/topcoat_ant_design/struct.tooltip.html)：提供悬停和键盘聚焦时的文字提示；
 - [Collapse](https://docs.rs/topcoat-ant-design/latest/topcoat_ant_design/struct.collapse.html)：未知高度内容的展开与收起动效；

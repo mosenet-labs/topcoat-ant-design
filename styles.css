@@ -306,6 +306,10 @@
 .gr-notification *,
 .gr-popconfirm,
 .gr-popconfirm *,
+.gr-anchored-menu,
+.gr-anchored-menu *,
+.gr-native-dialog,
+.gr-native-dialog *,
 .gr-collapse,
 .gr-collapse *,
 .gr-drawer,
@@ -461,6 +465,54 @@
   animation: gr-popconfirm-enter 140ms ease-out;
 }
 
+.gr-native-dialog::backdrop {
+  background: rgb(0 0 0 / 45%);
+}
+
+.gr-native-dialog[open] {
+  display: flex;
+  flex-direction: column;
+  animation: gr-dialog-enter 180ms cubic-bezier(.2, 0, 0, 1);
+}
+
+.gr-native-dialog[open]::backdrop {
+  animation: gr-dialog-backdrop-enter 180ms ease-out;
+}
+
+.gr-anchored-menu {
+  position-area: bottom span-left;
+  position-try-fallbacks: flip-block, flip-inline;
+}
+
+.gr-anchored-menu form {
+  @apply m-0 block w-full;
+}
+
+.gr-anchored-menu button {
+  @apply flex min-h-9 w-full items-center justify-between gap-3 rounded-md border-0 bg-transparent px-3 py-2 text-left font-mono text-[13px] leading-5 text-[var(--gr-fg)];
+}
+
+.gr-anchored-menu button:not(:disabled) {
+  @apply cursor-pointer;
+}
+
+.gr-anchored-menu button:hover:not(:disabled) {
+  @apply bg-[var(--gr-accent-soft)] text-[var(--gr-accent)];
+}
+
+.gr-anchored-menu button:disabled {
+  @apply cursor-default text-[var(--gr-fg-subtle)];
+}
+
+.gr-anchored-menu button:focus-visible {
+  outline: 2px solid var(--gr-accent);
+  outline-offset: -2px;
+}
+
+.gr-anchored-menu:popover-open {
+  animation: gr-popconfirm-enter 140ms ease-out;
+}
+
 .gr-date-range-panel {
   position-area: bottom span-left;
   position-try-fallbacks: flip-block, flip-inline;
@@ -522,6 +574,13 @@
     transform: translate(-50%, -50%);
   }
 
+  .gr-anchored-menu {
+    top: 50%;
+    left: 50%;
+    margin: 0;
+    transform: translate(-50%, -50%);
+  }
+
   .gr-popconfirm-arrow {
     display: none;
   }
@@ -561,9 +620,22 @@
   }
 }
 
+@keyframes gr-dialog-enter {
+  from { opacity: 0; transform: scale(.96); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes gr-dialog-backdrop-enter {
+  from { background: rgb(0 0 0 / 0%); }
+  to { background: rgb(0 0 0 / 45%); }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .gr-notification,
-  .gr-popconfirm:popover-open {
+  .gr-popconfirm:popover-open,
+  .gr-anchored-menu:popover-open,
+  .gr-native-dialog[open],
+  .gr-native-dialog[open]::backdrop {
     animation-duration: 1ms;
   }
 
