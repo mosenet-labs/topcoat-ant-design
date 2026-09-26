@@ -9,6 +9,12 @@
   --font-mono: "JetBrains Mono", "Noto Sans SC", "PingFang SC", "Microsoft YaHei", ui-monospace, SFMono-Regular, monospace;
 }
 
+/* Official UI utilities assume border-box sizing; scope it to the Gallery. */
+.gallery-shell, .gallery-shell *, .gallery-shell *::before, .gallery-shell *::after,
+.showcase-shell, .showcase-shell *, .showcase-shell *::before, .showcase-shell *::after {
+  box-sizing: border-box;
+}
+
 /* Markdown 来自仓库内的可信组件文档，由 Gallery 在服务端转换成 HTML。 */
 .gallery-markdown {
   @apply overflow-hidden rounded-xl border border-border bg-card px-7 py-6 text-sm leading-7 text-muted-foreground shadow-sm;

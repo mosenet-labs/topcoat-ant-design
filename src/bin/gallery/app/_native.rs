@@ -135,7 +135,7 @@ pub(in crate::app) async fn native_ui_page(cx: &Cx) -> Result<impl View> {
     let mobile_open = signal(cx, || false);
 
     Ok(view! {
-        <div :class=$(if dark.get() { "dark relative min-h-screen overflow-x-clip bg-background text-foreground" } else { "relative min-h-screen overflow-x-clip bg-background text-foreground" })>
+        <div :class=$(if dark.get() { "showcase-shell dark relative min-h-screen overflow-x-clip bg-background text-foreground" } else { "showcase-shell relative min-h-screen overflow-x-clip bg-background text-foreground" })>
             <div class="flex flex-wrap items-center justify-between gap-3 border-b border-border bg-card px-6 py-3 text-sm text-muted-foreground">
                 <span>"Topcoat 0.9.0 · 31 official components · Ant Design theme"</span>
                 <a class="font-medium text-foreground hover:underline" href=(gallery_url.as_str())>(locale.select("← Back to Ant Design Gallery", "← 返回 Ant Design Gallery"))</a>
@@ -201,7 +201,7 @@ pub(in crate::app) async fn native_ui_page(cx: &Cx) -> Result<impl View> {
                         )
                         <div
                             id="overview"
-                            class="mx-auto w-full max-w-6xl scroll-mt-20 px-6 py-12"
+                            class="mx-auto box-border w-full min-w-0 max-w-6xl scroll-mt-20 px-6 py-12"
                         >
                             <div
                                 class="flex flex-col-reverse items-start justify-between gap-6 sm:flex-row"
@@ -1152,7 +1152,7 @@ async fn hover_card_demo() -> Result<impl View> {
                         <button type="button" class="font-medium underline">
                             "@ada"
                         </button>
-                        hover_card_content(
+                        hover_card_content(attrs: attributes! { class="max-[640px]:left-1/2 max-[640px]:-translate-x-1/2" },
                             <div class="flex items-center gap-3">
                                 avatar(
                                     size: AvatarSize::Md,

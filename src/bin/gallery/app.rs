@@ -384,7 +384,7 @@ async fn gallery_layout(cx: &Cx, slot: Slot<'_>) -> Result<impl View> {
                                     $(if dark.get() { light_theme_label } else { dark_theme_label })
                                 )
                             )
-                            <div class="mx-auto w-full max-w-[1240px] px-8 pb-24 pt-12 max-[640px]:px-4 max-[640px]:pt-8">(slot)</div>
+                            <div class="mx-auto box-border w-full min-w-0 max-w-[1240px] px-8 pb-24 pt-12 max-[640px]:px-4 max-[640px]:pt-8">(slot)</div>
                         )
                     )
                 }
