@@ -104,6 +104,9 @@ pub(crate) fn text(locale: Locale, chinese: &'static str) -> &'static str {
         "使用真实链接组织同一对象下的多个页面，并由 Topcoat 路由决定当前状态。" => {
             "Organize related pages with real links and let the Topcoat route determine the active tab."
         }
+        "页签在浏览器中即时切换；直接打开某个页签地址时，会显示对应的初始内容。" => {
+            "Tabs switch instantly in the browser; opening a tab URL directly selects its initial panel."
+        }
         "使用组件库" => "Use the component library",
         "例如 Merge Request 变化或分支 Push。" => {
             "For example, a Merge Request change or a branch push."
@@ -130,6 +133,9 @@ pub(crate) fn text(locale: Locale, chinese: &'static str) -> &'static str {
         "内部操作" => "Inner action",
         "切换页签后，路由、激活态和下方内容会一起更新。" => {
             "Switching tabs updates the route, active state, and content together."
+        }
+        "点击页签即可切换内容，无需刷新页面。" => {
+            "Switch panels without reloading the page."
         }
         "刷新" => "Refresh",
         "加载页面资源" => "Load page assets",

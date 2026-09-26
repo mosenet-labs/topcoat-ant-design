@@ -1,13 +1,17 @@
-use crate::locale::text;
+use crate::locale::{Locale, text};
 use topcoat::{
     Result,
     router::page,
-    view::{View, view},
+    view::{View, component, view},
 };
 
 #[page]
-pub(super) async fn webhook_page(cx: &topcoat::context::Cx) -> Result<impl View> {
-    let locale = crate::locale::Locale::current(cx);
+pub(super) async fn webhook_page() -> Result<impl View> {
+    Ok(view! {})
+}
+
+#[component]
+pub(super) async fn content(locale: Locale) -> Result<impl View> {
     Ok(view! {
         <section aria-labelledby="tabs-webhook-heading">
             <p class="m-0 text-xs font-bold tracking-[0.1em] text-primary">"WEBHOOK"</p>
