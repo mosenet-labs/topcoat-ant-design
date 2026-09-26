@@ -56,6 +56,7 @@ view! {
 - `/chat/states`、`/chat/markdown`、`/chat/think`、`/chat/thought-chain`、`/chat/sources`、`/chat/actions`、`/chat/attachments`、`/chat/files`、`/chat/prompts`、`/chat/conversations`：内容和导航组件示例。
 
 Gallery 的 `gallery_reply` 与 `gallery_action` 是有输入校验的演示 `#[procedure]`。它们不调用模型，也不保存会话；取消与重试只确认示例操作。发送时，页面先追加用户消息和 `Sending` 状态的助手消息。分段按钮只修改当前助手气泡的浏览器 signal；完成、失败或取消时，才把最终内容和状态提交到消息列表 shard。新消息追加、会话列表和历史的局部刷新由宿主按同样方式接入。
+Gallery 使用 Topcoat 0.9 的显式端点路径：`/_gallery/chat/reply`、`/_gallery/chat/action` 和 `/_gallery/chat/messages`，便于检查请求与路由注册。新消息追加、会话列表和历史的局部刷新由宿主按同样方式接入。
 
 实际应用应以宿主的 `#[procedure]` 或端点处理发送、重试、鉴权与参数校验，并以流式端点更新当前助手消息。取消操作还需要停止宿主的真实请求。路由表达当前会话；服务端负责会话历史和持久化。不要把浏览器传来的消息内容、角色、状态或 ID 当作已验证的服务端事实。
 

@@ -36,3 +36,5 @@ Ok(view! {
 ```
 
 Headings are native buttons with `aria-controls` and a stateful `aria-expanded`. Content has the matching `aria-labelledby`. The animation reuses the Collapse grid transition and respects reduced-motion preferences. Closing an item hides its content without unmounting inputs, so edited form values remain intact.
+
+On Topcoat 0.9, the component derives its button, icon, and panel attributes from one composable `expr!` value so they stay in sync with the active item.

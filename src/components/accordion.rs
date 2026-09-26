@@ -2,7 +2,7 @@ use topcoat::{
     Result,
     context::Cx,
     icon::icon,
-    runtime::{Event, Signal},
+    runtime::{Event, Signal, expr},
     view::{Attributes, Child, View, attributes, class, component, view},
 };
 
@@ -59,6 +59,10 @@ pub async fn accordion_item(
     let trigger_id = format!("{id}-trigger");
     let active_id = id.to_owned();
     let current = active.clone();
+    let expanded = expr!(active.get() == active_id);
+    let expanded_for_icon = expanded.clone();
+    let expanded_for_state = expanded.clone();
+    let expanded_for_hidden = expanded.clone();
     let count_suffix = language.select(" enabled", " 项已启用");
     let caller_class = attrs.remove("class");
     let root_class = class!(
@@ -72,7 +76,7 @@ pub async fn accordion_item(
             <h3 class="m-0">
                 <button id=(trigger_id.as_str()) type="button" class="group flex w-full cursor-pointer items-center gap-3 border-0 bg-[#fafafa] px-4 py-3 text-left font-mono text-[#262626] transition-colors duration-150 hover:bg-[#f5f7fa] focus-visible:relative focus-visible:z-10 focus-visible:outline-2 focus-visible:outline-[#91caff]"
                     aria-controls=(id)
-                    :aria-expanded=$(if active.get() == active_id { "true" } else { "false" })
+                    :aria-expanded=$(if expanded { "true" } else { "false" })
                     @click=$(|_event: Event| {
                         if current.get() == active_id {
                             current.set("".to_owned());
@@ -91,7 +95,7 @@ pub async fn accordion_item(
                         <span class="shrink-0 rounded bg-[#e6f4ff] px-[7px] py-[2px] text-[11px] font-semibold text-[#0958d9]">(badge)</span>
                     }
                     icon(data: DOWN_OUTLINED, size: 14, attrs: attributes! { cx =>
-                        :class=$(if active.get() == active_id {
+                        :class=$(if expanded_for_icon {
                             "shrink-0 rotate-180 text-[#8c8c8c] transition-transform duration-200"
                         } else {
                             "shrink-0 text-[#8c8c8c] transition-transform duration-200"
@@ -100,8 +104,8 @@ pub async fn accordion_item(
                 </button>
             </h3>
             <div id=(id) class="gr-collapse" aria-labelledby=(trigger_id.as_str())
-                :data-state=$(if active.get() == active_id { "open" } else { "closed" })
-                :aria-hidden=$(if active.get() == active_id { "false" } else { "true" })>
+                :data-state=$(if expanded_for_state { "open" } else { "closed" })
+                :aria-hidden=$(if expanded_for_hidden { "false" } else { "true" })>
                 <div class="gr-collapse-inner border-t border-[#f0f0f0]">(child)</div>
             </div>
         </section>

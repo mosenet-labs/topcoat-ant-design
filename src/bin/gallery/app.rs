@@ -5,6 +5,7 @@ mod _data_entry;
 mod _feedback;
 mod _guide;
 mod _motion;
+mod _native;
 mod _navigation;
 
 use topcoat::{
@@ -27,6 +28,8 @@ pub(crate) fn router(app_assets: AssetConfig) -> Router {
         .route(crate::assets::component_css)
         .route(crate::assets::gallery_css)
         .route(crate::assets::topcoat_runtime_js)
+        .route(crate::assets::native_ui_portrait)
+        .page(_native::native_ui_page)
         .route(_ai::chat::flow::gallery_reply)
         .route(_ai::chat::flow::gallery_action)
         .route(_ai::chat::flow::message_region)
@@ -92,6 +95,7 @@ async fn gallery_layout(cx: &Cx, slot: Slot<'_>) -> Result<impl View> {
     let overview_link = href!(_guide::overview_page);
     let getting_started_link = href!(home);
     let icons_link = href!(_guide::icons_page);
+    let native_ui_link = href!(_native::native_ui_page);
     let notification_link = href!(_feedback::notification_page);
     let tag_link = href!(_feedback::tag_page);
     let tag_active = tag_link.is_current(cx);
@@ -115,6 +119,7 @@ async fn gallery_layout(cx: &Cx, slot: Slot<'_>) -> Result<impl View> {
     let getting_started_active =
         getting_started_link.is_current(cx) || href!(_guide::getting_started_page).is_current(cx);
     let icons_active = icons_link.is_current(cx);
+    let native_ui_active = native_ui_link.is_current(cx);
     let notification_active = notification_link.is_current(cx);
     let tooltip_active = tooltip_link.is_current(cx);
     let popconfirm_active = popconfirm_link.is_current(cx);
@@ -152,6 +157,8 @@ async fn gallery_layout(cx: &Cx, slot: Slot<'_>) -> Result<impl View> {
         text(locale, "组件概览")
     } else if icons_active {
         text(locale, "Icons 图标")
+    } else if native_ui_active {
+        locale.select("Topcoat native UI", "Topcoat 原生 UI")
     } else if chat_active {
         locale.select("Chat interface", "Chat 聊天界面")
     } else if bubble_active {
@@ -195,6 +202,7 @@ async fn gallery_layout(cx: &Cx, slot: Slot<'_>) -> Result<impl View> {
     let overview_url = locale.link(&overview_link.resolve(cx));
     let getting_started_url = locale.link(&getting_started_link.resolve(cx));
     let icons_url = locale.link(&icons_link.resolve(cx));
+    let native_ui_url = locale.link(&native_ui_link.resolve(cx));
     let notification_url = locale.link(&notification_link.resolve(cx));
     let tag_url = locale.link(&tag_link.resolve(cx));
     let tooltip_url = locale.link(&tooltip_link.resolve(cx));
@@ -264,6 +272,7 @@ async fn gallery_layout(cx: &Cx, slot: Slot<'_>) -> Result<impl View> {
                                     gallery_nav_link(href: getting_started_url.as_str(), badge: "→", label: text(locale, "快速开始"), active: getting_started_active)
                                     gallery_nav_link(href: overview_url.as_str(), badge: "01", label: text(locale, "组件概览"), active: overview_active)
                                     gallery_nav_link(href: icons_url.as_str(), badge: "I", label: text(locale, "Icons 图标"), active: icons_active)
+                                    gallery_nav_link(href: native_ui_url.as_str(), badge: "UI", label: locale.select("Topcoat native UI", "Topcoat 原生 UI"), active: native_ui_active)
                                 </div>
                             </section>
                             <section class="max-[899px]:hidden">
@@ -364,6 +373,7 @@ pub(in crate::app) async fn overview_content(cx: &Cx) -> Result<impl View> {
         )
         <div class="grid gap-6">
             <a class="group flex items-center justify-between gap-6 rounded-xl border border-[#91caff] bg-[#e6f4ff] p-6 text-[#262626] no-underline shadow-sm transition-[border-color,box-shadow,transform] duration-200 hover:-translate-y-0.5 hover:border-[#1677ff] hover:shadow-md max-[620px]:block" href=(locale.link(&href!(home).resolve(cx)))><div><span class="text-xs font-bold tracking-[0.1em] text-[#0958d9]">(text(locale, "第一次使用"))</span><h2 class="mb-2 mt-2 text-xl font-semibold">(text(locale, "先完成五步接入"))</h2><p class="m-0 text-sm leading-6 text-[#595959]">(text(locale, "查看依赖、页面资源、AssetBundle、Router 和第一个组件的完整示例。"))</p></div><span class="shrink-0 text-sm font-semibold text-[#1677ff] max-[620px]:mt-5 max-[620px]:inline-block">(text(locale, "打开快速开始 →"))</span></a>
+            <a class="group flex items-center justify-between gap-6 rounded-xl border border-[#d5d5d5] bg-[#f7f6f3] p-6 text-[#272727] no-underline shadow-sm transition-[border-color,box-shadow,transform] duration-200 hover:-translate-y-0.5 hover:border-[#555] hover:shadow-md max-[620px]:block" href=(locale.link(&href!(_native::native_ui_page).resolve(cx)))><div><span class="text-xs font-bold tracking-[0.1em] text-[#777]">"TOPCOAT 0.9.0"</span><h2 class="mb-2 mt-2 text-xl font-semibold">(locale.select("Native UI · 31 components", "原生 UI · 31 个组件"))</h2><p class="m-0 text-sm leading-6 text-[#666]">(locale.select("Explore the official neutral theme, reactive controls, sidebar, forms and overlays.", "查看官方 neutral 主题、响应式控件、侧栏、表单与弹层。"))</p></div><span class="shrink-0 text-sm font-semibold text-[#333] max-[620px]:mt-5 max-[620px]:inline-block">(locale.select("Open showcase →", "打开展示页 →"))</span></a>
             <section class="rounded-xl border border-[#dbe8f7] bg-[#f8fbff] p-5" aria-label=(locale.select("AI component examples", "AI 组件示例"))>
                 <h2 class="m-0 mb-3 text-base font-semibold text-[#233449]">(locale.select("AI component examples", "AI 组件示例"))</h2>
                 <div class="flex flex-wrap gap-2">
@@ -394,9 +404,72 @@ pub(in crate::app) async fn overview_content(cx: &Cx) -> Result<impl View> {
 
 #[cfg(test)]
 mod tests {
-    use topcoat::router::{Body, StatusCode, request::Request, to_bytes};
+    use topcoat::router::{Body, Route, StatusCode, request::Request, to_bytes};
 
     use super::router;
+
+    #[tokio::test]
+    async fn native_ui_gallery_renders_registry_components_and_theme() {
+        let router = router(crate::assets::config().expect("Gallery assets should be valid"));
+        let response = router
+            .handle(
+                Request::builder()
+                    .uri("/topcoat-ui")
+                    .body(Body::empty())
+                    .unwrap(),
+            )
+            .await;
+        assert_eq!(response.status(), StatusCode::OK);
+        let body = to_bytes(response.into_body(), usize::MAX).await.unwrap();
+        let html = String::from_utf8(body.to_vec()).unwrap();
+        for marker in [
+            "31 native components",
+            "class=\"native-ui",
+            "Buttons",
+            "Forms",
+            "Sidebar",
+            "Dialog",
+            "Accordion",
+        ] {
+            assert!(html.contains(marker), "missing {marker}");
+        }
+    }
+
+    #[tokio::test]
+    async fn chat_endpoints_have_stable_paths_and_reply_is_served() {
+        use crate::app::_ai::chat::flow::{gallery_action, gallery_reply, message_region};
+
+        assert_eq!(
+            gallery_reply.path().to_matchit_path(),
+            "/_gallery/chat/reply"
+        );
+        assert_eq!(
+            gallery_action.path().to_matchit_path(),
+            "/_gallery/chat/action"
+        );
+        assert_eq!(
+            message_region.path().to_matchit_path(),
+            "/_gallery/chat/messages"
+        );
+
+        let router = router(crate::assets::config().expect("Gallery assets should be valid"));
+        let response = router
+            .handle(
+                Request::builder()
+                    .method("POST")
+                    .uri("/_gallery/chat/reply")
+                    .header("content-type", "application/json")
+                    .body(Body::from(r#"["Hello","en"]"#))
+                    .unwrap(),
+            )
+            .await;
+        assert_eq!(response.status(), StatusCode::OK);
+        let body = to_bytes(response.into_body(), usize::MAX).await.unwrap();
+        assert!(
+            String::from_utf8_lossy(&body)
+                .contains("The demo service received your question: Hello")
+        );
+    }
 
     #[tokio::test]
     async fn accordion_gallery_shows_the_component_and_shared_usage_document() {

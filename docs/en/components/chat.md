@@ -56,6 +56,7 @@ view! {
 - `/chat/states`, `/chat/markdown`, `/chat/think`, `/chat/thought-chain`, `/chat/sources`, `/chat/actions`, `/chat/attachments`, `/chat/files`, `/chat/prompts`, `/chat/conversations`: content and navigation examples.
 
 Gallery's `gallery_reply` and `gallery_action` are validated demo `#[procedure]` functions. They do not call a model or persist conversations; cancel and retry only acknowledge demo actions. Sending appends a user message and an assistant message in `Sending` state. The chunk control updates only the active assistant bubble's browser signal. Completion, failure, and cancellation commit the final content and status to the message-list shard.
+The Gallery uses Topcoat 0.9's explicit endpoint paths at `/_gallery/chat/reply`, `/_gallery/chat/action`, and `/_gallery/chat/messages` so requests and route registration are easier to inspect.
 
 Real hosts should implement send, retry, authentication, and input validation through their own `#[procedure]` functions or endpoints. A streaming endpoint updates the active assistant message; cancellation must stop the real host request. The route identifies the current conversation while the server owns history and persistence. Treat browser-supplied message content, roles, states, and IDs as untrusted.
 

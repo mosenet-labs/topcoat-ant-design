@@ -60,6 +60,14 @@ pub(crate) async fn topcoat_runtime_js() -> Result<Response> {
     )
 }
 
+#[route(GET "/assets/topcoat-ui-portrait.svg")]
+pub(crate) async fn native_ui_portrait() -> Result<Response> {
+    embedded_asset(
+        "image/svg+xml; charset=utf-8",
+        include_str!("app/portrait.svg"),
+    )
+}
+
 fn embedded_asset(content_type: &'static str, body: &'static str) -> Result<Response> {
     Ok(Response::builder()
         .header("content-type", content_type)

@@ -2,6 +2,8 @@
 @import "tailwindcss/theme.css" layer(theme);
 @import "tailwindcss/utilities.css" layer(utilities) source(none);
 @source "./**/*.rs";
+@source "../../native_ui/**/*.rs";
+@import "../../../assets/topcoat-ui-neutral-scoped.css";
 
 @theme {
   --font-mono: "JetBrains Mono", "Noto Sans SC", "PingFang SC", "Microsoft YaHei", ui-monospace, SFMono-Regular, monospace;

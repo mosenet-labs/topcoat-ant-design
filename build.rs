@@ -15,6 +15,12 @@ fn main() {
         .icon_set("ant-design")
         .stage()
         .expect("stage Ant Design Iconify set");
+    #[cfg(feature = "native-ui")]
+    topcoat::icon::iconify::BuildConfig::new()
+        .cache_dir("icons")
+        .icon_set("lucide")
+        .stage()
+        .expect("stage Lucide Iconify set for native UI gallery");
 
     // UI crate 自己生成组件样式，宿主只需把公开的 Asset 加入最终资源包。
     let component_stylesheet_path = if env::var_os("DOCS_RS").is_some() {
@@ -38,6 +44,13 @@ fn main() {
     )
     .expect("write component Tailwind stylesheet hash");
 
+    #[cfg(feature = "native-ui")]
+    topcoat::tailwind::BuildConfig::new()
+        .input("native-ui.css")
+        .output(out.join("topcoat-native-ui.css"))
+        .render()
+        .expect("render native UI Tailwind stylesheet");
+
     #[cfg(feature = "gallery")]
     build_gallery(&out);
 
@@ -46,6 +59,12 @@ fn main() {
     println!("cargo:rerun-if-changed=icons/ant-design.json");
     println!("cargo:rerun-if-changed=styles.css");
     println!("cargo:rerun-if-changed=src/components");
+    #[cfg(feature = "native-ui")]
+    {
+        println!("cargo:rerun-if-changed=native-ui.css");
+        println!("cargo:rerun-if-changed=assets/topcoat-ui-neutral-scoped.css");
+        println!("cargo:rerun-if-changed=src/native_ui");
+    }
     #[cfg(feature = "gallery")]
     println!("cargo:rerun-if-changed=src/bin/gallery");
 }

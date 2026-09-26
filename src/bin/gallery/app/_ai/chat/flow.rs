@@ -16,7 +16,7 @@ use crate::{app::page_header, demo::component_example, locale::Locale};
 
 /// Gallery-only stand-in for a host procedure. It validates browser input and
 /// returns deterministic text; applications replace this with their own model.
-#[procedure]
+#[procedure("/_gallery/chat/reply")]
 pub(in crate::app) async fn gallery_reply(
     prompt: String,
     language: String,
@@ -37,7 +37,7 @@ pub(in crate::app) async fn gallery_reply(
 
 /// Acknowledges Gallery cancel/retry controls through the same boundary a
 /// host would use to cancel a stream or retry a request.
-#[procedure]
+#[procedure("/_gallery/chat/action")]
 pub(in crate::app) async fn gallery_action(
     action: String,
     message_id: String,
@@ -188,7 +188,7 @@ pub(super) async fn chat_flow(cx: &Cx, session: &str) -> Result<impl View> {
     })
 }
 
-#[shard]
+#[shard("/_gallery/chat/messages")]
 pub(in crate::app) async fn message_region(
     messages: Signal<String>,
     draft: Signal<String>,

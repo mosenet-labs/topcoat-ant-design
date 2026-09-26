@@ -103,6 +103,18 @@ Popconfirm uses a trusted stable ID to associate its trigger and bubble; provide
 
 Built-in component labels default to English. Pass `language: UiLanguage::ChineseSimplified` to components that provide their own controls, such as Notification, Popconfirm, Dialog, Drawer, Accordion, and DateTimeRange, when the host page is in Chinese.
 
+## Topcoat native UI
+
+The optional `native-ui` feature exports all 31 native Topcoat 0.9.0 registry components under `topcoat_ant_design::native_ui`. Their original sources and neutral theme are recorded in [components.toml](components.toml). This namespace stays separate from the Ant Design components with similar names.
+
+```toml
+topcoat-ant-design = { version = "0.1.2", features = ["native-ui"] }
+```
+
+Import a component from its module, load `topcoat_ant_design::native_ui::head_assets()` in the document head, and wrap native components in an element with `class="native-ui"` to apply the scoped neutral theme. The native stylesheet includes the utilities used by all 31 components. The Gallery includes an interactive [Topcoat native UI showcase](http://127.0.0.1:3100/topcoat-ui) with light and dark themes, sidebar, fields, dialogs, tables, and other controls.
+
+The sources were copied from the official Topcoat `v0.9.0` registry at commit `96e8f9e0932ea883ced2859d462e9d6d3f52ea59`; see [upstream license](assets/topcoat-upstream-LICENSE). The crates.io release currently lacks `topcoat-ui-registry 0.9.0`, so this project vendors the registry sources directly and does not require Topcoat's `ui` Cargo feature.
+
 ## Browse the Gallery
 
 ```bash

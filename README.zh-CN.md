@@ -95,6 +95,18 @@ let router = topcoat::router::module_router!()
 
 当前 Fontsource 使用默认的 jsDelivr 字体来源。UI crate 在全新构建环境中会通过 Topcoat 下载锁定的 Tailwind CLI；离线构建和字体自托管需要另外提供对应资源。组件样式不包含 Tailwind Preflight，不会重置宿主页面的全局元素样式。
 
+## Topcoat 原生 UI 组件
+
+启用 `native-ui` feature 后，可以通过 `topcoat_ant_design::native_ui` 使用 Topcoat 0.9.0 官方 registry 的全部 31 个原生组件。它们与本项目的 Ant Design 同名组件分处不同模块，源码及 neutral 主题的版本哈希记录在 [components.toml](components.toml)。
+
+```toml
+topcoat-ant-design = { version = "0.1.2", features = ["native-ui"] }
+```
+
+按模块导入组件，在页面 `<head>` 中调用 `topcoat_ant_design::native_ui::head_assets()`，并用 `class="native-ui"` 包裹原生组件区域。原生样式已包含所有 31 个组件需要的 Tailwind 工具类，neutral 主题仅作用于这个区域。运行 Gallery 后打开 [Topcoat 原生组件展示页](http://127.0.0.1:3100/topcoat-ui)，可以直接试用明暗主题、Sidebar、表单字段、弹层、表格等组件。
+
+原始源码来自 Topcoat 官方 `v0.9.0` 标签对应的提交 `96e8f9e0932ea883ced2859d462e9d6d3f52ea59`，见[上游许可证](assets/topcoat-upstream-LICENSE)。目前 crates.io 缺少 `topcoat-ui-registry 0.9.0`，因此项目直接导入官方 registry 源码，不依赖 Topcoat 的 `ui` Cargo feature。
+
 ## 接入图标
 
 UI 库在 `build.rs` 中通过 Topcoat `icon-iconify` 暂存 Ant Design 图标集，并只公开项目实际使用的 `IconData` 常量。宿主直接调用 Topcoat 原生 `icon` 组件，不需要图标字体或浏览器端 CDN：
