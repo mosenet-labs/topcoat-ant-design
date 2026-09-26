@@ -9,7 +9,7 @@ Applications depend directly on Topcoat with icon and view support:
 ```toml
 [dependencies]
 topcoat-ant-design = "0.1.2"
-topcoat = { version = "=0.8.1", default-features = false, features = ["icon", "view"] }
+topcoat = { version = "=0.9.0", default-features = false, features = ["icon", "view"] }
 ```
 
 Import a selected icon constant from the UI library and render it with Topcoat's native component:

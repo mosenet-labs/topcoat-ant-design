@@ -91,19 +91,19 @@ let router = topcoat::router::module_router!()
 
 ## 4. 注册额外的链接期资源
 
-`module_router!()` 负责模块派生的 page、layout、layer 和 route。组件库的 Fontsource 字体由 `topcoat_ant_design()` 显式注册；应用的 procedure 和 shard 也应按需注册：
+Topcoat 0.9 将 procedure 和 shard 作为 route 注册。`module_router!()` 发现模块派生的 page、layout、layer 和 route；procedure 与 shard 需要用 `.route(name)` 显式注册。组件库的 Fontsource 字体由 `topcoat_ant_design()` 注册：
 
 ```rust,ignore
 let router = topcoat::router::module_router!()
+    .route(gallery_reply)
+    .route(message_region)
     .runtime()
-    .discover_procedures()
-    .discover_shards()
     .topcoat_ant_design()
     .assets(app_assets)
     .build();
 ```
 
-需要一次性发现绝对路径处理器和字体的应用，也可以在 `module_router!()` 返回的 builder 上调用完整 `.discover()`。完整发现与 `topcoat_ant_design()` 不应同时注册同一字体路由。
+只有使用 `Router::builder()` 从空路由开始时，才适合用完整 `.discover()` 统一发现全部路由。`module_router!()` 已发现模块派生的 route，再调用 `.discover_routes()` 可能重复注册。完整发现与 `topcoat_ant_design()` 也不应同时注册同一字体路由。
 
 ## 5. 使用组件
 

@@ -4,7 +4,7 @@ use topcoat::{
     Result,
     context::Cx,
     router::page,
-    runtime::{Event, signal},
+    runtime::{Event, expr, signal},
     view::{View, attributes, view},
 };
 use topcoat_ant_design::{DataTableDensity, data_table, table_page_size_select, table_pagination};
@@ -30,6 +30,11 @@ pub(in crate::app) async fn table_page(cx: &Cx) -> Result<impl View> {
     let document = locale.select(TABLE_DOC_EN, TABLE_DOC_ZH);
     let page = signal(cx, || "1".to_owned());
     let page_size = signal(cx, || "2".to_owned());
+    let last_page = expr!(if page_size.get() == "4" {
+        true
+    } else {
+        page.get() == "2"
+    });
     let compact_source = rust_code_block(document, 0);
     let default_source = rust_code_block(document, 1);
 
@@ -60,7 +65,7 @@ pub(in crate::app) async fn table_page(cx: &Cx) -> Result<impl View> {
                     )
                     <button type="button" :disabled=$(page.get() == "1") @click=$(|_e| page.set("1".to_owned()))>(text(locale, "上一页"))</button>
                     <span aria-current="page">$(page.get()) " / " $(if page_size.get() == "4" { "1" } else { "2" })</span>
-                    <button type="button" :disabled=$(if page_size.get() == "4" { true } else { page.get() == "2" }) @click=$(|_e| page.set("2".to_owned()))>(text(locale, "下一页"))</button>
+                    <button type="button" :disabled=$(last_page) @click=$(|_e| page.set("2".to_owned()))>(text(locale, "下一页"))</button>
                 )
             )
             component_example(id: "table-default-preview", title: text(locale, "默认密度"), description: text(locale, "适合单元格包含说明文字或操作入口的管理表格。"), source: default_source,

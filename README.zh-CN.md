@@ -21,11 +21,15 @@
 - [FormField](https://docs.rs/topcoat-ant-design/latest/topcoat_ant_design/struct.form_field.html)：统一表单字段的标签、说明和错误展示；
 - [DateTimeRange](https://docs.rs/topcoat-ant-design/latest/topcoat_ant_design/struct.date_time_range_filter.html)：选择起止日期时间。
 
-AI 组件从 `chat_bubble`、`chat_message_list` 和 `chat_sender` 开始。Gallery 中的「AI 组件」分类既展示 Chat 聊天界面，也提供三个组件各自的示例页。
+AI 组件覆盖消息、输入、会话导航、Markdown、过程详情、来源、操作、附件和建议输入。Gallery 的「AI 组件」分类同时展示独立示例与完整 Chat 界面。
 
-当前范围和后续验收要求见 [AI 组件需求记录](docs/ai-components.md)。
+当前范围与验收结果见 [AI 组件需求记录](docs/ai-components.md)。
+分阶段开发任务的完成状态见 [Chat 组件开发待办清单](docs/chat-todo.md)。
+公共 API 和宿主接入边界见 [Chat 组件文档](docs/components/chat.md)。
 
 [完整快速开始](https://github.com/mosenet-labs/topcoat-ant-design/blob/main/docs/getting-started.md)说明了依赖、页面资源、AssetBundle 和 Router 的接入关系。
+
+组件库当前面向 Topcoat 0.9.0。交互式宿主需要在 Router 上启用 `.runtime()`，并在文档 `<head>` 中加入 `topcoat::runtime::script()`。
 
 ## 添加依赖
 
@@ -204,7 +208,8 @@ cargo run -p topcoat-ant-design \
 - `http://127.0.0.1:3100/`：快速开始与完整接入说明；
 - `http://127.0.0.1:3100/overview`：组件概览；
 - `http://127.0.0.1:3100/icons`：Topcoat Iconify 图标目录；
-- `http://127.0.0.1:3100/chat`：Chat 聊天界面，本地发送预览，不连接模型；
+- `http://127.0.0.1:3100/chat`：Chat 聊天界面，含真实会话路由和服务端示例过程函数，不连接模型；
+- `http://127.0.0.1:3100/chat/new`：空会话、多轮消息和请求状态演示；
 - `http://127.0.0.1:3100/bubble`：ChatBubble 的用户与助手消息示例；
 - `http://127.0.0.1:3100/message-list`：ChatMessageList 的会话区域示例；
 - `http://127.0.0.1:3100/sender`：ChatSender 的本地发送示例；

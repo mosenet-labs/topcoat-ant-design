@@ -91,19 +91,19 @@ For a single self-contained binary, construct `AssetConfig` in an `assets` modul
 
 ## 4. Register additional linked resources
 
-`module_router!()` handles module-derived pages, layouts, layers, and routes. `topcoat_ant_design()` explicitly registers the library's Fontsource routes. Register application procedures and shards as needed:
+Topcoat 0.9 registers procedures and shards as routes. `module_router!()` discovers module-derived pages, layouts, layers, and routes; register procedures and shards explicitly with `.route(name)`. `topcoat_ant_design()` registers the library's Fontsource routes:
 
 ```rust,ignore
 let router = topcoat::router::module_router!()
+    .route(gallery_reply)
+    .route(message_region)
     .runtime()
-    .discover_procedures()
-    .discover_shards()
     .topcoat_ant_design()
     .assets(app_assets)
     .build();
 ```
 
-Applications that want to discover all absolute-path handlers and fonts can call full `.discover()` on the builder returned by `module_router!()`. Do not register the same font routes through both full discovery and `topcoat_ant_design()`.
+Full `.discover()` suits applications starting with an empty `Router::builder()`. Calling `.discover_routes()` after `module_router!()` may register module routes twice. Do not register the same font routes through both full discovery and `topcoat_ant_design()`.
 
 ## 5. Use components
 

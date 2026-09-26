@@ -21,13 +21,25 @@ use crate::{assets::GALLERY_STYLESHEET, locale::Locale};
 
 /// 使用 Topcoat 模块路由构造 Gallery。
 ///
-/// 页面和布局由 `module_router!` 按 `app` 模块树发现；静态资源路由不属于
-/// 页面层级，因此在这里逐项注册，让每条路由的来源保持明确。
+/// `module_router!` 发现模块路由；静态资源、过程函数与 shard 通过 `.route()` 注册。
 pub(crate) fn router(app_assets: AssetConfig) -> Router {
     topcoat::router::module_router!()
         .route(crate::assets::component_css)
         .route(crate::assets::gallery_css)
         .route(crate::assets::topcoat_runtime_js)
+        .route(_ai::chat::flow::gallery_reply)
+        .route(_ai::chat::flow::gallery_action)
+        .route(_ai::chat::flow::message_region)
+        .page(_ai::extras::chat_states_page)
+        .page(_ai::extras::chat_markdown_page)
+        .page(_ai::extras::chat_think_page)
+        .page(_ai::extras::chat_thought_chain_page)
+        .page(_ai::extras::chat_sources_page)
+        .page(_ai::extras::chat_actions_page)
+        .page(_ai::extras::chat_attachments_page)
+        .page(_ai::extras::chat_files_page)
+        .page(_ai::extras::chat_prompts_page)
+        .page(_ai::extras::chat_conversations_page)
         .runtime()
         .topcoat_ant_design()
         .assets(app_assets)
@@ -115,10 +127,25 @@ async fn gallery_layout(cx: &Cx, slot: Slot<'_>) -> Result<impl View> {
     let table_active = table_link.is_current(cx);
     let form_field_active = form_field_link.is_current(cx);
     let date_time_range_active = date_time_range_link.is_current(cx);
-    let chat_active = chat_link.is_current(cx);
+    let chat_active = chat_link.is_current(cx)
+        || href!(_ai::chat_notes_page).is_current(cx)
+        || href!(_ai::chat_new_page).is_current(cx);
     let bubble_active = bubble_link.is_current(cx);
     let message_list_active = message_list_link.is_current(cx);
     let sender_active = sender_link.is_current(cx);
+    let ai_extra_title = match uri(cx).path() {
+        "/chat/states" => Some(locale.select("Message states", "消息状态")),
+        "/chat/markdown" => Some("ChatMarkdown"),
+        "/chat/think" => Some("ChatThink"),
+        "/chat/thought-chain" => Some("ChatThoughtChain"),
+        "/chat/sources" => Some("ChatSources"),
+        "/chat/actions" => Some("ChatActions"),
+        "/chat/attachments" => Some("ChatAttachmentTray"),
+        "/chat/files" => Some("ChatFile"),
+        "/chat/prompts" => Some("ChatPrompts"),
+        "/chat/conversations" => Some("ChatConversationList"),
+        _ => None,
+    };
     let document_title = if getting_started_active {
         text(locale, "快速开始")
     } else if overview_active {
@@ -133,6 +160,8 @@ async fn gallery_layout(cx: &Cx, slot: Slot<'_>) -> Result<impl View> {
         "ChatMessageList"
     } else if sender_active {
         "ChatSender"
+    } else if let Some(title) = ai_extra_title {
+        title
     } else if notification_active {
         text(locale, "Notification 通知提醒框")
     } else if tag_active {
@@ -183,6 +212,24 @@ async fn gallery_layout(cx: &Cx, slot: Slot<'_>) -> Result<impl View> {
     let bubble_url = locale.link(&bubble_link.resolve(cx));
     let message_list_url = locale.link(&message_list_link.resolve(cx));
     let sender_url = locale.link(&sender_link.resolve(cx));
+    let ai_extra_links = [
+        (
+            "/chat/states",
+            "St",
+            locale.select("Message states", "消息状态"),
+        ),
+        ("/chat/markdown", "Md", "ChatMarkdown"),
+        ("/chat/think", "Th", "ChatThink"),
+        ("/chat/thought-chain", "Tc", "ChatThoughtChain"),
+        ("/chat/sources", "So", "ChatSources"),
+        ("/chat/actions", "Ac", "ChatActions"),
+        ("/chat/attachments", "At", "ChatAttachmentTray"),
+        ("/chat/files", "Fi", "ChatFile"),
+        ("/chat/prompts", "Pr", "ChatPrompts"),
+        ("/chat/conversations", "Co", "ChatConversationList"),
+    ]
+    .map(|(path, badge, label)| (locale.link(path), badge, label, uri(cx).path() == path));
+    let ai_extra_mobile_links = ai_extra_links.clone();
 
     Ok(view! {
         <!DOCTYPE html>
@@ -219,14 +266,31 @@ async fn gallery_layout(cx: &Cx, slot: Slot<'_>) -> Result<impl View> {
                                     gallery_nav_link(href: icons_url.as_str(), badge: "I", label: text(locale, "Icons 图标"), active: icons_active)
                                 </div>
                             </section>
-                            <section>
+                            <section class="max-[899px]:hidden">
                                 <p class="mb-2 mt-0 px-3 text-[11px] font-bold tracking-[0.1em] text-[#8c8c8c]">(locale.select("AI Components", "AI 组件"))</p>
                                 <div class="grid gap-1">
                                     gallery_nav_link(href: chat_url.as_str(), badge: "AI", label: locale.select("Chat interface", "Chat 聊天界面"), active: chat_active)
                                     gallery_nav_link(href: bubble_url.as_str(), badge: "B", label: "ChatBubble", active: bubble_active)
                                     gallery_nav_link(href: message_list_url.as_str(), badge: "L", label: "ChatMessageList", active: message_list_active)
                                     gallery_nav_link(href: sender_url.as_str(), badge: "S", label: "ChatSender", active: sender_active)
+                                    for (url, badge, label, active) in ai_extra_links {
+                                        gallery_nav_link(href: url.as_str(), badge: badge, label: label, active: active)
+                                    }
                                 </div>
+                            </section>
+                            <section class="min-[900px]:hidden">
+                                <details class="rounded-lg border border-[#e8eaee] bg-white open:shadow-sm">
+                                    <summary class="cursor-pointer px-3 py-3 text-[11px] font-bold uppercase tracking-[0.1em] text-[#595959]">(locale.select("AI Components", "AI 组件"))</summary>
+                                    <div class="grid gap-1 border-t border-[#edf0f4] p-2">
+                                        gallery_nav_link(href: chat_url.as_str(), badge: "AI", label: locale.select("Chat interface", "Chat 聊天界面"), active: chat_active)
+                                        gallery_nav_link(href: bubble_url.as_str(), badge: "B", label: "ChatBubble", active: bubble_active)
+                                        gallery_nav_link(href: message_list_url.as_str(), badge: "L", label: "ChatMessageList", active: message_list_active)
+                                        gallery_nav_link(href: sender_url.as_str(), badge: "S", label: "ChatSender", active: sender_active)
+                                        for (url, badge, label, active) in ai_extra_mobile_links {
+                                            gallery_nav_link(href: url.as_str(), badge: badge, label: label, active: active)
+                                        }
+                                    </div>
+                                </details>
                             </section>
                             <section>
                                 <p class="mb-2 mt-0 px-3 text-[11px] font-bold tracking-[0.1em] text-[#8c8c8c]">(text(locale, "反馈"))</p>
@@ -279,6 +343,19 @@ async fn home(cx: &Cx) -> Result<impl View> {
 #[component]
 pub(in crate::app) async fn overview_content(cx: &Cx) -> Result<impl View> {
     let locale = Locale::current(cx);
+    let ai_examples = [
+        ("/chat/states", locale.select("Message states", "消息状态")),
+        ("/chat/markdown", "ChatMarkdown"),
+        ("/chat/think", "ChatThink"),
+        ("/chat/thought-chain", "ChatThoughtChain"),
+        ("/chat/sources", "ChatSources"),
+        ("/chat/actions", "ChatActions"),
+        ("/chat/attachments", "ChatAttachmentTray"),
+        ("/chat/files", "ChatFile"),
+        ("/chat/prompts", "ChatPrompts"),
+        ("/chat/conversations", "ChatConversationList"),
+    ]
+    .map(|(path, label)| (locale.link(path), label));
     Ok(view! {
         page_header(
             eyebrow: "COMPONENTS",
@@ -287,6 +364,14 @@ pub(in crate::app) async fn overview_content(cx: &Cx) -> Result<impl View> {
         )
         <div class="grid gap-6">
             <a class="group flex items-center justify-between gap-6 rounded-xl border border-[#91caff] bg-[#e6f4ff] p-6 text-[#262626] no-underline shadow-sm transition-[border-color,box-shadow,transform] duration-200 hover:-translate-y-0.5 hover:border-[#1677ff] hover:shadow-md max-[620px]:block" href=(locale.link(&href!(home).resolve(cx)))><div><span class="text-xs font-bold tracking-[0.1em] text-[#0958d9]">(text(locale, "第一次使用"))</span><h2 class="mb-2 mt-2 text-xl font-semibold">(text(locale, "先完成五步接入"))</h2><p class="m-0 text-sm leading-6 text-[#595959]">(text(locale, "查看依赖、页面资源、AssetBundle、Router 和第一个组件的完整示例。"))</p></div><span class="shrink-0 text-sm font-semibold text-[#1677ff] max-[620px]:mt-5 max-[620px]:inline-block">(text(locale, "打开快速开始 →"))</span></a>
+            <section class="rounded-xl border border-[#dbe8f7] bg-[#f8fbff] p-5" aria-label=(locale.select("AI component examples", "AI 组件示例"))>
+                <h2 class="m-0 mb-3 text-base font-semibold text-[#233449]">(locale.select("AI component examples", "AI 组件示例"))</h2>
+                <div class="flex flex-wrap gap-2">
+                    for (url, label) in ai_examples {
+                        <a class="rounded-md border border-[#dbe8f7] bg-white px-3 py-1.5 text-xs font-medium text-[#0958d9] no-underline hover:border-[#91caff] hover:bg-[#e6f4ff] focus-visible:outline-2 focus-visible:outline-[#1677ff]" href=(url.as_str())>(label)</a>
+                    }
+                </div>
+            </section>
             <section class="grid grid-cols-3 gap-5 max-[760px]:grid-cols-1">
                 <a class="group rounded-xl border border-[#cbdfff] bg-[#f6faff] p-6 text-[#262626] no-underline shadow-sm transition-[border-color,box-shadow,transform] duration-200 hover:-translate-y-0.5 hover:border-[#1677ff] hover:shadow-md" href=(locale.link(&href!(_ai::chat_page).resolve(cx)))><span class="mb-5 grid size-10 place-items-center rounded-lg bg-[#1677ff] text-xs font-bold text-white">"AI"</span><h2 class="m-0 text-lg font-semibold">(locale.select("Chat interface", "Chat 聊天界面"))</h2><p class="mb-0 mt-2 text-sm leading-6 text-[#595959]">(locale.select("Explore a composed AI conversation with reusable Topcoat components.", "用可复用的 Topcoat 组件查看完整聊天界面。"))</p><span class="mt-6 inline-block text-sm text-[#1677ff]">(text(locale, "查看组件 →"))</span></a>
                 <a class="group rounded-xl border border-[#e8eaee] bg-white p-6 text-[#262626] no-underline shadow-sm transition-[border-color,box-shadow,transform] duration-200 hover:-translate-y-0.5 hover:border-[#91caff] hover:shadow-md" href=(locale.link(&href!(_ai::bubble_page).resolve(cx)))><span class="mb-5 grid size-10 place-items-center rounded-lg bg-[#e6f4ff] font-bold text-[#1677ff]">"B"</span><h2 class="m-0 text-lg font-semibold">"ChatBubble"</h2><p class="mb-0 mt-2 text-sm leading-6 text-[#595959]">(locale.select("Compare user and assistant message bubbles.", "查看用户与助手消息气泡。"))</p><span class="mt-6 inline-block text-sm text-[#1677ff]">(text(locale, "查看组件 →"))</span></a>
@@ -345,6 +430,12 @@ mod tests {
                 "zh-CN",
                 "Dropdown 下拉菜单",
                 "暂不可用",
+            ),
+            (
+                "/chat/new?lang=zh",
+                "zh-CN",
+                "Chat 聊天界面",
+                "今天想探索什么？",
             ),
         ] {
             let response = router
@@ -418,9 +509,21 @@ mod tests {
             ("/overview", "Component overview", None),
             ("/icons", "Icons", None),
             ("/chat", "Chat interface", None),
+            ("/chat/notes", "Chat interface", None),
+            ("/chat/new", "Chat interface", None),
             ("/bubble", "ChatBubble", None),
             ("/message-list", "ChatMessageList", None),
             ("/sender", "ChatSender", None),
+            ("/chat/states", "Message states", None),
+            ("/chat/markdown", "ChatMarkdown", None),
+            ("/chat/think", "ChatThink", None),
+            ("/chat/thought-chain", "ChatThoughtChain", None),
+            ("/chat/sources", "ChatSources", None),
+            ("/chat/actions", "ChatActions", None),
+            ("/chat/attachments", "ChatAttachmentTray", None),
+            ("/chat/files", "ChatFile", None),
+            ("/chat/prompts", "ChatPrompts", None),
+            ("/chat/conversations", "ChatConversationList", None),
             ("/notification", "Notification", None),
             ("/tag", "Tag", None),
             ("/tooltip", "Tooltip", None),
@@ -468,17 +571,24 @@ mod tests {
                 assert!(html.contains("href=\"/bubble\""));
                 assert!(html.contains("href=\"/message-list\""));
                 assert!(html.contains("href=\"/sender\""));
+                assert!(html.contains("href=\"/chat/markdown\""));
+                assert!(html.contains("href=\"/chat/conversations\""));
                 assert!(html.contains("href=\"/dropdown-menu\""));
             }
             if path == "/dropdown-menu" {
                 assert!(html.contains("id=\"gallery-actions-menu\""));
                 assert!(html.contains("gr-dropdown-menu"));
             }
-            if path == "/chat" {
+            if matches!(path, "/chat" | "/chat/notes" | "/chat/new") {
                 assert!(html.contains("<title>Chat interface · Topcoat Ant Design</title>"));
-                assert!(html.contains("gr-chat-bubble"));
                 assert!(html.contains("gr-chat-sender"));
                 assert!(html.contains("AI Components"));
+            }
+            if matches!(path, "/chat" | "/chat/notes") {
+                assert!(html.contains("gr-chat-bubble"));
+            }
+            if path == "/chat/new" {
+                assert!(html.contains("gr-chat-prompts"));
             }
             if path == "/bubble" {
                 assert!(html.contains("gr-chat-bubble-user"));
@@ -518,9 +628,21 @@ mod tests {
                 path,
                 "/notification"
                     | "/chat"
+                    | "/chat/notes"
+                    | "/chat/new"
                     | "/bubble"
                     | "/message-list"
                     | "/sender"
+                    | "/chat/states"
+                    | "/chat/markdown"
+                    | "/chat/think"
+                    | "/chat/thought-chain"
+                    | "/chat/sources"
+                    | "/chat/actions"
+                    | "/chat/attachments"
+                    | "/chat/files"
+                    | "/chat/prompts"
+                    | "/chat/conversations"
                     | "/tag"
                     | "/tooltip"
                     | "/popconfirm"

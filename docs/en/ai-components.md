@@ -42,11 +42,15 @@ The component library does not prescribe a model protocol. The host handles requ
 
 - The Gallery's **AI Components** section has a composed [`/chat`](../../src/bin/gallery/app/_ai/chat.rs) page and individual [`/bubble`](../../src/bin/gallery/app/_ai/bubble.rs), [`/message-list`](../../src/bin/gallery/app/_ai/message_list.rs), and [`/sender`](../../src/bin/gallery/app/_ai/sender.rs) examples. Each example can reveal its source code.
 - [`chat_bubble`, `chat_message_list`, and `chat_sender`](../../src/components/chat/mod.rs) are exported as public components, each in its own `chat/` submodule.
-- The Chat page displays sample user and assistant messages. A browser-side signal holds the draft, and submitting displays the most recently sent message.
-- The individual examples cover both message roles, the accessible message region, and local sender interaction.
-- The preview supports English and Chinese. It does not call a model, persist conversations, or append a complete multi-turn history yet.
+- The Chat page uses stable message IDs and five request states. It supports an empty-state prompt, multiple turns, Enter to send, incremental chunks, completion, failure, cancellation, and retry.
+- The conversation sidebar switches between real routes. A Topcoat shard updates the message region; chunks update only the active assistant bubble's browser signal.
+- Validated Gallery `#[procedure]` functions demonstrate server-side send, cancel, and retry boundaries without contacting a model or persisting conversations.
+- Markdown, Think, ThoughtChain, Sources, Actions, attachments, files, prompts, and conversation navigation have public components and individual Gallery examples. The preview supports English and Chinese.
+- See the [Chat component guide](components/chat.md) for APIs, composition, host responsibilities, and content safety.
 
-## Next requirements and acceptance
+## Acceptance scope
+
+The repository scope in the [Chat development checklist](../chat-todo.md) is complete. The Gallery uses local data and demo procedures; the host application connects a model, authentication, persistence, and a real file service.
 
 1. **Complete basic Chat interaction:** empty, sending, complete, error, and cancelled states; append multiple turns; keyboard behavior; scrolling and focus. Each state should have an operable Gallery example.
 2. **Add conversation management:** list, active item, creation, and selection. Routes express the active conversation; the host supplies history data.
@@ -54,4 +58,4 @@ The component library does not prescribe a model protocol. The host handles requ
 4. **Expand content components:** Markdown, Think, ThoughtChain, Sources, Actions, attachments, files, and input suggestions while reusing the Chat message and composer structure.
 5. **Maintain component quality:** accessible names and states, narrow-screen layout, English and Chinese copy, reduced-motion support, and an interactive Gallery example for each new component.
 
-This document records the current direction and acceptance scope. The public API will be refined as the Chat interactions are implemented.
+This document records the current component scope and acceptance result. The public API can be refined as host applications integrate it.

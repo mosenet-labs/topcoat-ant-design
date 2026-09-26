@@ -42,11 +42,15 @@ ChatPage（会话数据、路由、请求和流式响应）
 
 - Gallery 的「AI 组件」分类提供 [`/chat`](../src/bin/gallery/app/_ai/chat.rs) 组合页，以及 [`/bubble`](../src/bin/gallery/app/_ai/bubble.rs)、[`/message-list`](../src/bin/gallery/app/_ai/message_list.rs)、[`/sender`](../src/bin/gallery/app/_ai/sender.rs) 三个独立组件示例页；每页可展开示例代码。
 - [`chat_bubble`、`chat_message_list`、`chat_sender`](../src/components/chat/mod.rs) 已作为公共组件导出，各自位于 `chat/` 下的独立子模块。
-- Chat 页面展示用户与助手样例消息，草稿由浏览器端 signal 管理；发送后会显示最近一次提交的消息。
-- 独立示例分别展示两种消息角色、消息列表的可访问区域，以及输入区的本地发送交互。
-- 预览支持中英文，不调用模型、不保存会话，也尚未追加完整的多轮历史。
+- Chat 页面使用稳定消息 ID 和五种请求状态，支持空会话建议输入、多轮追加、回车发送、分段更新、完成、失败、取消与重试。
+- 会话侧栏通过真实路由切换示例会话；消息列表由 Topcoat shard 局部重绘，分段内容只更新当前助手气泡的浏览器 signal。
+- Gallery 的演示 `#[procedure]` 提供可校验的服务端发送、取消与重试接入示例，不调用模型或保存会话。
+- Markdown、Think、ThoughtChain、Sources、Actions、附件、文件、建议输入和会话导航已有公共组件及独立 Gallery 示例；预览支持中英文。
+- 组件 API、组合方式、宿主责任与内容安全约束见 [Chat 组件文档](components/chat.md)。
 
-## 后续需求与验收
+## 验收范围
+
+仓库内的分阶段任务与验收条件已按 [Chat 组件开发待办清单](chat-todo.md) 实现。Gallery 演示使用本地数据和示例过程函数；模型、鉴权、持久化与真实文件服务的接入由宿主应用完成。
 
 1. **完善 Chat 基础交互**：空会话、发送中、完成、失败和取消状态；多轮消息追加；输入框键盘行为；滚动与焦点处理。每种状态都能在 Gallery 独立查看。
 2. **完善会话管理**：会话列表、当前项、创建与切换；由路由表达当前会话，宿主负责历史数据。
@@ -54,4 +58,4 @@ ChatPage（会话数据、路由、请求和流式响应）
 4. **扩展内容组件**：Markdown、Think、ThoughtChain、Sources、Actions，以及附件、文件和建议输入；复用 Chat 界面的消息与输入结构。
 5. **保持组件库质量**：可访问的标签和状态、窄屏布局、中英文文案、减少动态效果支持；每个新组件在 Gallery 有可操作示例。
 
-本文件记录当前方向与验收范围。具体公共 API 会随 Chat 交互实现继续收敛。
+本文件记录当前组件范围和验收结果；具体公共 API 可随宿主接入继续收敛。

@@ -9,7 +9,7 @@ UI 库使用 Topcoat 的 `icon` 与 `icon-iconify` 能力提供统一图标。�
 ```toml
 [dependencies]
 topcoat-ant-design = "0.1.2"
-topcoat = { version = "=0.8.1", default-features = false, features = ["icon", "view"] }
+topcoat = { version = "=0.9.0", default-features = false, features = ["icon", "view"] }
 ```
 
 从 UI 库取得经过筛选的图标常量，再交给 Topcoat 原生组件渲染：
