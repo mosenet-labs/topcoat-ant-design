@@ -26,6 +26,19 @@ use topcoat_ant_design::{
 
 use crate::{assets::GALLERY_STYLESHEET, locale::Locale};
 
+const THEME_COOKIE: &str = "topcoat-ant-theme=dark";
+
+fn theme_is_dark(cx: &Cx) -> bool {
+    topcoat::router::request::headers(cx)
+        .get("cookie")
+        .and_then(|value| value.to_str().ok())
+        .is_some_and(|cookies| {
+            cookies
+                .split(';')
+                .any(|cookie| cookie.trim() == THEME_COOKIE)
+        })
+}
+
 /// 使用 Topcoat 模块路由构造 Gallery。
 ///
 /// `module_router!` 发现模块路由；静态资源、过程函数与 shard 通过 `.route()` 注册。
@@ -93,7 +106,6 @@ async fn gallery_layout(cx: &Cx, slot: Slot<'_>) -> Result<impl View> {
     let locale = Locale::current(cx);
     let sidebar_open = signal(cx, || true);
     let mobile_open = signal(cx, || false);
-    let dark = signal(cx, || false);
     let light_theme_label = locale.select("Light theme", "浅色主题");
     let dark_theme_label = locale.select("Dark theme", "深色主题");
     let english_url = uri(cx).path();
@@ -126,6 +138,10 @@ async fn gallery_layout(cx: &Cx, slot: Slot<'_>) -> Result<impl View> {
         getting_started_link.is_current(cx) || href!(_guide::getting_started_page).is_current(cx);
     let icons_active = icons_link.is_current(cx);
     let native_ui_active = native_ui_link.is_current(cx);
+    // The official showcase owns a nested theme root; its page signal reads the
+    // same cookie without a second `.dark` ancestor from this layout.
+    let initially_dark = theme_is_dark(cx) && !native_ui_active;
+    let dark = signal(cx, || initially_dark);
     let notification_active = notification_link.is_current(cx);
     let tooltip_active = tooltip_link.is_current(cx);
     let popconfirm_active = popconfirm_link.is_current(cx);
@@ -356,7 +372,15 @@ async fn gallery_layout(cx: &Cx, slot: Slot<'_>) -> Result<impl View> {
                                 sidebar_trigger(open: $(mobile_open.get()), attrs: attributes! { class="md:hidden" aria-controls="gallery-sidebar" @click=$(|_e: Event| mobile_open.toggle()) })
                                 <span class="h-5 w-px bg-border" aria-hidden="true"></span>
                                 <span class="min-w-0 flex-1 truncate text-sm font-semibold text-foreground">(document_title)</span>
-                                button(attrs: attributes! { type="button" class="shrink-0" @click=$(|_e: Event| dark.toggle()) },
+                                button(attrs: attributes! { type="button" class="shrink-0" @click=$(|_e: Event| {
+                                    let next = !dark.get();
+                                    dark.set(next);
+                                    if next {
+                                        raw!("document.cookie = 'topcoat-ant-theme=dark; Path=/; Max-Age=31536000; SameSite=Lax'", ());
+                                    } else {
+                                        raw!("document.cookie = 'topcoat-ant-theme=light; Path=/; Max-Age=31536000; SameSite=Lax'", ());
+                                    }
+                                }) },
                                     $(if dark.get() { light_theme_label } else { dark_theme_label })
                                 )
                             )
@@ -406,6 +430,36 @@ mod tests {
             "Accordion",
         ] {
             assert!(html.contains(marker), "missing {marker}");
+        }
+    }
+
+    #[tokio::test]
+    async fn selected_theme_is_restored_on_every_gallery_route() {
+        let router = router(crate::assets::config().expect("Gallery assets should be valid"));
+
+        for path in ["/overview", "/notification", "/topcoat-ui"] {
+            let response = router
+                .handle(
+                    Request::builder()
+                        .uri(path)
+                        .header("cookie", "session=demo; topcoat-ant-theme=dark")
+                        .body(Body::empty())
+                        .unwrap(),
+                )
+                .await;
+            assert_eq!(response.status(), StatusCode::OK, "{path}");
+            let html = String::from_utf8(
+                to_bytes(response.into_body(), usize::MAX)
+                    .await
+                    .unwrap()
+                    .to_vec(),
+            )
+            .unwrap();
+            if path == "/topcoat-ui" {
+                assert!(html.contains("dark relative min-h-screen"), "{path}");
+            } else {
+                assert!(html.contains("class=\"dark\""), "{path}");
+            }
         }
     }
 

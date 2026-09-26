@@ -1,6 +1,6 @@
 use topcoat_ant_design::ui as components;
 
-use crate::locale::Locale;
+use crate::{app::theme_is_dark, locale::Locale};
 use components::{
     accordion::{accordion, accordion_content, accordion_item, accordion_trigger},
     alert::{AlertVariant, alert, alert_description, alert_title},
@@ -129,7 +129,8 @@ fn status_variant(status: &str) -> BadgeVariant {
 pub(in crate::app) async fn native_ui_page(cx: &Cx) -> Result<impl View> {
     let locale = Locale::current(cx);
     let gallery_url = locale.link("/overview");
-    let dark = signal(cx, || false);
+    let initially_dark = theme_is_dark(cx);
+    let dark = signal(cx, || initially_dark);
     let sidebar_open = signal(cx, || true);
     let mobile_open = signal(cx, || false);
 
@@ -176,7 +177,15 @@ pub(in crate::app) async fn native_ui_page(cx: &Cx) -> Result<impl View> {
                                 attrs: attributes! {
                                     type="button"
                                     class="ml-auto"
-                                    @click=$(|_e: Event| dark.toggle())
+                                    @click=$(|_e: Event| {
+                                        let next = !dark.get();
+                                        dark.set(next);
+                                        if next {
+                                            raw!("document.cookie = 'topcoat-ant-theme=dark; Path=/; Max-Age=31536000; SameSite=Lax'", ());
+                                        } else {
+                                            raw!("document.cookie = 'topcoat-ant-theme=light; Path=/; Max-Age=31536000; SameSite=Lax'", ());
+                                        }
+                                    })
                                     :aria-label=(theme_label.clone())
                                     :title=(theme_label)
                                 },
