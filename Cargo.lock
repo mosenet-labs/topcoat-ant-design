@@ -1498,7 +1498,7 @@ dependencies = [
 
 [[package]]
 name = "topcoat-ant-design"
-version = "0.2.0-dev.1"
+version = "0.2.0"
 dependencies = [
  "pulldown-cmark",
  "serde",
