@@ -32,6 +32,7 @@ pub use components::native_dialog::{
 };
 pub use components::notification::{NotificationTone, notification};
 pub use components::popconfirm::{popconfirm, popconfirm_trigger_attributes};
+pub use components::search_multi_select::{SearchOption, search_multi_select};
 pub use components::table::{
     DataTableDensity, data_table, table_page_size_select, table_pagination,
 };

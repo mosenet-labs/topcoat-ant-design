@@ -7,5 +7,6 @@ pub(super) mod form_field;
 pub(super) mod native_dialog;
 pub(super) mod notification;
 pub(super) mod popconfirm;
+pub(super) mod search_multi_select;
 pub(super) mod table;
 pub(super) mod tag;
