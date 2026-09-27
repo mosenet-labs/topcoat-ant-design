@@ -27,6 +27,7 @@ pub(in crate::app) async fn overview_content(cx: &Cx) -> Result<impl View> {
         ("Popconfirm", "/popconfirm"),
         ("Drawer", "/drawer"),
         ("FormField", "/form-field"),
+        ("SearchMultiSelect", "/search-multi-select"),
         ("DateTimeRange", "/date-time-range"),
         ("Table", "/table"),
     ];

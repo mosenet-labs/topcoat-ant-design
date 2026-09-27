@@ -21,6 +21,7 @@
 - [Drawer](https://docs.rs/topcoat-ant-design/latest/topcoat_ant_design/struct.drawer.html)：由 signal 或关闭路由控制的右侧详情面板；
 - [Table](https://docs.rs/topcoat-ant-design/latest/topcoat_ant_design/struct.data_table.html)：支持显示密度和分页组合的数据表格；
 - [FormField](https://docs.rs/topcoat-ant-design/latest/topcoat_ant_design/struct.form_field.html)：统一表单字段的标签、说明和错误展示；
+- [SearchMultiSelect](docs/components/search-multi-select.md)：搜索并选择多个选项，已选标签可移除；
 - [DateTimeRange](https://docs.rs/topcoat-ant-design/latest/topcoat_ant_design/struct.date_time_range_filter.html)：选择起止日期时间。
 
 AI 组件覆盖消息、输入、会话导航、Markdown、过程详情、来源、操作、附件和建议输入。Gallery 的「AI 组件」分类同时展示独立示例与完整 Chat 界面。

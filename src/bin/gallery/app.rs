@@ -130,6 +130,7 @@ async fn gallery_layout(cx: &Cx, slot: Slot<'_>) -> Result<impl View> {
     let tabs_link = href!(_navigation::tabs_page);
     let table_link = href!(_data_display::table_page);
     let form_field_link = href!(_data_entry::form_field_page);
+    let search_multi_select_link = href!(_data_entry::search_multi_select_page);
     let date_time_range_link = href!(_data_entry::date_time_range_page);
     let chat_link = href!(_ai::chat_page);
     let chat_live_link = href!(_ai::chat_live_page);
@@ -154,6 +155,7 @@ async fn gallery_layout(cx: &Cx, slot: Slot<'_>) -> Result<impl View> {
     let tabs_active = tabs_link.is_current(cx) || uri(cx).path().starts_with("/tabs/");
     let table_active = table_link.is_current(cx);
     let form_field_active = form_field_link.is_current(cx);
+    let search_multi_select_active = search_multi_select_link.is_current(cx);
     let date_time_range_active = date_time_range_link.is_current(cx);
     let chat_active = chat_link.is_current(cx)
         || href!(_ai::chat_notes_page).is_current(cx)
@@ -219,6 +221,8 @@ async fn gallery_layout(cx: &Cx, slot: Slot<'_>) -> Result<impl View> {
         text(locale, "Table 数据表格")
     } else if form_field_active {
         text(locale, "FormField 表单字段")
+    } else if search_multi_select_active {
+        locale.select("SearchMultiSelect", "SearchMultiSelect 搜索多选")
     } else if date_time_range_active {
         text(locale, "DateTimeRange 时间范围")
     } else {
@@ -241,6 +245,7 @@ async fn gallery_layout(cx: &Cx, slot: Slot<'_>) -> Result<impl View> {
     let tabs_url = locale.link(&tabs_link.resolve(cx));
     let table_url = locale.link(&table_link.resolve(cx));
     let form_field_url = locale.link(&form_field_link.resolve(cx));
+    let search_multi_select_url = locale.link(&search_multi_select_link.resolve(cx));
     let date_time_range_url = locale.link(&date_time_range_link.resolve(cx));
     let chat_url = locale.link(&chat_link.resolve(cx));
     let chat_live_url = locale.link(&chat_live_link.resolve(cx));
@@ -367,6 +372,7 @@ async fn gallery_layout(cx: &Cx, slot: Slot<'_>) -> Result<impl View> {
                             <section>
                                 <p class="mb-2 mt-0 px-3 text-[11px] font-bold tracking-[0.1em] text-muted-foreground">(text(locale, "数据录入"))</p>
                                 gallery_nav_link(href: form_field_url.as_str(), badge: "F", label: "FormField", active: form_field_active)
+                                gallery_nav_link(href: search_multi_select_url.as_str(), badge: "Ms", label: "SearchMultiSelect", active: search_multi_select_active)
                                 gallery_nav_link(href: date_time_range_url.as_str(), badge: "R", label: "DateTimeRange", active: date_time_range_active)
                             </section>
                             <section>
@@ -723,6 +729,7 @@ mod tests {
             ("/drawer", "Drawer", None),
             ("/table", "Table", None),
             ("/form-field", "FormField", None),
+            ("/search-multi-select", "SearchMultiSelect", None),
             ("/date-time-range", "DateTimeRange", None),
             ("/collapse", "Collapse", None),
             ("/accordion", "Accordion", None),
@@ -764,6 +771,7 @@ mod tests {
                 assert!(html.contains("href=\"/chat/markdown\""));
                 assert!(html.contains("href=\"/chat/conversations\""));
                 assert!(html.contains("href=\"/dropdown-menu\""));
+                assert!(html.contains("href=\"/search-multi-select\""));
             }
             if path == "/dropdown-menu" {
                 assert!(html.contains("<details"));
@@ -795,6 +803,12 @@ mod tests {
             if path == "/sender" {
                 assert!(html.contains("gr-chat-sender"));
                 assert!(html.contains("gallery-sender-draft"));
+            }
+            if path == "/search-multi-select" {
+                assert!(html.contains("Show example code"));
+                assert!(html.contains("gallery-models-input"));
+                assert!(html.contains("Search and select models"));
+                assert!(html.contains("Disabled state"));
             }
             assert!(
                 !html

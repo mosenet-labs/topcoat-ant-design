@@ -115,6 +115,8 @@ The regular `head_assets()` includes all component styles and the project font. 
 
 The Gallery includes an interactive [Topcoat native UI showcase](http://127.0.0.1:3100/topcoat-ui) with light and dark themes, sidebar, fields, dialogs, tables, and other controls.
 
+The [SearchMultiSelect](docs/en/components/search-multi-select.md) component has its own Gallery page at `http://127.0.0.1:3100/search-multi-select`, with searchable options, removable selections, a disabled example, and expandable code.
+
 The sources were copied from the official Topcoat `v0.9.0` registry at commit `96e8f9e0932ea883ced2859d462e9d6d3f52ea59`; see [upstream license](assets/topcoat-upstream-LICENSE). This project vendors the registry sources directly and does not require Topcoat's `ui` Cargo feature.
 
 ## Browse the Gallery
