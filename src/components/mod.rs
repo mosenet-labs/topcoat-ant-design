@@ -1,9 +1,13 @@
+pub(super) mod anchored_menu;
+pub(super) mod calendar;
 pub(super) mod chat;
 pub(super) mod collapse;
 pub(super) mod date_time_range;
 pub(super) mod drawer;
 pub(super) mod form_field;
+pub(super) mod native_dialog;
 pub(super) mod notification;
 pub(super) mod popconfirm;
+pub(super) mod search_multi_select;
 pub(super) mod table;
 pub(super) mod tag;

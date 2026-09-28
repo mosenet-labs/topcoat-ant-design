@@ -3,6 +3,7 @@
 ## Unreleased
 
 - Add a live Chat Gallery room using Topcoat 0.9 server push with the existing Chat message, bubble, and sender components.
+- Add a bilingual Gallery page for SearchMultiSelect and make its selections, search results, and colors reactive across light and dark themes.
 
 ## 0.2.0
 
