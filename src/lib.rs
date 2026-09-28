@@ -16,6 +16,7 @@ pub use ui::{
 };
 
 pub use components::anchored_menu::{anchored_menu, anchored_menu_trigger_attributes};
+pub use components::calendar::{CalendarEvent, CalendarEventKind, CalendarView, calendar};
 pub use components::chat::{
     ChatBubbleRole, ChatMessage, ChatMessageStatus, ChatThoughtStatus, chat_actions,
     chat_attachment_tray, chat_bubble, chat_conversation_item, chat_conversation_list, chat_file,

@@ -1,4 +1,5 @@
 pub(super) mod anchored_menu;
+pub(super) mod calendar;
 pub(super) mod chat;
 pub(super) mod collapse;
 pub(super) mod date_time_range;

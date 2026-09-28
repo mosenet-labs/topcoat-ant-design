@@ -29,6 +29,7 @@ pub(in crate::app) async fn overview_content(cx: &Cx) -> Result<impl View> {
         ("FormField", "/form-field"),
         ("SearchMultiSelect", "/search-multi-select"),
         ("DateTimeRange", "/date-time-range"),
+        ("Calendar", "/calendar"),
         ("Table", "/table"),
     ];
     let chat_examples = [

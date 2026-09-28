@@ -128,6 +128,7 @@ async fn gallery_layout(cx: &Cx, slot: Slot<'_>) -> Result<impl View> {
     let accordion_link = href!(_motion::accordion_page);
     let dropdown_menu_link = href!(_navigation::dropdown_menu_page);
     let tabs_link = href!(_navigation::tabs_page);
+    let calendar_link = href!(_data_display::calendar_page);
     let table_link = href!(_data_display::table_page);
     let form_field_link = href!(_data_entry::form_field_page);
     let search_multi_select_link = href!(_data_entry::search_multi_select_page);
@@ -153,6 +154,7 @@ async fn gallery_layout(cx: &Cx, slot: Slot<'_>) -> Result<impl View> {
     let accordion_active = accordion_link.is_current(cx);
     let dropdown_menu_active = dropdown_menu_link.is_current(cx);
     let tabs_active = tabs_link.is_current(cx) || uri(cx).path().starts_with("/tabs/");
+    let calendar_active = calendar_link.is_current(cx);
     let table_active = table_link.is_current(cx);
     let form_field_active = form_field_link.is_current(cx);
     let search_multi_select_active = search_multi_select_link.is_current(cx);
@@ -217,6 +219,8 @@ async fn gallery_layout(cx: &Cx, slot: Slot<'_>) -> Result<impl View> {
         locale.select("Dropdown Menu", "Dropdown 下拉菜单")
     } else if tabs_active {
         text(locale, "Tabs 路由页签")
+    } else if calendar_active {
+        locale.select("Calendar", "Calendar 日历")
     } else if table_active {
         text(locale, "Table 数据表格")
     } else if form_field_active {
@@ -243,6 +247,7 @@ async fn gallery_layout(cx: &Cx, slot: Slot<'_>) -> Result<impl View> {
     let accordion_url = locale.link(&accordion_link.resolve(cx));
     let dropdown_menu_url = locale.link(&dropdown_menu_link.resolve(cx));
     let tabs_url = locale.link(&tabs_link.resolve(cx));
+    let calendar_url = locale.link(&calendar_link.resolve(cx));
     let table_url = locale.link(&table_link.resolve(cx));
     let form_field_url = locale.link(&form_field_link.resolve(cx));
     let search_multi_select_url = locale.link(&search_multi_select_link.resolve(cx));
@@ -377,6 +382,7 @@ async fn gallery_layout(cx: &Cx, slot: Slot<'_>) -> Result<impl View> {
                             </section>
                             <section>
                                 <p class="mb-2 mt-0 px-3 text-[11px] font-bold tracking-[0.1em] text-muted-foreground">(text(locale, "数据展示"))</p>
+                                gallery_nav_link(href: calendar_url.as_str(), badge: "Ca", label: "Calendar", active: calendar_active)
                                 gallery_nav_link(href: table_url.as_str(), badge: "Tb", label: "Table", active: table_active)
                             </section>
                             <section>
@@ -621,6 +627,12 @@ mod tests {
             ("/?lang=zh", "zh-CN", "快速开始", "添加 Cargo 依赖"),
             ("/overview?lang=zh", "zh-CN", "组件概览", "先完成五步接入"),
             (
+                "/calendar?lang=zh",
+                "zh-CN",
+                "Calendar 日历",
+                "同一组数据只需切换",
+            ),
+            (
                 "/dropdown-menu?lang=zh",
                 "zh-CN",
                 "Dropdown 下拉菜单",
@@ -727,6 +739,7 @@ mod tests {
             ("/dropdown-menu", "Dropdown Menu", None),
             ("/dialog", "Dialog", None),
             ("/drawer", "Drawer", None),
+            ("/calendar", "Calendar", None),
             ("/table", "Table", None),
             ("/form-field", "FormField", None),
             ("/search-multi-select", "SearchMultiSelect", None),
@@ -772,6 +785,17 @@ mod tests {
                 assert!(html.contains("href=\"/chat/conversations\""));
                 assert!(html.contains("href=\"/dropdown-menu\""));
                 assert!(html.contains("href=\"/search-multi-select\""));
+                assert!(html.contains("href=\"/calendar\""));
+            }
+            if path == "/calendar" {
+                for marker in [
+                    "gr-calendar-month",
+                    "gr-calendar-week",
+                    "gr-calendar-day-panel",
+                    "href=\"/calendar\"",
+                ] {
+                    assert!(html.contains(marker), "missing {marker}");
+                }
             }
             if path == "/dropdown-menu" {
                 assert!(html.contains("<details"));
