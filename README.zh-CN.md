@@ -44,7 +44,7 @@ AI 组件覆盖消息、输入、会话导航、Markdown、过程详情、来源
 
 ```toml
 [dependencies]
-topcoat-ant-design = "=0.2.0"
+topcoat-ant-design = "=0.3.0"
 ```
 
 在发布前或开发组件库时，可以使用本地路径：
@@ -57,7 +57,7 @@ topcoat-ant-design = { path = "../topcoat-ant-design" }
 默认 feature 已足够渲染组件。只有宿主采用选择性路由发现并需要显式注册字体时，才启用 `router`：
 
 ```toml
-topcoat-ant-design = { version = "=0.2.0", features = ["router"] }
+topcoat-ant-design = { version = "=0.3.0", features = ["router"] }
 ```
 
 ## 接入样式与字体
@@ -77,7 +77,7 @@ Ok(view! {
 使用完整 `.discover()` 的应用会同时发现 Fontsource 字体路由，不需要额外注册。只发现部分路由的应用可启用 `router` feature，并调用一次扩展：
 
 ```toml
-topcoat-ant-design = { version = "=0.2.0", features = ["router"] }
+topcoat-ant-design = { version = "=0.3.0", features = ["router"] }
 ```
 
 ```rust,ignore

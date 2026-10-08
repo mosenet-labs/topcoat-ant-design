@@ -1,6 +1,8 @@
 # Changelog
 
-## Unreleased
+## 0.3.0
+
+Official release built on Topcoat 0.10.0.
 
 - Upgrade Topcoat and its runtime, router, asset, font, icon, and Tailwind crates to 0.10.0.
 - Use runtime links with intent prefetching for Gallery navigation and overview links, preserving the page shell and shared signals across route changes.
@@ -12,6 +14,7 @@
 - Verify that all 31 vendored official UI registry components and the neutral theme are unchanged between Topcoat v0.9.0 and v0.10.0.
 - Add a live Chat Gallery room using Topcoat server push with the existing Chat message, bubble, and sender components.
 - Add a bilingual Gallery page for SearchMultiSelect and make its selections, search results, and colors reactive across light and dark themes.
+- Add Calendar and refresh the bundled stylesheet used by docs.rs to include the current component styles.
 
 ## 0.2.0
 

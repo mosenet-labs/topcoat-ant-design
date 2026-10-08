@@ -23,7 +23,7 @@ For a published version:
 
 ```toml
 [dependencies]
-topcoat-ant-design = "=0.2.0"
+topcoat-ant-design = "=0.3.0"
 ```
 
 For local component development:
@@ -36,7 +36,7 @@ topcoat-ant-design = { path = "../topcoat-ant-design" }
 The default feature is sufficient to render components. Enable `router` only when the host uses selective route discovery and must explicitly register font routes:
 
 ```toml
-topcoat-ant-design = { version = "=0.2.0", features = ["router"] }
+topcoat-ant-design = { version = "=0.3.0", features = ["router"] }
 ```
 
 ## CSS, fonts, and assets
