@@ -2,7 +2,10 @@
 
 ## Unreleased
 
-- Add a live Chat Gallery room using Topcoat 0.9 server push with the existing Chat message, bubble, and sender components.
+- Upgrade Topcoat and its runtime, router, asset, font, icon, and Tailwind crates to 0.10.0.
+- Use runtime links with intent prefetching for Gallery navigation and overview links, preserving the page shell and shared signals across route changes.
+- Verify that all 31 vendored official UI registry components and the neutral theme are unchanged between Topcoat v0.9.0 and v0.10.0.
+- Add a live Chat Gallery room using Topcoat server push with the existing Chat message, bubble, and sender components.
 - Add a bilingual Gallery page for SearchMultiSelect and make its selections, search results, and colors reactive across light and dark themes.
 
 ## 0.2.0

@@ -13,7 +13,7 @@ See the [Chat component guide](docs/en/components/chat.md) for the public API an
 
 See the [complete integration guide](docs/en/getting-started.md) or its [Chinese version](docs/getting-started.md).
 
-This library targets Topcoat 0.9.0. Interactive hosts must enable `.runtime()` on the router and include `topcoat::runtime::script()` in the document head.
+This library targets Topcoat 0.10.0. Interactive hosts must enable `.runtime()` on the router and include `topcoat::runtime::script()` in the document head.
 
 ## Add the dependency
 
@@ -105,7 +105,7 @@ Built-in component labels default to English. Pass `language: UiLanguage::Chines
 
 ## Topcoat native UI
 
-All 31 Topcoat 0.9.0 registry components are re-exported directly from `topcoat_ant_design`; their modules also remain available under `topcoat_ant_design::ui`. For example, `use topcoat_ant_design::{button, ButtonVariant, dialog, dialog_content};`. The upstream registry state is recorded in [components.toml](components.toml).
+All 31 Topcoat 0.10.0 registry components are re-exported directly from `topcoat_ant_design`; their modules also remain available under `topcoat_ant_design::ui`. For example, `use topcoat_ant_design::{button, ButtonVariant, dialog, dialog_content};`. The upstream registry state is recorded in [components.toml](components.toml).
 
 This root-level API is available in version `0.2.0` and later.
 
@@ -117,7 +117,7 @@ The Gallery includes an interactive [Topcoat native UI showcase](http://127.0.0.
 
 The [SearchMultiSelect](docs/en/components/search-multi-select.md) component has its own Gallery page at `http://127.0.0.1:3100/search-multi-select`, with searchable options, removable selections, a disabled example, and expandable code.
 
-The sources were copied from the official Topcoat `v0.9.0` registry at commit `96e8f9e0932ea883ced2859d462e9d6d3f52ea59`; see [upstream license](assets/topcoat-upstream-LICENSE). This project vendors the registry sources directly and does not require Topcoat's `ui` Cargo feature.
+The sources were copied from the official Topcoat `v0.9.0` registry at commit `96e8f9e0932ea883ced2859d462e9d6d3f52ea59`; every registry file has the same Git blob in `v0.10.0`. See the [upstream license](assets/topcoat-upstream-LICENSE). This project vendors the registry sources directly and does not require Topcoat's `ui` Cargo feature.
 
 ## Browse the Gallery
 
@@ -129,9 +129,11 @@ cargo run -p topcoat-ant-design \
 
 Open `http://127.0.0.1:3100/` for the English Quick Start page, or `http://127.0.0.1:3100/overview` for the component overview. Use the **中文** switch for Chinese, or open `http://127.0.0.1:3100/?lang=zh` directly. `HOST` and `PORT` override the listening address. Component pages render interactive previews and examples. Most interactions use browser-side Topcoat signals; Chat also demonstrates validated Gallery-only procedures.
 
+Gallery navigation uses Topcoat 0.10 runtime links. Internal page links navigate without a full document reload and prefetch on hover or focus; normal links still work when JavaScript is unavailable.
+
 Open `http://127.0.0.1:3100/chat` for the Chat interface preview. `/chat/new` demonstrates multiple turns, request states, and a validated demo procedure; it does not contact a model.
 
-Open `http://127.0.0.1:3100/chat/live` in two tabs to see Topcoat 0.9 server push update the existing Chat components in both. This is a shared Gallery demo room with no model or persistence.
+Open `http://127.0.0.1:3100/chat/live` in two tabs to see Topcoat server push update the existing Chat components in both. This is a shared Gallery demo room with no model or persistence.
 
 Open `/bubble`, `/message-list`, and `/sender` for individual Chat component examples and expandable source code.
 

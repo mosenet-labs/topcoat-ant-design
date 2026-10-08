@@ -127,7 +127,7 @@ pub(in crate::app) async fn native_ui_page(cx: &Cx) -> Result<impl View> {
 
     Ok(view! {
         page_header(
-            eyebrow: "TOPCOAT 0.9.0 / OFFICIAL UI",
+            eyebrow: "TOPCOAT 0.10.0 / OFFICIAL UI",
             title: locale.select("Official Topcoat components", "Topcoat 官方组件"),
             description: locale.select(
                 "Explore all 31 official modules in the same Gallery as our own components. Open any example to inspect the Rust source.",
@@ -137,7 +137,7 @@ pub(in crate::app) async fn native_ui_page(cx: &Cx) -> Result<impl View> {
         <section class="mb-8 rounded-xl border border-border bg-card p-6 shadow-sm" aria-labelledby="native-registry-heading">
             <div class="flex flex-wrap items-baseline justify-between gap-3">
                 <h2 id="native-registry-heading" class="m-0 text-lg font-semibold">(locale.select("Component index", "组件索引"))</h2>
-                <span class="text-xs text-muted-foreground">"Topcoat 0.9.0 · 31 / 31"</span>
+                <span class="text-xs text-muted-foreground">"Topcoat 0.10.0 · 31 / 31"</span>
             </div>
             <p class="mb-4 mt-2 text-sm leading-6 text-muted-foreground">(locale.select(
                 "Each module links to a live example. Composite examples show related primitives together.",

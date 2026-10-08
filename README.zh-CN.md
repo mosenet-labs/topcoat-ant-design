@@ -26,7 +26,7 @@
 
 AI 组件覆盖消息、输入、会话导航、Markdown、过程详情、来源、操作、附件和建议输入。Gallery 的「AI 组件」分类同时展示独立示例与完整 Chat 界面。
 
-在两个标签页打开 `http://127.0.0.1:3100/chat/live?lang=zh`，可以看到 Topcoat 0.9 的服务端推送如何实时更新现有 Chat 组件。此页面是共享的 Gallery 示例会话，不连接模型，也不持久化消息。
+在两个标签页打开 `http://127.0.0.1:3100/chat/live?lang=zh`，可以看到 Topcoat 的服务端推送如何实时更新现有 Chat 组件。此页面是共享的 Gallery 示例会话，不连接模型，也不持久化消息。
 
 当前范围与验收结果见 [AI 组件需求记录](docs/ai-components.md)。
 分阶段开发任务的完成状态见 [Chat 组件开发待办清单](docs/chat-todo.md)。
@@ -34,7 +34,7 @@ AI 组件覆盖消息、输入、会话导航、Markdown、过程详情、来源
 
 [完整快速开始](https://github.com/mosenet-labs/topcoat-ant-design/blob/main/docs/getting-started.md)说明了依赖、页面资源、AssetBundle 和 Router 的接入关系。
 
-组件库当前面向 Topcoat 0.9.0。交互式宿主需要在 Router 上启用 `.runtime()`，并在文档 `<head>` 中加入 `topcoat::runtime::script()`。
+组件库当前面向 Topcoat 0.10.0。交互式宿主需要在 Router 上启用 `.runtime()`，并在文档 `<head>` 中加入 `topcoat::runtime::script()`。
 
 ## 添加依赖
 
@@ -102,7 +102,7 @@ let router = topcoat::router::module_router!()
 
 ## Topcoat 原生 UI 组件
 
-Topcoat 0.9.0 官方 registry 的全部 31 个组件直接从 `topcoat_ant_design` 导出，也可通过 `topcoat_ant_design::ui` 下的对应模块访问。例如 `use topcoat_ant_design::{button, ButtonVariant, dialog, dialog_content};`。官方组件的来源记录在 [components.toml](components.toml)。
+Topcoat 0.10.0 官方 registry 的全部 31 个组件直接从 `topcoat_ant_design` 导出，也可通过 `topcoat_ant_design::ui` 下的对应模块访问。例如 `use topcoat_ant_design::{button, ButtonVariant, dialog, dialog_content};`。官方组件的来源记录在 [components.toml](components.toml)。
 
 根目录直接导出的 API 自 `0.2.0` 版本起可用。
 
@@ -112,7 +112,7 @@ Topcoat 0.9.0 官方 registry 的全部 31 个组件直接从 `topcoat_ant_desig
 
 运行 Gallery 后打开 [Topcoat 原生组件展示页](http://127.0.0.1:3100/topcoat-ui)，可以直接试用明暗主题、Sidebar、表单字段、弹层、表格等组件。
 
-原始源码来自 Topcoat 官方 `v0.9.0` 标签对应的提交 `96e8f9e0932ea883ced2859d462e9d6d3f52ea59`，见[上游许可证](assets/topcoat-upstream-LICENSE)。项目直接导入官方 registry 源码，不依赖 Topcoat 的 `ui` Cargo feature。
+原始源码来自 Topcoat 官方 `v0.9.0` 标签对应的提交 `96e8f9e0932ea883ced2859d462e9d6d3f52ea59`；`v0.10.0` 的 registry 文件 Git blob 全部相同，因此无需覆盖本地组件。见[上游许可证](assets/topcoat-upstream-LICENSE)。项目直接导入官方 registry 源码，不依赖 Topcoat 的 `ui` Cargo feature。
 
 ## 接入图标
 
@@ -239,7 +239,7 @@ cargo run -p topcoat-ant-design \
 - `http://127.0.0.1:3100/tabs`：Tabs 路由页签；
 - `http://127.0.0.1:3100/drawer`：Drawer。
 
-可以使用 `HOST` 和 `PORT` 环境变量覆盖监听地址。Gallery 使用 `app.rs` 根路由、下划线逻辑分组、无路径 `#[page]`、根 `#[layout]` 和类型安全的 `href!`；现有基础组件页同时展示真实交互效果与公开 API 共用的 Markdown 文档。
+可以使用 `HOST` 和 `PORT` 环境变量覆盖监听地址。Gallery 使用 `app.rs` 根路由、下划线逻辑分组、无路径 `#[page]`、根 `#[layout]` 和类型安全的 `href!`；现有基础组件页同时展示真实交互效果与公开 API 共用的 Markdown 文档。站内导航使用 Topcoat 0.10 的运行时链接，点击时无需重新加载整个文档，并在悬停或聚焦时预取目标页面；禁用 JavaScript 后仍是普通链接。
 
 Gallery 只修改浏览器中的 Topcoat signal，不连接业务服务。
 
