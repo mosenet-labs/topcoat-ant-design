@@ -1,3 +1,4 @@
+use chrono::NaiveDate;
 use topcoat::{
     Result,
     context::Cx,
@@ -6,12 +7,55 @@ use topcoat::{
     view::{View, ViewExt, attributes, component, view},
 };
 use topcoat_ant_design::{
-    ButtonVariant, DEFAULT_FONT, DateTimeRangeConfig, NotificationTone, STYLESHEET, button, card,
+    ButtonVariant, CalendarEvent, CalendarEventKind, CalendarView, DEFAULT_FONT,
+    DateTimeRangeConfig, NotificationTone, STYLESHEET, UiLanguage, button, calendar, card,
     card_content, chat_actions, chat_conversation_item, chat_prompt, chat_source, chat_think,
     collapse, collapse_trigger_attributes, data_table, date_time_range_filter, embedded_stylesheet,
     icons::PROJECT_OUTLINED, notification, popconfirm, popconfirm_trigger_attributes,
     table_page_size_select, table_pagination, tabs_trigger, tooltip, tooltip_content,
 };
+
+#[tokio::test]
+async fn calendar_month_and_day_keep_dates_and_event_meaning() {
+    let cx = &Cx::default();
+    let date = NaiveDate::from_ymd_opt(2026, 2, 15).unwrap();
+    let events = vec![CalendarEvent {
+        date,
+        title: "春节 · 放假".into(),
+        kind: CalendarEventKind::Holiday,
+    }];
+    let day_events = events.clone();
+    let week_events = events.clone();
+    let month = view! { cx => calendar(date: date, today: date, events: &events,
+    mode: CalendarView::Month, language: UiLanguage::ChineseSimplified) }
+    .single()
+    .await
+    .unwrap()
+    .render(cx);
+    assert!(month.contains("data-date=\"2026-01-26\""), "{month}");
+    assert!(month.contains("data-date=\"2026-03-01\""), "{month}");
+    assert!(month.contains("春节 · 放假"), "{month}");
+    assert!(month.contains("aria-current=\"date\""), "{month}");
+    let day = view! { cx => calendar(date: date, today: date, events: &day_events,
+    mode: CalendarView::Day, language: UiLanguage::ChineseSimplified) }
+    .single()
+    .await
+    .unwrap()
+    .render(cx);
+    assert!(day.contains("gr-calendar-day-panel"), "{day}");
+    assert!(day.contains("春节 · 放假"), "{day}");
+    let week = view! { cx => calendar(date: date, today: date, events: &week_events,
+    mode: CalendarView::Week, language: UiLanguage::ChineseSimplified) }
+    .single()
+    .await
+    .unwrap()
+    .render(cx);
+    assert_eq!(week.matches("data-date=").count(), 7, "{week}");
+    assert!(
+        week.contains("2026 年 2 月 9 日 – 2026 年 2 月 15 日"),
+        "{week}"
+    );
+}
 
 #[component]
 async fn notification_fixture(cx: &Cx, tone: NotificationTone) -> Result<impl View> {

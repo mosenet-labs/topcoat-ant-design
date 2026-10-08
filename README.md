@@ -4,7 +4,7 @@
 
 `topcoat-ant-design` provides a reusable Rust library and a component Gallery binary behind the `gallery` feature. Components handle presentation, browser state, and interaction. They do not depend on a domain model, database, or external service.
 
-Available components: [Icons](https://docs.rs/topcoat-ant-design/latest/topcoat_ant_design/icons/index.html), [Notification](https://docs.rs/topcoat-ant-design/latest/topcoat_ant_design/struct.notification.html), [Popconfirm](https://docs.rs/topcoat-ant-design/latest/topcoat_ant_design/struct.popconfirm.html), [Dropdown Menu](docs/en/components/dropdown-menu.md), [Dialog](https://docs.rs/topcoat-ant-design/latest/topcoat_ant_design/struct.dialog.html), [Tag](https://docs.rs/topcoat-ant-design/latest/topcoat_ant_design/struct.tag.html), [Tooltip](https://docs.rs/topcoat-ant-design/latest/topcoat_ant_design/struct.tooltip.html), [Collapse](https://docs.rs/topcoat-ant-design/latest/topcoat_ant_design/struct.collapse.html), [Accordion](https://docs.rs/topcoat-ant-design/latest/topcoat_ant_design/struct.accordion_item.html), [Tabs](https://docs.rs/topcoat-ant-design/latest/topcoat_ant_design/struct.tabs.html), [Drawer](https://docs.rs/topcoat-ant-design/latest/topcoat_ant_design/struct.drawer.html), [Table](https://docs.rs/topcoat-ant-design/latest/topcoat_ant_design/struct.data_table.html), [FormField](https://docs.rs/topcoat-ant-design/latest/topcoat_ant_design/struct.form_field.html), and [DateTimeRange](https://docs.rs/topcoat-ant-design/latest/topcoat_ant_design/struct.date_time_range_filter.html).
+Available components: [Icons](https://docs.rs/topcoat-ant-design/latest/topcoat_ant_design/icons/index.html), [Notification](https://docs.rs/topcoat-ant-design/latest/topcoat_ant_design/struct.notification.html), [Popconfirm](https://docs.rs/topcoat-ant-design/latest/topcoat_ant_design/struct.popconfirm.html), [Dropdown Menu](docs/en/components/dropdown-menu.md), [Dialog](https://docs.rs/topcoat-ant-design/latest/topcoat_ant_design/struct.dialog.html), [Tag](https://docs.rs/topcoat-ant-design/latest/topcoat_ant_design/struct.tag.html), [Tooltip](https://docs.rs/topcoat-ant-design/latest/topcoat_ant_design/struct.tooltip.html), [Collapse](https://docs.rs/topcoat-ant-design/latest/topcoat_ant_design/struct.collapse.html), [Accordion](https://docs.rs/topcoat-ant-design/latest/topcoat_ant_design/struct.accordion_item.html), [Tabs](https://docs.rs/topcoat-ant-design/latest/topcoat_ant_design/struct.tabs.html), [Drawer](https://docs.rs/topcoat-ant-design/latest/topcoat_ant_design/struct.drawer.html), [Table](https://docs.rs/topcoat-ant-design/latest/topcoat_ant_design/struct.data_table.html), [Calendar](docs/en/components/calendar.md), [FormField](https://docs.rs/topcoat-ant-design/latest/topcoat_ant_design/struct.form_field.html), and [DateTimeRange](https://docs.rs/topcoat-ant-design/latest/topcoat_ant_design/struct.date_time_range_filter.html).
 
 The AI component set includes messages, sending, conversation navigation, Markdown, process details, sources, actions, attachments, and prompts. The Gallery's **AI Components** section shows individual examples and a composed Chat interface.
 
@@ -99,7 +99,7 @@ Ok(view! {
 })
 ```
 
-Popconfirm uses a trusted stable ID to associate its trigger and bubble; provide the business action in the child confirm button. The official [Dropdown Menu](docs/en/components/dropdown-menu.md) groups actions in a native `<details>` control. Collapse shares one signal between its trigger attributes and content. Official Tabs use real links and a host-provided `active` state. Drawer composes the official Sheet, accepts a `Signal<bool>`, and can navigate to a close URL through `DrawerConfig::with_close_href`. Each component has an [English guide](docs/en/components/) and a [Chinese guide](docs/components/).
+Popconfirm uses a trusted stable ID to associate its trigger and bubble; provide the business action in the child confirm button. The official [Dropdown Menu](docs/en/components/dropdown-menu.md) groups actions in a native `<details>` control. For forms that require a modal with focus trapping and for menus inside scrollable tables, use the separate [Native Dialog](docs/en/components/native-dialog.md) and [Anchored Menu](docs/en/components/anchored-menu.md) extensions. Collapse shares one signal between its trigger attributes and content. Official Tabs use real links and a host-provided `active` state. Drawer composes the official Sheet, accepts a `Signal<bool>`, and can navigate to a close URL through `DrawerConfig::with_close_href`. Each component has an [English guide](docs/en/components/) and a [Chinese guide](docs/components/).
 
 Built-in component labels default to English. Pass `language: UiLanguage::ChineseSimplified` to composed components that provide their own controls, such as Notification, Popconfirm, Drawer, and DateTimeRange, when the host page is in Chinese.
 
@@ -115,6 +115,8 @@ The regular `head_assets()` includes all component styles and the project font. 
 
 The Gallery includes an interactive [Topcoat native UI showcase](http://127.0.0.1:3100/topcoat-ui) with light and dark themes, sidebar, fields, dialogs, tables, and other controls.
 
+The [SearchMultiSelect](docs/en/components/search-multi-select.md) component has its own Gallery page at `http://127.0.0.1:3100/search-multi-select`, with searchable options, removable selections, a disabled example, and expandable code.
+
 The sources were copied from the official Topcoat `v0.9.0` registry at commit `96e8f9e0932ea883ced2859d462e9d6d3f52ea59`; see [upstream license](assets/topcoat-upstream-LICENSE). This project vendors the registry sources directly and does not require Topcoat's `ui` Cargo feature.
 
 ## Browse the Gallery
@@ -128,6 +130,8 @@ cargo run -p topcoat-ant-design \
 Open `http://127.0.0.1:3100/` for the English Quick Start page, or `http://127.0.0.1:3100/overview` for the component overview. Use the **中文** switch for Chinese, or open `http://127.0.0.1:3100/?lang=zh` directly. `HOST` and `PORT` override the listening address. Component pages render interactive previews and examples. Most interactions use browser-side Topcoat signals; Chat also demonstrates validated Gallery-only procedures.
 
 Open `http://127.0.0.1:3100/chat` for the Chat interface preview. `/chat/new` demonstrates multiple turns, request states, and a validated demo procedure; it does not contact a model.
+
+Open `http://127.0.0.1:3100/chat/live` in two tabs to see Topcoat 0.9 server push update the existing Chat components in both. This is a shared Gallery demo room with no model or persistence.
 
 Open `/bubble`, `/message-list`, and `/sender` for individual Chat component examples and expandable source code.
 

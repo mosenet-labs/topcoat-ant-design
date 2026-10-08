@@ -11,6 +11,8 @@
 - [Popconfirm](https://docs.rs/topcoat-ant-design/latest/topcoat_ant_design/struct.popconfirm.html)：按钮附近的轻量二次确认气泡；
 - [Dropdown Menu](docs/components/dropdown-menu.md)：按钮附近的紧凑操作菜单；
 - [Dialog](https://docs.rs/topcoat-ant-design/latest/topcoat_ant_design/struct.dialog.html)：承载表单与集中操作的官方对话框结构；
+- [Native Dialog](docs/components/native-dialog.md)：支持焦点约束与 Escape 关闭的模态表单；
+- [Anchored Menu](docs/components/anchored-menu.md)：在表格滚动区域上方展开的操作菜单；
 - [Tag](https://docs.rs/topcoat-ant-design/latest/topcoat_ant_design/struct.tag.html)：展示状态和分类；
 - [Tooltip](https://docs.rs/topcoat-ant-design/latest/topcoat_ant_design/struct.tooltip.html)：提供悬停和键盘聚焦时的文字提示；
 - [Collapse](https://docs.rs/topcoat-ant-design/latest/topcoat_ant_design/struct.collapse.html)：未知高度内容的展开与收起动效；
@@ -19,9 +21,12 @@
 - [Drawer](https://docs.rs/topcoat-ant-design/latest/topcoat_ant_design/struct.drawer.html)：由 signal 或关闭路由控制的右侧详情面板；
 - [Table](https://docs.rs/topcoat-ant-design/latest/topcoat_ant_design/struct.data_table.html)：支持显示密度和分页组合的数据表格；
 - [FormField](https://docs.rs/topcoat-ant-design/latest/topcoat_ant_design/struct.form_field.html)：统一表单字段的标签、说明和错误展示；
+- [SearchMultiSelect](docs/components/search-multi-select.md)：搜索并选择多个选项，已选标签可移除；
 - [DateTimeRange](https://docs.rs/topcoat-ant-design/latest/topcoat_ant_design/struct.date_time_range_filter.html)：选择起止日期时间。
 
 AI 组件覆盖消息、输入、会话导航、Markdown、过程详情、来源、操作、附件和建议输入。Gallery 的「AI 组件」分类同时展示独立示例与完整 Chat 界面。
+
+在两个标签页打开 `http://127.0.0.1:3100/chat/live?lang=zh`，可以看到 Topcoat 0.9 的服务端推送如何实时更新现有 Chat 组件。此页面是共享的 Gallery 示例会话，不连接模型，也不持久化消息。
 
 当前范围与验收结果见 [AI 组件需求记录](docs/ai-components.md)。
 分阶段开发任务的完成状态见 [Chat 组件开发待办清单](docs/chat-todo.md)。

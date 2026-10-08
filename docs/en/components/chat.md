@@ -55,11 +55,14 @@ view! {
 
 - `/chat`, `/chat/notes`: two sample conversations on real routes.
 - `/chat/new`: empty state, suggestions, multiple turns, and message actions.
+- `/chat/live`: a shared demo room combining `chat_message_list`, `chat_bubble`, and `chat_sender` with Topcoat 0.9 server push. Open it in two tabs to see updates arrive in both.
 - `/bubble`, `/message-list`, `/sender`: individual base components.
 - `/chat/states`, `/chat/markdown`, `/chat/think`, `/chat/thought-chain`, `/chat/sources`, `/chat/actions`, `/chat/attachments`, `/chat/files`, `/chat/prompts`, `/chat/conversations`: content and navigation examples.
 
 Gallery's `gallery_reply` and `gallery_action` are validated demo `#[procedure]` functions. They do not call a model or persist conversations; cancel and retry only acknowledge demo actions. Sending appends a user message and an assistant message in `Sending` state. The chunk control updates only the active assistant bubble's browser signal. Completion, failure, and cancellation commit the final content and status to the message-list shard.
 The Gallery uses Topcoat 0.9's explicit endpoint paths at `/_gallery/chat/reply`, `/_gallery/chat/action`, and `/_gallery/chat/messages` so requests and route registration are easier to inspect.
+
+The live room stores a bounded message list in Gallery application context. Its send `#[procedure]` validates and stores each message, then notifies subscribers. A `#[shard]` subscribes before reading messages, renders the existing Chat components with `emit!`, and uses `connected(cx)` to keep a `live!` stream open for connected tabs. The first HTTP render completes without waiting for another message. The demo room is shared by everyone using the Gallery process and clears on restart; do not enter private information. Its explicit endpoints are `/_gallery/chat/live/send` and `/_gallery/chat/live/messages`.
 
 Real hosts should implement send, retry, authentication, and input validation through their own `#[procedure]` functions or endpoints. A streaming endpoint updates the active assistant message; cancellation must stop the real host request. The route identifies the current conversation while the server owns history and persistence. Treat browser-supplied message content, roles, states, and IDs as untrusted.
 

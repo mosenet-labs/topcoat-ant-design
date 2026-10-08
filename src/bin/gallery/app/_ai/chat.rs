@@ -1,7 +1,9 @@
 pub(in crate::app) mod flow;
+pub(in crate::app) mod live;
 mod new;
 mod notes;
 
+pub(in crate::app) use live::chat_live_page;
 pub(in crate::app) use new::chat_new_page;
 pub(in crate::app) use notes::chat_notes_page;
 
