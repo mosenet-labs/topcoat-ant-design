@@ -17,7 +17,7 @@
 
 这些组件都从 crate 根导出。`ChatMessageStatus` 有 `Sending`、`Streaming`、`Complete`、`Failed`、`Cancelled` 五种状态。`chat_bubble` 可以通过 `status` 显示状态并设置 `aria-busy`；`chat_message_list` 提供带标签的 `role="log"` 区域。页面应为消息提供稳定 ID，并在 `view!` 的消息循环中使用 Topcoat 0.9 的 `#[key(message.id.clone())]`，使消息组件的浏览器状态在列表更新后仍对应同一条消息。
 
-所有会渲染元素的 Chat 组件都接受可选的 `attrs`，转发到根元素，并与组件自身的 class 合并，与 Topcoat 原生 UI 的模式一致。`chat_conversation_item` 的 `active` 可传入布尔值或响应式 `Expr<bool>`。
+所有会渲染元素的 Chat 组件都接受可选的 `attrs`，转发到根元素，并与组件自身的 class 合并，与 Topcoat 原生 UI 的模式一致。`chat_conversation_item` 的 `active` 可传入布尔值或响应式 `Expr<bool>`。宿主启用 `.runtime()` 后，它的路由链接使用 Topcoat 0.10 客户端导航；否则按普通链接工作。
 Chat 组件颜色使用 `--gr-*` 主题变量，并随 `.dark` 主题类切换。
 
 `chat_think` 使用轻量的三角形与脑图标入口，在回复正文前展开过程摘要。Gallery 的“复制回复”操作位于回复底部，只复制该条助手消息的文本内容；复制成功后显示反馈。操作本身由页面提供，`chat_actions` 只负责承载与布局。
@@ -61,6 +61,8 @@ view! {
 
 Gallery 的 `gallery_reply` 与 `gallery_action` 是有输入校验的演示 `#[procedure]`。它们不调用模型，也不保存会话；取消与重试只确认示例操作。发送时，页面先追加用户消息和 `Sending` 状态的助手消息。分段按钮只修改当前助手气泡的浏览器 signal；完成、失败或取消时，才把最终内容和状态提交到消息列表 shard。新消息追加、会话列表和历史的局部刷新由宿主按同样方式接入。
 Gallery 使用 Topcoat 0.9 的显式端点路径：`/_gallery/chat/reply`、`/_gallery/chat/action` 和 `/_gallery/chat/messages`，便于检查请求与路由注册。新消息追加、会话列表和历史的局部刷新由宿主按同样方式接入。
+
+Topcoat 0.10 的本地回复预览使用 `#[record]` 保存 `content` 和 `streaming` 字段，推进一段回复时通过一次 signal 写入同步更新两者。消息保存契约与输入校验仍基于 `ChatMessage`。
 
 实时示例会话在 Gallery 应用上下文中保存有上限的消息列表。发送 `#[procedure]` 校验并保存消息，然后通知订阅者；`#[shard]` 先订阅再读取消息，使用 `emit!` 渲染现有 Chat 组件，并通过 `connected(cx)` 让已连接的标签页持续接收 `live!` 更新。首次 HTTP 渲染不会等待下一条消息。示例会话由访问同一 Gallery 进程的所有人共享，重启后清空，请勿输入隐私信息。对应端点为 `/_gallery/chat/live/send` 和 `/_gallery/chat/live/messages`。
 

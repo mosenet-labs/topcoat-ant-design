@@ -15,7 +15,7 @@ use topcoat::{
     asset::{AssetConfig, RouterBuilderAssetExt},
     context::Cx,
     router::{Router, Slot, href, layout, page, request::uri},
-    runtime::{Event, RouterBuilderRuntimeExt, signal},
+    runtime::{Event, RouterBuilderRuntimeExt, link, link_attrs, prefetch_mode, signal},
     view::{View, attributes, class, component, view},
 };
 use topcoat_ant_design::{
@@ -72,7 +72,15 @@ pub(crate) fn router(app_assets: AssetConfig) -> Router {
 }
 
 #[component]
-async fn gallery_nav_link(href: &str, badge: &str, label: &str, active: bool) -> Result<impl View> {
+async fn gallery_nav_link(
+    cx: &Cx,
+    href: &str,
+    badge: &str,
+    label: &str,
+    active: bool,
+) -> Result<impl View> {
+    let mut navigation_attrs = link_attrs(cx, href, prefetch_mode(cx));
+    navigation_attrs.remove("href");
     let badge_class = class!(
         "grid size-7 shrink-0 place-items-center rounded-md border text-[11px] font-bold",
         "border-primary bg-primary text-primary-foreground" if active,
@@ -80,7 +88,7 @@ async fn gallery_nav_link(href: &str, badge: &str, label: &str, active: bool) ->
     );
 
     Ok(view! {
-        sidebar_menu_button(href: Some(href), active: active, attrs: attributes! { class="min-h-10 gap-3 px-3 py-2 text-sidebar-foreground" },
+        sidebar_menu_button(href: Some(href), active: active, attrs: attributes! { class="min-h-10 gap-3 px-3 py-2 text-sidebar-foreground" (navigation_attrs) },
             <span class=(badge_class) aria-hidden="true">(badge)</span>
             <span>(label)</span>
         )
@@ -298,13 +306,13 @@ async fn gallery_layout(cx: &Cx, slot: Slot<'_>) -> Result<impl View> {
                             collapsible: SidebarCollapsible::Offcanvas,
                             sheet_attrs: attributes! { id="gallery-sidebar" aria-label=(text(locale, "组件导航")) },
                             sidebar_header(attrs: attributes! { class="[&]:h-auto gap-4 px-5 py-5" },
-                                <a class="flex items-center gap-3 text-sidebar-foreground no-underline" href=(getting_started_url.as_str())>
+                                link(href: getting_started_url.as_str(), attrs: attributes! { class="flex items-center gap-3 text-sidebar-foreground no-underline" },
                                     <span class="grid size-9 place-items-center rounded-lg bg-primary text-sm font-bold text-primary-foreground shadow-sm">"AD"</span>
                                     <span><strong class="block text-[15px] font-semibold leading-5">"Topcoat Ant Design"</strong><small class="mt-0.5 block text-xs text-muted-foreground">(locale.select("Topcoat components", "Topcoat 组件"))</small></span>
-                                </a>
+                                )
                                 <nav class="flex gap-2" aria-label=(text(locale, "语言"))>
-                                    <a class="rounded-md border border-border px-3 py-1 text-xs text-sidebar-foreground no-underline aria-[current=page]:border-primary aria-[current=page]:bg-sidebar-accent aria-[current=page]:text-sidebar-accent-foreground" href=(english_url) data-language-switch="" aria-current=(if locale == Locale::En { Some("page") } else { None })>"English"</a>
-                                    <a class="rounded-md border border-border px-3 py-1 text-xs text-sidebar-foreground no-underline aria-[current=page]:border-primary aria-[current=page]:bg-sidebar-accent aria-[current=page]:text-sidebar-accent-foreground" href=(chinese_url.as_str()) data-language-switch="" aria-current=(if locale == Locale::Zh { Some("page") } else { None })>"中文"</a>
+                                    link(href: english_url, attrs: attributes! { class="rounded-md border border-border px-3 py-1 text-xs text-sidebar-foreground no-underline aria-[current=page]:border-primary aria-[current=page]:bg-sidebar-accent aria-[current=page]:text-sidebar-accent-foreground" data-language-switch="" aria-current=(if locale == Locale::En { Some("page") } else { None }) }, "English")
+                                    link(href: chinese_url.as_str(), attrs: attributes! { class="rounded-md border border-border px-3 py-1 text-xs text-sidebar-foreground no-underline aria-[current=page]:border-primary aria-[current=page]:bg-sidebar-accent aria-[current=page]:text-sidebar-accent-foreground" data-language-switch="" aria-current=(if locale == Locale::Zh { Some("page") } else { None }) }, "中文")
                                 </nav>
                                 button(attrs: attributes! { type="button" class="md:hidden" @click=$(|_e: Event| mobile_open.set(false)) }, (locale.select("Close navigation", "关闭导航")))
                             )
@@ -325,7 +333,7 @@ async fn gallery_layout(cx: &Cx, slot: Slot<'_>) -> Result<impl View> {
                                     <div class="grid grid-cols-2 gap-1 border-t border-border p-2">
                                         for name in _native::REGISTRY_COMPONENTS {
                                             let target = format!("{}#{}", native_ui_url, _native::registry_target(name));
-                                            <a class="truncate rounded px-2 py-1.5 font-mono text-[11px] text-sidebar-foreground no-underline hover:bg-sidebar-accent hover:text-primary" href=(target.as_str())>(name)</a>
+                                            link(href: target.as_str(), attrs: attributes! { class="truncate rounded px-2 py-1.5 font-mono text-[11px] text-sidebar-foreground no-underline hover:bg-sidebar-accent hover:text-primary" }, (name))
                                         }
                                     </div>
                                 </details>
@@ -450,7 +458,7 @@ mod tests {
             "Topcoat Ant Design",
             "Official Topcoat components",
             "Component index",
-            "Topcoat 0.9.0 · 31 / 31",
+            "Topcoat 0.10.0 · 31 / 31",
             "Show example code",
             "async fn buttons_card",
             "async fn sidebar_card",
@@ -776,6 +784,7 @@ mod tests {
             if path == "/overview" {
                 assert!(html.contains("<title>Component overview · Topcoat Ant Design</title>"));
                 assert!(html.contains("Complete the five integration steps"));
+                assert!(html.contains("data-topcoat-link=\"intent\""));
                 assert!(html.contains("href=\"/\""));
                 assert!(html.contains("href=\"/chat\""));
                 assert!(html.contains("href=\"/bubble\""));

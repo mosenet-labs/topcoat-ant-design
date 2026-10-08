@@ -32,7 +32,7 @@ Ok(view! {
 
 - Topcoat signal synchronizes `data-state` and accessibility state.
 - The backdrop, close button, and Escape all close the drawer.
-- `DrawerConfig::with_close_href` changes close behavior to navigation; otherwise `open` becomes `false`.
+- `DrawerConfig::with_close_href` changes close behavior to navigation through Topcoat 0.10 runtime links; otherwise `open` becomes `false`. Runtime links retain normal anchor behavior without JavaScript.
 - Open and close transitions respect reduced-motion preferences.
 - A closed drawer is invisible and does not receive pointer events.
 

@@ -4,7 +4,7 @@ mod components;
 pub mod icons;
 mod language;
 mod theme;
-/// Topcoat 0.9.0 components, vendored from its official registry.
+/// Official Topcoat UI components, vendored from its registry (unchanged in 0.10.0).
 pub mod ui;
 
 pub use ui::{

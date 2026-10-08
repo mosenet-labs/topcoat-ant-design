@@ -88,12 +88,15 @@ data_table(label: "用户列表",
 
 ## 服务端或游标分页
 
-调用方负责构造包含筛选条件和游标的地址，组件保留真实链接：
+调用方负责构造包含筛选条件和游标的地址。给官方分页链接传入 Topcoat 0.10 的 `link_attrs`，即可使用客户端导航并遵循宿主的预取配置：
 
 ```rust,ignore
+use topcoat::runtime::{link_attrs, prefetch_mode};
+use topcoat_ant_design::pagination_next;
+
 table_pagination(summary: "使用稳定时间游标分页", label: "事件列表分页",
     if let Some(next_url) = next_url {
-        <a href=(next_url)>"下一页"</a>
+        pagination_next(attrs: link_attrs(cx, next_url, prefetch_mode(cx)))
     } else {
         <span aria-disabled="true">"没有更多"</span>
     }

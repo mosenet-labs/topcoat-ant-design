@@ -185,7 +185,7 @@ pub(in crate::app) async fn chat_conversations_page(cx: &Cx) -> Result<impl View
     let new = locale.link("/chat/new");
     Ok(view! {
         page_header(eyebrow: "AI COMPONENTS", title: "ChatConversationList", description: locale.select("Navigate between host-provided conversation routes.", "在宿主提供的会话路由间切换。"))
-        component_example(id: "chat-conversations-preview", title: locale.select("Conversation navigation", "会话导航"), description: locale.select("Links open real Chat routes; the current route controls the active item.", "链接打开真实 Chat 路由，当前路由决定激活项。"), source: "chat_conversation_list(label: \"Conversations\",\n    chat_conversation_item(title: \"Design\", href: \"/chat\", active: true)\n)",
+        component_example(id: "chat-conversations-preview", title: locale.select("Conversation navigation", "会话导航"), description: locale.select("Links open real Chat routes without a full reload; the current route controls the active item.", "链接无需整页刷新即可打开真实 Chat 路由，当前路由决定激活项。"), source: "chat_conversation_list(label: \"Conversations\",\n    chat_conversation_item(title: \"Design\", href: \"/chat\", active: true)\n)",
             <div class="max-w-[360px] bg-background p-6 max-[520px]:p-4">chat_conversation_list(label: locale.select("Conversations", "会话"),
                 chat_conversation_item(title: locale.select("Designing a Chat interface", "设计 Chat 界面"), href: design.as_str(), active: true)
                 chat_conversation_item(title: locale.select("Component boundaries", "组件边界"), href: notes.as_str(), active: false)

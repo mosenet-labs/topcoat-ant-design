@@ -8,11 +8,12 @@ use topcoat::{
 };
 use topcoat_ant_design::{
     ButtonVariant, CalendarEvent, CalendarEventKind, CalendarView, DEFAULT_FONT,
-    DateTimeRangeConfig, NotificationTone, STYLESHEET, UiLanguage, button, calendar, card,
-    card_content, chat_actions, chat_conversation_item, chat_prompt, chat_source, chat_think,
-    collapse, collapse_trigger_attributes, data_table, date_time_range_filter, embedded_stylesheet,
-    icons::PROJECT_OUTLINED, notification, popconfirm, popconfirm_trigger_attributes,
-    table_page_size_select, table_pagination, tabs_trigger, tooltip, tooltip_content,
+    DateTimeRangeConfig, DrawerConfig, NotificationTone, STYLESHEET, UiLanguage, button, calendar,
+    card, card_content, chat_actions, chat_conversation_item, chat_prompt, chat_source, chat_think,
+    collapse, collapse_trigger_attributes, data_table, date_time_range_filter, drawer,
+    embedded_stylesheet, icons::PROJECT_OUTLINED, notification, popconfirm,
+    popconfirm_trigger_attributes, table_page_size_select, table_pagination, tabs_trigger, tooltip,
+    tooltip_content,
 };
 
 #[tokio::test]
@@ -186,6 +187,35 @@ async fn custom_components_forward_attributes_and_accept_reactive_active_state()
     ] {
         assert!(html.contains(marker), "missing {marker}: {html}");
     }
+    assert!(html.contains("data-topcoat-link=\"intent\""), "{html}");
+}
+
+#[component]
+async fn routed_drawer_fixture(cx: &Cx) -> Result<impl View> {
+    let open = signal(cx, || true);
+    Ok(view! {
+        drawer(config: DrawerConfig::new("audit-drawer", "Details").with_close_href("/events"), open: &open,
+            <p>"Event details"</p>
+        )
+    })
+}
+
+#[tokio::test]
+async fn route_backed_drawer_uses_runtime_links_without_prefetching() {
+    let cx = &Cx::default();
+    let html = view! { cx => routed_drawer_fixture() }
+        .single()
+        .await
+        .unwrap()
+        .render(cx);
+
+    assert_eq!(html.matches("href=\"/events\"").count(), 2, "{html}");
+    assert_eq!(
+        html.matches("data-topcoat-link=\"never\"").count(),
+        2,
+        "{html}"
+    );
+    assert!(html.contains("id=\"audit-drawer-close-link\""), "{html}");
 }
 
 #[tokio::test]

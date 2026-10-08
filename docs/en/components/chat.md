@@ -17,7 +17,7 @@
 
 All are exported from the crate root. `ChatMessageStatus` covers `Sending`, `Streaming`, `Complete`, `Failed`, and `Cancelled`. `chat_bubble` can display a status and set `aria-busy`; `chat_message_list` supplies a labelled `role="log"` region. Give each message a stable ID and use Topcoat 0.9's `#[key(message.id.clone())]` in the `view!` message loop so browser state stays with the same message after list updates.
 
-Every rendered Chat component accepts optional `attrs` for its root element. Caller classes are appended to component classes, matching the native Topcoat UI convention. `chat_conversation_item` also accepts a boolean or reactive `Expr<bool>` for `active`.
+Every rendered Chat component accepts optional `attrs` for its root element. Caller classes are appended to component classes, matching the native Topcoat UI convention. `chat_conversation_item` also accepts a boolean or reactive `Expr<bool>` for `active`. Its route link uses Topcoat 0.10 client navigation when the host enables `.runtime()`, with a normal anchor fallback.
 Custom Chat colors use the `--gr-*` theme variables and follow the `.dark` theme class.
 
 `chat_think` uses a compact triangle and brain icon before the reply text to reveal process details. The Gallery's “Copy reply” action sits beneath the reply and copies only that assistant message's text, then shows success feedback. The page supplies the action; `chat_actions` provides its container and layout.
@@ -61,6 +61,8 @@ view! {
 
 Gallery's `gallery_reply` and `gallery_action` are validated demo `#[procedure]` functions. They do not call a model or persist conversations; cancel and retry only acknowledge demo actions. Sending appends a user message and an assistant message in `Sending` state. The chunk control updates only the active assistant bubble's browser signal. Completion, failure, and cancellation commit the final content and status to the message-list shard.
 The Gallery uses Topcoat 0.9's explicit endpoint paths at `/_gallery/chat/reply`, `/_gallery/chat/action`, and `/_gallery/chat/messages` so requests and route registration are easier to inspect.
+
+In Topcoat 0.10, the local reply preview uses a `#[record]` with `content` and `streaming` fields. One signal write updates both fields when advancing a chunk. The saved message contract and validation remain `ChatMessage`-based.
 
 The live room stores a bounded message list in Gallery application context. Its send `#[procedure]` validates and stores each message, then notifies subscribers. A `#[shard]` subscribes before reading messages, renders the existing Chat components with `emit!`, and uses `connected(cx)` to keep a `live!` stream open for connected tabs. The first HTTP render completes without waiting for another message. The demo room is shared by everyone using the Gallery process and clears on restart; do not enter private information. Its explicit endpoints are `/_gallery/chat/live/send` and `/_gallery/chat/live/messages`.
 

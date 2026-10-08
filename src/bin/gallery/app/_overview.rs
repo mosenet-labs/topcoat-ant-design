@@ -2,6 +2,7 @@ use crate::locale::Locale;
 use topcoat::{
     Result,
     context::Cx,
+    runtime::link,
     view::{View, attributes, component, view},
 };
 use topcoat_ant_design::{
@@ -49,8 +50,8 @@ pub(in crate::app) async fn overview_content(cx: &Cx) -> Result<impl View> {
                     <h1 id="overview-title" class="mb-3 mt-4 max-w-[750px] text-[clamp(32px,5vw,52px)] font-bold leading-[1.1] tracking-[-0.045em] text-foreground">(locale.select("Components for real applications", "面向真实应用的组件"))</h1>
                     <p class="m-0 max-w-[720px] text-[15px] leading-7 text-muted-foreground">(locale.select("Explore 31 official Topcoat UI modules and the composed components built for data workflows and AI conversations. Every example uses the same light and dark theme.", "浏览 31 个 Topcoat 官方 UI 模块，以及面向数据流程和 AI 对话的组合组件。所有示例共用明暗主题。"))</p>
                     <div class="mt-7 flex flex-wrap gap-3">
-                        <a href=(native_url.as_str()) class=(button_variants(ButtonVariant::Primary, ButtonSize::Md))>(locale.select("Explore official components", "查看官方组件")) " →"</a>
-                        <a href=(start_url.as_str()) class=(button_variants(ButtonVariant::Outline, ButtonSize::Md))>(locale.select("Read the quick start", "阅读快速开始"))</a>
+                        link(href: native_url.as_str(), attrs: attributes! { class=(button_variants(ButtonVariant::Primary, ButtonSize::Md)) }, (locale.select("Explore official components", "查看官方组件")) " →")
+                        link(href: start_url.as_str(), attrs: attributes! { class=(button_variants(ButtonVariant::Outline, ButtonSize::Md)) }, (locale.select("Read the quick start", "阅读快速开始")))
                     </div>
                 </div>
             </section>
@@ -70,10 +71,10 @@ pub(in crate::app) async fn overview_content(cx: &Cx) -> Result<impl View> {
                     card_content(
                         <div class="flex flex-wrap gap-2">
                             for (name, path) in native_examples {
-                                <a href=(locale.link(path)) class="rounded-md border border-border bg-background px-3 py-2 text-sm font-medium text-foreground no-underline transition-colors hover:border-primary hover:text-primary">(name) " ↗"</a>
+                                link(href: locale.link(path), attrs: attributes! { class="rounded-md border border-border bg-background px-3 py-2 text-sm font-medium text-foreground no-underline transition-colors hover:border-primary hover:text-primary" }, (name) " ↗")
                             }
                         </div>
-                        <a href=(native_url.as_str()) class="mt-5 inline-flex text-sm font-semibold text-primary no-underline hover:underline">(locale.select("See the complete registry →", "查看完整组件目录 →"))</a>
+                        link(href: native_url.as_str(), attrs: attributes! { class="mt-5 inline-flex text-sm font-semibold text-primary no-underline hover:underline" }, (locale.select("See the complete registry →", "查看完整组件目录 →")))
                     )
                 )
                 card(
@@ -84,7 +85,7 @@ pub(in crate::app) async fn overview_content(cx: &Cx) -> Result<impl View> {
                     card_content(
                         <div class="flex flex-wrap gap-2">
                             for (name, path) in composed_examples {
-                                <a href=(locale.link(path)) class="rounded-md border border-border bg-background px-3 py-2 text-sm font-medium text-foreground no-underline transition-colors hover:border-primary hover:text-primary">(name) " ↗"</a>
+                                link(href: locale.link(path), attrs: attributes! { class="rounded-md border border-border bg-background px-3 py-2 text-sm font-medium text-foreground no-underline transition-colors hover:border-primary hover:text-primary" }, (name) " ↗")
                             }
                         </div>
                     )
@@ -97,10 +98,10 @@ pub(in crate::app) async fn overview_content(cx: &Cx) -> Result<impl View> {
                     card_description((locale.select("Compose a chat interface from messages, input, markdown, and conversation navigation.", "用消息、输入、Markdown 和会话导航组合聊天界面。")))
                 )
                 card_content(
-                    <a href=(chat_url.as_str()) class=(button_variants(ButtonVariant::Primary, ButtonSize::Md))>(locale.select("Open chat demo", "打开聊天演示")) " →"</a>
+                    link(href: chat_url.as_str(), attrs: attributes! { class=(button_variants(ButtonVariant::Primary, ButtonSize::Md)) }, (locale.select("Open chat demo", "打开聊天演示")) " →")
                     <div class="mt-5 flex flex-wrap gap-2">
                         for (name, path) in chat_examples {
-                            <a href=(locale.link(path)) class="rounded-md border border-[var(--gr-accent-border)] bg-card px-3 py-2 text-sm font-medium text-foreground no-underline hover:text-primary">(name)</a>
+                            link(href: locale.link(path), attrs: attributes! { class="rounded-md border border-[var(--gr-accent-border)] bg-card px-3 py-2 text-sm font-medium text-foreground no-underline hover:text-primary" }, (name))
                         }
                     </div>
                 )
