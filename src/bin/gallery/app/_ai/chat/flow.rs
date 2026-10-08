@@ -2,7 +2,7 @@ use topcoat::{
     Result,
     context::Cx,
     icon::icon,
-    runtime::{Event, Signal, procedure, shard, signal},
+    runtime::{Event, Signal, procedure, record, shard, signal},
     view::{View, attributes, component, view},
 };
 use topcoat_ant_design::{
@@ -13,6 +13,14 @@ use topcoat_ant_design::{
 };
 
 use crate::{app::page_header, demo::component_example, locale::Locale};
+
+/// Content and its streaming indicator change together in the browser.
+#[record]
+#[derive(Clone)]
+struct ReplyPreview {
+    content: String,
+    streaming: bool,
+}
 
 /// Gallery-only stand-in for a host procedure. It validates browser input and
 /// returns deterministic text; applications replace this with their own model.
@@ -60,9 +68,12 @@ const EXAMPLE_SOURCE: &str = r#"// The page owns a JSON-encoded Vec<ChatMessage>
 // Gallery's local response controls with a procedure and stream.
 let messages = signal(cx, || serde_json::to_string(&initial_messages).unwrap());
 let draft = signal(cx, String::new);
+let busy = signal(cx, || false);
+// Inside each keyed assistant message, a Topcoat 0.10 ReplyPreview record
+// keeps local response content and streaming status in one typed signal.
 view! {
-    message_region(messages: $(messages), draft: $(draft), language: "en".to_owned())
-    chat_sender(id: "chat-draft", draft: &draft, submit_attrs: submit)
+    message_region(messages: $(messages), draft: $(draft), busy: $(busy), language: "en".to_owned())
+    chat_sender(id: "chat-draft", draft: &draft, busy: Some(&busy), submit_attrs: submit)
 }"#;
 
 fn initial_messages(session: &str, locale: Locale) -> Vec<ChatMessage> {
@@ -276,43 +287,39 @@ async fn demo_message(
     let busy_for_fail = busy.clone();
     let busy_for_cancel = busy.clone();
     let busy_for_retry = busy.clone();
-    let live_content = signal(cx, || message.content.clone());
-    let live_status = signal(cx, || message.status.as_str().to_owned());
-    let next_content = live_content.clone();
-    let next_status = live_status.clone();
-    let finish_content = live_content.clone();
-    let fail_content = live_content.clone();
-    let cancel_content = live_content.clone();
+    let live_reply = signal(cx, || ReplyPreview {
+        content: message.content.clone(),
+        streaming: message.status == ChatMessageStatus::Streaming,
+    });
+    let next_reply = live_reply.clone();
+    let finish_reply = live_reply.clone();
+    let fail_reply = live_reply.clone();
+    let cancel_reply = live_reply.clone();
+    let retry_reply = live_reply.clone();
     let waiting_label = locale
         .select("Waiting for a reply…", "等待回复…")
         .to_owned();
     let sending_label = locale.select("Sending", "发送中").to_owned();
     let streaming_label = locale.select("Streaming", "生成中").to_owned();
-    let first_chunk = locale
-        .select(
-            "This response is arriving in parts. ",
-            "这条回复正在分段生成。 ",
-        )
-        .to_owned();
-    let second_chunk = locale
-        .select(
-            "The page owns messages and request state. ",
-            "页面持有消息与请求状态。 ",
-        )
-        .to_owned();
-    let third_chunk = locale
-        .select(
-            "Reusable components render each part.",
-            "可复用组件负责呈现各部分。 ",
-        )
-        .to_owned();
+    let first_chunk = locale.select(
+        "This response is arriving in parts. ",
+        "这条回复正在分段生成。 ",
+    );
+    let second_chunk = locale.select(
+        "The page owns messages and request state. ",
+        "页面持有消息与请求状态。 ",
+    );
+    let third_chunk = locale.select(
+        "Reusable components render each part.",
+        "可复用组件负责呈现各部分。 ",
+    );
     let pending = matches!(
         message.status,
         ChatMessageStatus::Sending | ChatMessageStatus::Streaming
     );
     let bubble_attrs = if pending {
-        let status = live_status.clone();
-        attributes! { cx => id=(message_id.as_str()) :data-status=$(status.get()) aria-busy="true" }
+        let reply = live_reply.clone();
+        attributes! { cx => id=(message_id.as_str()) :data-status=$(if reply.get().streaming { "streaming" } else { "sending" }) aria-busy="true" }
     } else {
         attributes! { cx => id=(message_id.as_str()) }
     };
@@ -335,9 +342,9 @@ async fn demo_message(
                 )
             }
             if pending {
-                <p class="m-0" :hidden=$(live_content.get().is_empty())>$(live_content.get())</p>
-                <p class="m-0 text-muted-foreground" :hidden=$(!live_content.get().is_empty())>(waiting_label.as_str())</p>
-                <p class="mb-0 mt-2 text-[11px] font-medium text-muted-foreground" role="status">$(if live_status.get() == "sending" { sending_label.clone() } else { streaming_label.clone() })</p>
+                <p class="m-0" :hidden=$(live_reply.read().content.is_empty())>$(live_reply.read().content.to_owned())</p>
+                <p class="m-0 text-muted-foreground" :hidden=$(!live_reply.read().content.is_empty())>(waiting_label.as_str())</p>
+                <p class="mb-0 mt-2 text-[11px] font-medium text-muted-foreground" role="status">$(if live_reply.get().streaming { streaming_label.clone() } else { sending_label.clone() })</p>
             } else if message.content.is_empty() {
                 <p class="m-0 text-muted-foreground">(waiting_label.as_str())</p>
             } else {
@@ -359,36 +366,45 @@ async fn demo_message(
                                 })();"#, ());
                         })>(locale.select("Demo service", "示例服务"))</button>
                         <button type="button" class="gr-chat-action" @click=$(|_e| {
-                            raw!(r#"(() => {
-                                const current = ${next_content}.get().dehydrate();
-                                const chunks = [${first_chunk}.dehydrate(), ${second_chunk}.dehydrate(), ${third_chunk}.dehydrate()];
-                                const next = chunks.find(chunk => !current.includes(chunk));
-                                if (next) ${next_content}.set(cx.hydrate(current + next));
-                                ${next_status}.set(cx.hydrate('streaming'));
-                            })()"#, ());
+                            let content = next_reply.get().content;
+                            let next = if !content.contains(first_chunk) {
+                                first_chunk
+                            } else if !content.contains(second_chunk) {
+                                second_chunk
+                            } else if !content.contains(third_chunk) {
+                                third_chunk
+                            } else {
+                                ""
+                            };
+                            let content = raw!("cx.hydrate(${content}.dehydrate() + ${next}.dehydrate())", format!("{content}{next}"));
+                            next_reply.set(ReplyPreview { content, streaming: true });
                         })>(locale.select("Next chunk", "下一段"))</button>
                         <button type="button" class="gr-chat-action" @click=$(|_e| {
+                            let _content = finish_reply.get().content;
                             raw!(r#"(() => {
                                 const items = JSON.parse(${finish_state}.get().dehydrate());
                                 const item = items.find(value => value.id === ${finish_id}.dehydrate());
                                 if (!item) return;
-                                item.content = ${finish_content}.get().dehydrate() || 'Done.';
+                                item.content = ${_content}.dehydrate() || 'Done.';
                                 item.status = 'complete';
                                 ${finish_state}.set(cx.hydrate(JSON.stringify(items)));
                                 ${busy_for_finish}.set(cx.hydrate(false));
                             })()"#, ());
                         })>(locale.select("Finish", "完成"))</button>
                         <button type="button" class="gr-chat-action" @click=$(|_e| {
-                            raw!(r#"(() => { const items = JSON.parse(${fail_state}.get().dehydrate()); const item = items.find(value => value.id === ${fail_id}.dehydrate()); if (item) { item.content = ${fail_content}.get().dehydrate(); item.status = 'failed'; ${fail_state}.set(cx.hydrate(JSON.stringify(items))); ${busy_for_fail}.set(cx.hydrate(false)); } })()"#, ());
+                            let _content = fail_reply.get().content;
+                            raw!(r#"(() => { const items = JSON.parse(${fail_state}.get().dehydrate()); const item = items.find(value => value.id === ${fail_id}.dehydrate()); if (item) { item.content = ${_content}.dehydrate(); item.status = 'failed'; ${fail_state}.set(cx.hydrate(JSON.stringify(items))); ${busy_for_fail}.set(cx.hydrate(false)); } })()"#, ());
                         })>(locale.select("Fail", "失败"))</button>
                         <button type="button" class="gr-chat-action" @click=$(async |_e: Event| {
                             let _ack = gallery_action("cancel".to_owned(), cancel_id.clone()).await;
-                            raw!(r#"(() => { const items = JSON.parse(${cancel_state}.get().dehydrate()); const item = items.find(value => value.id === ${cancel_id}.dehydrate()); if (item) { item.content = ${cancel_content}.get().dehydrate(); item.status = 'cancelled'; ${cancel_state}.set(cx.hydrate(JSON.stringify(items))); ${busy_for_cancel}.set(cx.hydrate(false)); } })()"#, ());
+                            let _content = cancel_reply.get().content;
+                            raw!(r#"(() => { const items = JSON.parse(${cancel_state}.get().dehydrate()); const item = items.find(value => value.id === ${cancel_id}.dehydrate()); if (item) { item.content = ${_content}.dehydrate(); item.status = 'cancelled'; ${cancel_state}.set(cx.hydrate(JSON.stringify(items))); ${busy_for_cancel}.set(cx.hydrate(false)); } })()"#, ());
                         })>(locale.select("Cancel", "取消"))</button>
                     }
                     if message.status == ChatMessageStatus::Failed || message.status == ChatMessageStatus::Cancelled {
                         <button type="button" class="gr-chat-action" @click=$(async |_e: Event| {
                             let _ack = gallery_action("retry".to_owned(), retry_id.clone()).await;
+                            retry_reply.set(ReplyPreview { content: "".to_owned(), streaming: false });
                             raw!(r#"(() => { const items = JSON.parse(${retry_state}.get().dehydrate()); const item = items.find(value => value.id === ${retry_id}.dehydrate()); if (item) { item.content = ''; item.status = 'sending'; ${retry_state}.set(cx.hydrate(JSON.stringify(items))); ${busy_for_retry}.set(cx.hydrate(true)); } })()"#, ());
                         })>(locale.select("Retry", "重试"))</button>
                     }

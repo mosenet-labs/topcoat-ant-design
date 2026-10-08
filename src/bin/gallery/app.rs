@@ -333,7 +333,7 @@ async fn gallery_layout(cx: &Cx, slot: Slot<'_>) -> Result<impl View> {
                                     <div class="grid grid-cols-2 gap-1 border-t border-border p-2">
                                         for name in _native::REGISTRY_COMPONENTS {
                                             let target = format!("{}#{}", native_ui_url, _native::registry_target(name));
-                                            <a class="truncate rounded px-2 py-1.5 font-mono text-[11px] text-sidebar-foreground no-underline hover:bg-sidebar-accent hover:text-primary" href=(target.as_str())>(name)</a>
+                                            link(href: target.as_str(), attrs: attributes! { class="truncate rounded px-2 py-1.5 font-mono text-[11px] text-sidebar-foreground no-underline hover:bg-sidebar-accent hover:text-primary" }, (name))
                                         }
                                     </div>
                                 </details>

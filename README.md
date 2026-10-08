@@ -15,6 +15,8 @@ See the [complete integration guide](docs/en/getting-started.md) or its [Chinese
 
 This library targets Topcoat 0.10.0. Interactive hosts must enable `.runtime()` on the router and include `topcoat::runtime::script()` in the document head.
 
+See the [0.10 feature audit](docs/topcoat-0.10-audit.md) for component coverage and adoption decisions.
+
 ## Add the dependency
 
 For a published version:

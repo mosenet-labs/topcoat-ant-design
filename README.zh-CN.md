@@ -36,6 +36,8 @@ AI 组件覆盖消息、输入、会话导航、Markdown、过程详情、来源
 
 组件库当前面向 Topcoat 0.10.0。交互式宿主需要在 Router 上启用 `.runtime()`，并在文档 `<head>` 中加入 `topcoat::runtime::script()`。
 
+逐项检查范围和新特性采用情况见 [0.10 组件核对记录](docs/topcoat-0.10-audit.md)。
+
 ## 添加依赖
 
 在应用中添加发布版本：

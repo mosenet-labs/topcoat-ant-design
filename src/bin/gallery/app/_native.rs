@@ -60,7 +60,7 @@ use topcoat::{
     context::Cx,
     icon::{icon, iconify::iconify_icon},
     router::page,
-    runtime::{Event, expr, shard, signal},
+    runtime::{Event, expr, link, shard, signal},
     view::{Child, View, attributes, component, view},
 };
 
@@ -146,7 +146,7 @@ pub(in crate::app) async fn native_ui_page(cx: &Cx) -> Result<impl View> {
             <nav class="flex flex-wrap gap-2" aria-label=(locale.select("Official component index", "官方组件索引"))>
                 for name in REGISTRY_COMPONENTS {
                     let target = format!("{}#{}", locale.link("/topcoat-ui"), registry_target(name));
-                    <a class="rounded-md border border-border bg-background px-2.5 py-1 font-mono text-xs text-foreground no-underline transition-colors hover:border-primary hover:text-primary focus-visible:outline-2 focus-visible:outline-ring" href=(target.as_str())>(name)</a>
+                    link(href: target.as_str(), attrs: attributes! { class="rounded-md border border-border bg-background px-2.5 py-1 font-mono text-xs text-foreground no-underline transition-colors hover:border-primary hover:text-primary focus-visible:outline-2 focus-visible:outline-ring" }, (name))
                 }
             </nav>
         </section>

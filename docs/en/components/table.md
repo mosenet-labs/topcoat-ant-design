@@ -88,12 +88,15 @@ data_table(label: "Users",
 
 ## Server or cursor pagination
 
-The caller constructs a URL containing filters and the cursor. The component preserves real links:
+The caller constructs a URL containing filters and the cursor. Topcoat 0.10 `link_attrs` gives the official pagination link client navigation with the host's prefetch setting:
 
 ```rust,ignore
+use topcoat::runtime::{link_attrs, prefetch_mode};
+use topcoat_ant_design::pagination_next;
+
 table_pagination(summary: "Stable time cursor", label: "Event pagination",
     if let Some(next_url) = next_url {
-        <a href=(next_url)>"Next"</a>
+        pagination_next(attrs: link_attrs(cx, next_url, prefetch_mode(cx)))
     } else {
         <span aria-disabled="true">"No more results"</span>
     }
