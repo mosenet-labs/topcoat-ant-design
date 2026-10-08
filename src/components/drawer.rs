@@ -2,7 +2,7 @@ use topcoat::{
     Result,
     context::Cx,
     icon::icon,
-    runtime::{Event, Signal},
+    runtime::{Event, PrefetchMode, Signal, link_attrs},
     view::{Attributes, Child, View, attributes, class, component, view},
 };
 
@@ -61,7 +61,12 @@ pub async fn drawer(
     let open = open.clone();
     let close_from_backdrop = open.clone();
     let close_from_button = open.clone();
-    let close_on_escape = close_href.unwrap_or_default().to_owned();
+    let close_link_id = format!("{id}-close-link");
+    let has_close_href = close_href.is_some();
+    // Closing a route-backed drawer is a click action, so prefetching its
+    // destination on hover or focus would render a page the user may not open.
+    let backdrop_link_attrs = close_href.map(|href| link_attrs(cx, href, PrefetchMode::Never));
+    let close_button_link_attrs = close_href.map(|href| link_attrs(cx, href, PrefetchMode::Never));
     attrs.extend(attributes! { cx =>
         id=(id)
         class=(root_class)
@@ -73,10 +78,10 @@ pub async fn drawer(
         :data-state=$(if open.get() { "open" } else { "closed" })
         @keydown=$(|event: Event| {
             if event.key == "Escape" {
-                if close_on_escape.is_empty() {
+                if !has_close_href {
                     open.set(false);
                 } else {
-                    raw!("window.location.assign(${close_on_escape}.dehydrate())", ());
+                    raw!("document.getElementById(${close_link_id}.dehydrate())?.click()", ());
                 }
             }
         })
@@ -84,16 +89,16 @@ pub async fn drawer(
 
     Ok(view! {
         sheet::sheet(open: $(open.get()), attrs: attrs,
-            if let Some(close_href) = close_href {
-                <a class="absolute inset-0 cursor-default bg-black/45" href=(close_href) tabindex="-1" aria-label=(language.select("Close drawer", "关闭抽屉"))></a>
+            if let Some(backdrop_link_attrs) = backdrop_link_attrs {
+                <a class="absolute inset-0 cursor-default bg-black/45" (backdrop_link_attrs) tabindex="-1" aria-label=(language.select("Close drawer", "关闭抽屉"))></a>
             } else {
                 <button class="absolute inset-0 cursor-default border-0 bg-black/45 p-0" type="button" tabindex="-1" aria-label=(language.select("Close drawer", "关闭抽屉")) @click=$(|_e| close_from_backdrop.set(false))></button>
             }
             sheet::sheet_content(attrs: attributes! { class="relative z-10 h-full w-full p-0 font-mono shadow-[-8px_0_24px_var(--gr-shadow-color)]" style="max-width:min(720px,100vw)" },
                 <header class="flex min-h-16 shrink-0 items-center justify-between gap-4 border-b border-[var(--gr-border-subtle)] px-6 py-4">
                     <h2 class="m-0 min-w-0 text-lg font-semibold leading-7" id=(title_id.as_str())>(title)</h2>
-                    if let Some(close_href) = close_href {
-                        <a class="inline-flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-md text-[var(--gr-fg-subtle)] no-underline transition-colors duration-200 hover:bg-[var(--gr-surface-muted)] hover:text-[var(--gr-fg)] focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[var(--gr-accent-border)]" href=(close_href) aria-label=(language.select("Close", "关闭"))>icon(data: CLOSE_OUTLINED, size: 16)</a>
+                    if let Some(close_button_link_attrs) = close_button_link_attrs {
+                        <a class="inline-flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-md text-[var(--gr-fg-subtle)] no-underline transition-colors duration-200 hover:bg-[var(--gr-surface-muted)] hover:text-[var(--gr-fg)] focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[var(--gr-accent-border)]" id=(close_link_id.as_str()) (close_button_link_attrs) aria-label=(language.select("Close", "关闭"))>icon(data: CLOSE_OUTLINED, size: 16)</a>
                     } else {
                         button::button(variant: button::ButtonVariant::Ghost, size: button::ButtonSize::Icon, attrs: attributes! { cx => class="size-8 shrink-0 bg-transparent p-0 text-[var(--gr-fg-subtle)] hover:text-[var(--gr-fg)]" type="button" aria-label=(language.select("Close", "关闭")) @click=$(|_e: Event| close_from_button.set(false)) }, icon(data: CLOSE_OUTLINED, size: 16))
                     }

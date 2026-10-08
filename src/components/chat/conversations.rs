@@ -1,6 +1,7 @@
 use topcoat::{
     Result,
-    runtime::Expr,
+    context::Cx,
+    runtime::{Expr, link_attrs, prefetch_mode},
     view::{Attributes, Child, View, attributes, class, component, view},
 };
 
@@ -21,14 +22,18 @@ pub async fn chat_conversation_list(
 /// One conversation link. Its active state comes from the current route.
 #[component]
 pub async fn chat_conversation_item(
+    cx: &Cx,
     title: &str,
     href: &str,
     #[into] active: Expr<bool>,
     #[default] mut attrs: Attributes,
 ) -> Result<impl View> {
     let item_class = class!("gr-chat-conversation-item", attrs.remove("class"));
+    let mut navigation_attrs = link_attrs(cx, href, prefetch_mode(cx));
+    // The native sidebar button owns href; forward only the runtime marker.
+    navigation_attrs.remove("href");
     Ok(view! {
-        sidebar::sidebar_menu_button(active: active, href: Some(href), attrs: attributes! { class=(item_class) (attrs) },
+        sidebar::sidebar_menu_button(active: active, href: Some(href), attrs: attributes! { class=(item_class) (navigation_attrs) (attrs) },
             <span>(title)</span>
         )
     })

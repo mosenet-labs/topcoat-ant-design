@@ -180,8 +180,8 @@ pub(in crate::app) async fn chat_live_page(cx: &Cx) -> Result<impl View> {
             eyebrow: "AI COMPONENTS",
             title: locale.select("Live Chat", "实时 Chat"),
             description: locale.select(
-                "Topcoat 0.9 server push composed with the existing Chat components. Open this page in two tabs to see both update.",
-                "用现有 Chat 组件组合 Topcoat 0.9 的服务端推送。在两个标签页打开此页面即可观察同步更新。",
+                "Topcoat 0.10 streams this room through its shared shard connection. Open this page in two tabs to see both update.",
+                "Topcoat 0.10 通过共享的 shard 连接推送这个会话。在两个标签页打开此页面即可观察同步更新。",
             ),
         )
         component_example(

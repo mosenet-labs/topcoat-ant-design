@@ -32,7 +32,7 @@ Ok(view! {
 
 - 由 Topcoat signal 同步 `data-state` 和无障碍状态。
 - 点击遮罩、关闭按钮或按 Escape 都会关闭。
-- 通过 `DrawerConfig::with_close_href` 设置关闭地址后执行导航；未设置时写回 `open = false`。
+- 通过 `DrawerConfig::with_close_href` 设置关闭地址后使用 Topcoat 0.10 运行时链接导航；未设置时写回 `open = false`。未启用 JavaScript 时仍按普通链接工作。
 - 打开和关闭均有平滑过渡；系统要求减少动态效果时取消过渡。
 - 关闭后根元素不可见且不接收指针事件。
 
