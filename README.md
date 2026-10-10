@@ -23,7 +23,7 @@ For a published version:
 
 ```toml
 [dependencies]
-topcoat-ant-design = "=0.3.0"
+topcoat-ant-design = "=0.3.1"
 ```
 
 For local component development:
@@ -36,7 +36,7 @@ topcoat-ant-design = { path = "../topcoat-ant-design" }
 The default feature is sufficient to render components. Enable `router` only when the host uses selective route discovery and must explicitly register font routes:
 
 ```toml
-topcoat-ant-design = { version = "=0.3.0", features = ["router"] }
+topcoat-ant-design = { version = "=0.3.1", features = ["router"] }
 ```
 
 ## CSS, fonts, and assets
@@ -145,9 +145,7 @@ Open `http://127.0.0.1:3100/dropdown-menu` for the interactive Dropdown Menu exa
 
 The project is MIT licensed. See [LICENSE](LICENSE). The Ant Design icon data in `icons/ant-design.json` retains its MIT notice in [LICENSES/ant-design-icons-MIT.txt](LICENSES/ant-design-icons-MIT.txt).
 
-## 待发布组件
+## Additional components in 0.3.1
 
-- [JSONViewer](docs/components/json-viewer.md)：可折叠 JSON 树与节点复制。
-- [表格列设置](docs/components/table-columns.md)：列显隐、固定列与恢复默认；默认隐藏 Label 由宿主配置。
-
-以上能力先在 UI 库中验证，发布后再由业务项目升级接入。
+- [JSONViewer](docs/en/components/json-viewer.md): collapsible JSON trees with node copying.
+- [Table column settings](docs/en/components/table-columns.md): toggle column visibility, keep required columns visible, and restore defaults; the host configures columns hidden by default.
