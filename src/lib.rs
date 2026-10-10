@@ -27,6 +27,7 @@ pub use components::collapse::{collapse, collapse_trigger_attributes};
 pub use components::date_time_range::{DateTimeRangeConfig, date_time_range_filter};
 pub use components::drawer::{DrawerConfig, drawer};
 pub use components::form_field::{FormFieldConfig, form_field};
+pub use components::json_viewer::json_viewer;
 pub use components::native_dialog::{
     NativeDialogConfig, native_dialog, native_dialog_close_attributes,
     native_dialog_trigger_attributes,
@@ -35,7 +36,10 @@ pub use components::notification::{NotificationTone, notification};
 pub use components::popconfirm::{popconfirm, popconfirm_trigger_attributes};
 pub use components::search_multi_select::{SearchOption, search_multi_select};
 pub use components::table::{
-    DataTableDensity, data_table, table_page_size_select, table_pagination,
+    DataTableDensity, data_table, table_page_size_select, table_pagination, table_toolbar,
+};
+pub use components::table_columns::{
+    TableColumn, table_column_attributes, table_column_settings, table_default_hidden_columns,
 };
 pub use language::UiLanguage;
 #[cfg(feature = "router")]

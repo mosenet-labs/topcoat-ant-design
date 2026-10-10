@@ -110,3 +110,7 @@ table_pagination(summary: "Stable time cursor", label: "Event pagination",
 - Reset to page one when page size changes to avoid an out-of-range empty page.
 - Keep row navigation as a real link in a cell rather than making `tr` act as a button.
 - The table scrolls horizontally in a narrow container. The host may set a business-specific minimum width through `attrs`.
+
+## Title and toolbar
+
+Place `table_toolbar(title, attrs, child)` before `data_table`. The title appears on the left and child actions, such as the column settings icon, on the right. Root attributes are forwarded and classes merged. Match the table's accessible `label` to its visible title. Consistent padding and vertical alignment keep actions balanced; long titles wrap while actions remain usable. See the column settings guide for a complete composition.

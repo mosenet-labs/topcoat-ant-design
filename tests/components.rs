@@ -15,6 +15,126 @@ use topcoat_ant_design::{
     popconfirm_trigger_attributes, table_page_size_select, table_pagination, tabs_trigger, tooltip,
     tooltip_content,
 };
+use topcoat_ant_design::{
+    TableColumn, json_viewer, table_column_attributes, table_column_settings,
+    table_default_hidden_columns,
+};
+
+#[tokio::test]
+async fn json_tree_escapes_text_and_preserves_types_and_empty_containers() {
+    let cx = &Cx::default();
+    let value = serde_json::json!({
+        "<script>": "<img src=x onerror=alert(1)>",
+        "nested": {"items": [true, 42, null], "empty": {}, "array": []}
+    });
+    let html = view! { cx => json_viewer(value: &value, language: UiLanguage::ChineseSimplified,
+    attrs: attributes! { class="fixture-json" aria-label="测试 JSON" }) }
+    .single()
+    .await
+    .unwrap()
+    .render(cx);
+    assert!(html.contains("gr-json-viewer fixture-json"), "{html}");
+    assert!(html.contains("aria-label=\"测试 JSON\""), "{html}");
+    assert!(html.contains("&lt;script&gt;"), "{html}");
+    assert!(
+        html.contains("&lt;img src=x onerror=alert(1)&gt;"),
+        "{html}"
+    );
+    assert!(
+        html.contains("class=\"gr-json-viewer-string\">\"&lt;img"),
+        "{html}"
+    );
+    for class in ["boolean", "number", "null"] {
+        assert!(html.contains(&format!("gr-json-viewer-{class}")), "{html}");
+    }
+    assert!(html.contains("{}") && html.contains("[]"), "{html}");
+    assert_eq!(html.matches("<details ").count(), 3, "{html}");
+    assert_eq!(html.matches(" open").count(), 1, "{html}");
+    assert_eq!(
+        html.matches("class=\"gr-json-viewer-copy\"").count(),
+        3,
+        "{html}"
+    );
+    assert!(html.contains("复制节点 JSON"), "{html}");
+}
+
+#[tokio::test]
+async fn json_tree_can_start_collapsed_and_display_a_primitive_root() {
+    let cx = &Cx::default();
+    let value = serde_json::json!({"nested": {"ok": true}});
+    let html =
+        view! { cx => json_viewer(value: &value, expanded_depth: 0, root_label: "response") }
+            .single()
+            .await
+            .unwrap()
+            .render(cx);
+    assert!(!html.contains(" open"), "{html}");
+    assert!(html.contains("response"), "{html}");
+    assert!(html.contains("Copy node JSON"), "{html}");
+    let value = serde_json::json!("plain text");
+    let html = view! { cx => json_viewer(value: &value) }
+        .single()
+        .await
+        .unwrap()
+        .render(cx);
+    assert!(!html.contains("<details"), "{html}");
+    assert!(html.contains("plain text"), "{html}");
+}
+
+#[test]
+fn hidden_column_defaults_use_keys_and_always_keep_required_columns() {
+    let columns = [
+        TableColumn::new("name", "名称").hidden().required(),
+        TableColumn::new("labels", "Label").hidden(),
+        TableColumn::new("phase", "状态"),
+    ];
+    assert_eq!(table_default_hidden_columns(&columns), "[\"labels\"]");
+}
+
+#[component]
+async fn table_columns_fixture(cx: &Cx, preference: &str) -> Result<impl View> {
+    let columns = [
+        TableColumn::new("name", "名称").required(),
+        TableColumn::new("labels", "Label").hidden(),
+    ];
+    let hidden = signal(cx, || preference.to_owned());
+    Ok(view! {
+        table_column_settings(id: "fixture-columns", columns: &columns, hidden: &hidden, language: UiLanguage::ChineseSimplified)
+        data_table(label: "资源",
+            <colgroup>for column in &columns { <col (table_column_attributes(cx, column, &hidden))> }</colgroup>
+            <thead><tr>for column in &columns { <th (table_column_attributes(cx, column, &hidden))>(column.label.as_str())</th> }</tr></thead>
+            <tbody><tr>for column in &columns { <td (table_column_attributes(cx, column, &hidden))>"value"</td> }</tr></tbody>
+        )
+    })
+}
+
+#[tokio::test]
+async fn column_settings_bind_headers_cells_colgroups_and_checkboxes() {
+    let cx = &Cx::default();
+    for (preference, hidden_count) in [("[\"labels\",\"name\"]", 3), ("[]", 0)] {
+        let html = view! { cx => table_columns_fixture(preference: preference) }
+            .single()
+            .await
+            .unwrap()
+            .render(cx);
+        assert!(html.contains("popover=\"auto\""), "{html}");
+        assert!(html.contains("popovertarget=\"fixture-columns\""), "{html}");
+        assert!(html.contains("恢复默认"), "{html}");
+        assert!(html.contains("固定"), "{html}");
+        assert_eq!(
+            html.matches("data-table-column=\"labels\"").count(),
+            3,
+            "{html}"
+        );
+        assert_eq!(html.matches(" hidden").count(), hidden_count, "{html}");
+        assert_eq!(
+            html.matches("data-topcoat-bind:hidden").count(),
+            3,
+            "{html}"
+        );
+        assert!(html.contains("data-topcoat-bind:checked"), "{html}");
+    }
+}
 
 #[tokio::test]
 async fn calendar_month_and_day_keep_dates_and_event_meaning() {

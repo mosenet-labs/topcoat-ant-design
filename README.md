@@ -144,3 +144,10 @@ Open `http://127.0.0.1:3100/dropdown-menu` for the interactive Dropdown Menu exa
 ## License
 
 The project is MIT licensed. See [LICENSE](LICENSE). The Ant Design icon data in `icons/ant-design.json` retains its MIT notice in [LICENSES/ant-design-icons-MIT.txt](LICENSES/ant-design-icons-MIT.txt).
+
+## 待发布组件
+
+- [JSONViewer](docs/components/json-viewer.md)：可折叠 JSON 树与节点复制。
+- [表格列设置](docs/components/table-columns.md)：列显隐、固定列与恢复默认；默认隐藏 Label 由宿主配置。
+
+以上能力先在 UI 库中验证，发布后再由业务项目升级接入。

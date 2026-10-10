@@ -138,6 +138,7 @@ async fn gallery_layout(cx: &Cx, slot: Slot<'_>) -> Result<impl View> {
     let tabs_link = href!(_navigation::tabs_page);
     let calendar_link = href!(_data_display::calendar_page);
     let table_link = href!(_data_display::table_page);
+    let json_viewer_link = href!(_data_display::json_viewer_page);
     let form_field_link = href!(_data_entry::form_field_page);
     let search_multi_select_link = href!(_data_entry::search_multi_select_page);
     let date_time_range_link = href!(_data_entry::date_time_range_page);
@@ -164,6 +165,7 @@ async fn gallery_layout(cx: &Cx, slot: Slot<'_>) -> Result<impl View> {
     let tabs_active = tabs_link.is_current(cx) || uri(cx).path().starts_with("/tabs/");
     let calendar_active = calendar_link.is_current(cx);
     let table_active = table_link.is_current(cx);
+    let json_viewer_active = json_viewer_link.is_current(cx);
     let form_field_active = form_field_link.is_current(cx);
     let search_multi_select_active = search_multi_select_link.is_current(cx);
     let date_time_range_active = date_time_range_link.is_current(cx);
@@ -229,6 +231,8 @@ async fn gallery_layout(cx: &Cx, slot: Slot<'_>) -> Result<impl View> {
         text(locale, "Tabs 路由页签")
     } else if calendar_active {
         locale.select("Calendar", "Calendar 日历")
+    } else if json_viewer_active {
+        "JSONViewer"
     } else if table_active {
         text(locale, "Table 数据表格")
     } else if form_field_active {
@@ -257,6 +261,7 @@ async fn gallery_layout(cx: &Cx, slot: Slot<'_>) -> Result<impl View> {
     let tabs_url = locale.link(&tabs_link.resolve(cx));
     let calendar_url = locale.link(&calendar_link.resolve(cx));
     let table_url = locale.link(&table_link.resolve(cx));
+    let json_viewer_url = locale.link(&json_viewer_link.resolve(cx));
     let form_field_url = locale.link(&form_field_link.resolve(cx));
     let search_multi_select_url = locale.link(&search_multi_select_link.resolve(cx));
     let date_time_range_url = locale.link(&date_time_range_link.resolve(cx));
@@ -392,6 +397,7 @@ async fn gallery_layout(cx: &Cx, slot: Slot<'_>) -> Result<impl View> {
                                 <p class="mb-2 mt-0 px-3 text-[11px] font-bold tracking-[0.1em] text-muted-foreground">(text(locale, "数据展示"))</p>
                                 gallery_nav_link(href: calendar_url.as_str(), badge: "Ca", label: "Calendar", active: calendar_active)
                                 gallery_nav_link(href: table_url.as_str(), badge: "Tb", label: "Table", active: table_active)
+                                gallery_nav_link(href: json_viewer_url.as_str(), badge: "Js", label: "JSONViewer", active: json_viewer_active)
                             </section>
                             <section>
                                 <p class="mb-2 mt-0 px-3 text-[11px] font-bold tracking-[0.1em] text-muted-foreground">(text(locale, "动效"))</p>
@@ -749,6 +755,7 @@ mod tests {
             ("/drawer", "Drawer", None),
             ("/calendar", "Calendar", None),
             ("/table", "Table", None),
+            ("/json-viewer", "JSONViewer", None),
             ("/form-field", "FormField", None),
             ("/search-multi-select", "SearchMultiSelect", None),
             ("/date-time-range", "DateTimeRange", None),

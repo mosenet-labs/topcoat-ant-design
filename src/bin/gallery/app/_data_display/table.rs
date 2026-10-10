@@ -7,7 +7,12 @@ use topcoat::{
     runtime::{Event, expr, signal},
     view::{View, attributes, view},
 };
-use topcoat_ant_design::{DataTableDensity, data_table, table_page_size_select, table_pagination};
+use topcoat_ant_design::{
+    DataTableDensity, data_table, table_page_size_select, table_pagination, table_toolbar,
+};
+use topcoat_ant_design::{
+    TableColumn, table_column_attributes, table_column_settings, table_default_hidden_columns,
+};
 
 use crate::{
     app::page_header,
@@ -37,6 +42,22 @@ pub(in crate::app) async fn table_page(cx: &Cx) -> Result<impl View> {
     });
     let compact_source = rust_code_block(document, 0);
     let default_source = rust_code_block(document, 1);
+    let columns = [
+        TableColumn::new("name", locale.select("Name", "名称")).required(),
+        TableColumn::new("namespace", "Namespace"),
+        TableColumn::new("labels", "Label").hidden(),
+    ];
+    let hidden = signal(cx, || table_default_hidden_columns(&columns));
+    let columns_document = locale.select(
+        include_str!(concat!(
+            env!("CARGO_MANIFEST_DIR"),
+            "/docs/en/components/table-columns.md"
+        )),
+        include_str!(concat!(
+            env!("CARGO_MANIFEST_DIR"),
+            "/docs/components/table-columns.md"
+        )),
+    );
 
     Ok(view! {
         page_header(
@@ -45,6 +66,21 @@ pub(in crate::app) async fn table_page(cx: &Cx) -> Result<impl View> {
             description: text(locale, "使用原生表格语义展示结构化数据，并组合 Topcoat signal 或真实链接完成分页。"),
         )
         <div class="grid gap-6">
+            component_example(id: "table-columns-preview", title: locale.select("Column visibility", "列显隐"),
+                description: locale.select("Label starts hidden. Choose columns or reset the defaults; Name stays visible.", "默认隐藏 Label，可勾选显示并恢复默认；名称列固定显示。"), source: rust_code_block(columns_document, 0),
+                table_toolbar(title: "Pods",
+                    table_column_settings(id: "gallery-table-columns", columns: &columns, hidden: &hidden, language: locale.ui())
+                )
+                data_table(label: locale.select("Column visibility example", "列显隐示例"),
+                    <colgroup>for column in &columns { <col (table_column_attributes(cx, column, &hidden))> }</colgroup>
+                    <thead><tr>for column in &columns { <th (table_column_attributes(cx, column, &hidden))>(column.label.as_str())</th> }</tr></thead>
+                    <tbody><tr>
+                        <td (table_column_attributes(cx, &columns[0], &hidden))>"api-7b8fc"</td>
+                        <td (table_column_attributes(cx, &columns[1], &hidden))>"production"</td>
+                        <td (table_column_attributes(cx, &columns[2], &hidden))>"app=api"</td>
+                    </tr></tbody>
+                )
+            )
             component_example(id: "table-preview", title: text(locale, "紧凑表格与页码分页"), description: text(locale, "点击分页按钮，行内容和禁用状态由 Topcoat signal 在浏览器中同步更新。"), source: compact_source,
                 <div class="max-w-full overflow-x-auto">
                 data_table(label: text(locale, "GitLab 项目示例"), density: DataTableDensity::Compact, attrs: attributes! { class="min-w-[720px]" },
@@ -79,6 +115,7 @@ pub(in crate::app) async fn table_page(cx: &Cx) -> Result<impl View> {
                 </div>
             )
             markdown_document(source: document)
+            markdown_document(source: columns_document)
         </div>
     })
 }
