@@ -1,5 +1,7 @@
 提供带横向滚动、显示密度和分页区域的数据表格。
 
+需要隐藏或展示列时，组合 `table_column_settings`（参见 `docs/components/table-columns.md`），将同一列的可见性属性应用到表头、单元格和可选列宽定义。
+
 `data_table` 保留原生 `table`、`thead`、`tbody`、`th` 和 `td` 语义。组件只统一视觉与容器行为，列结构、业务数据、排序和数据请求仍由宿主负责。
 
 `table_pagination` 与表格分开组合。宿主可以传入真实链接完成服务端或游标分页，也可以传入带 Topcoat `@click` 的按钮完成浏览器内分页。`table_page_size_select` 用于在分页区提供统一的页容量选择器，实际查询状态仍由宿主控制。
@@ -110,3 +112,7 @@ table_pagination(summary: "使用稳定时间游标分页", label: "事件列表
 - 切换页容量时应由宿主把当前页重置为第一页，避免新页容量下出现越界空页。
 - 整行跳转仍由业务单元格中的真实链接表达，避免让 `tr` 模拟按钮。
 - 表格会在窄容器中横向滚动；宿主可通过 `attrs` 中的 class 或 style 设置业务需要的最小宽度。
+
+## 标题与工具栏
+
+`table_toolbar(title, attrs, child)` 放在 `data_table` 前面，左侧显示表格标题，右侧的 `child` 放列设置齿轮等操作；`attrs` 转发到工具栏外层，class 合并。建议表格的 `label` 与可见标题一致。工具栏使用统一的内边距和垂直居中布局，长标题可以换行，右侧操作保持可用。完整组合示例见列设置说明。

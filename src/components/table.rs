@@ -42,6 +42,26 @@ pub async fn data_table(
     Ok(view! { table::table(attrs: attrs, (child)) })
 }
 
+/// Table title on the left with host-supplied actions on the right.
+///
+/// Compose before [`data_table`]; actions may include [`crate::table_column_settings`].
+#[component]
+pub async fn table_toolbar(
+    cx: &Cx,
+    title: &str,
+    #[default] mut attrs: Attributes,
+    #[default] child: Child<'_>,
+) -> Result<impl View> {
+    let caller_class = attrs.remove("class");
+    attrs.extend(attributes! { cx => class=(class!("gr-table-toolbar", caller_class)) });
+    Ok(view! {
+        <header (attrs)>
+            <strong class="gr-table-toolbar-title">(title)</strong>
+            <div class="gr-table-toolbar-actions">(child)</div>
+        </header>
+    })
+}
+
 /// Table pagination area. The caller supplies real links or Topcoat buttons as children.
 ///
 /// See [`data_table`] for complete parameters and numbered or cursor pagination examples.

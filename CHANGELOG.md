@@ -1,5 +1,11 @@
 # Changelog
 
+## 未发布
+
+- 新增通用 `json_viewer`：对象与数组折叠、类型展示、未展开节点悬停或聚焦复制、亮暗主题和中英文提示。
+- 新增 `TableColumn`、`table_column_settings` 与 `table_column_attributes`：列显隐、固定必要列、恢复默认设置，支持 Label 默认隐藏；`table_toolbar` 统一左侧标题与右侧齿轮操作布局。
+- 新增 Gallery 示例与组件说明；业务项目将在 UI 库发布后接入。
+
 ## 0.3.0
 
 Official release built on Topcoat 0.10.0.

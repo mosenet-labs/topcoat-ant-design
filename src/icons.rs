@@ -26,5 +26,6 @@ iconify::include!(pub "ant-design:plus-outlined");
 iconify::include!(pub "ant-design:project-outlined");
 iconify::include!(pub "ant-design:reload-outlined");
 iconify::include!(pub "ant-design:search-outlined");
+iconify::include!(pub "ant-design:setting-outlined");
 iconify::include!(pub "ant-design:team-outlined");
 iconify::include!(pub "ant-design:warning-filled");
