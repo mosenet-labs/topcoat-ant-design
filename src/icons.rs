@@ -22,6 +22,7 @@ iconify::include!(pub "ant-design:gitlab-outlined");
 iconify::include!(pub "ant-design:info-circle-filled");
 iconify::include!(pub "ant-design:menu-outlined");
 iconify::include!(pub "ant-design:logout-outlined");
+iconify::include!(pub "ant-design:node-expand-outlined");
 iconify::include!(pub "ant-design:plus-outlined");
 iconify::include!(pub "ant-design:project-outlined");
 iconify::include!(pub "ant-design:reload-outlined");

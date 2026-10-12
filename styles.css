@@ -722,10 +722,10 @@
 .gr-json-viewer-bracket { color: var(--gr-fg-muted); font-weight: 600; }
 .gr-json-viewer-collapsed { color: var(--gr-warning); }
 .gr-json-viewer-count { color: var(--gr-fg-subtle); font-size: 12px; font-style: italic; margin-left: 10px; user-select: none; }
-.gr-json-viewer-copy { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; margin-left: 6px; padding: 0; border: 0; border-radius: 4px; background: transparent; color: var(--gr-accent); vertical-align: middle; cursor: pointer; opacity: 0; }
-.gr-json-viewer-node > summary:hover > .gr-json-viewer-copy, .gr-json-viewer-node > summary:focus-within > .gr-json-viewer-copy { opacity: 1; }
-.gr-json-viewer-copy:hover { background: var(--gr-accent-soft); }
-.gr-json-viewer-copy:focus-visible { outline: 2px solid var(--gr-accent); outline-offset: 1px; }
-.gr-json-viewer-node[open] > summary > .gr-json-viewer-copy { display: none; }
+.gr-json-viewer-copy, .gr-json-viewer-expand { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; margin-left: 6px; padding: 0; border: 0; border-radius: 4px; background: transparent; color: var(--gr-accent); vertical-align: middle; cursor: pointer; opacity: 0; }
+.gr-json-viewer-node > summary:hover > :is(.gr-json-viewer-copy, .gr-json-viewer-expand), .gr-json-viewer-node > summary:focus-within > :is(.gr-json-viewer-copy, .gr-json-viewer-expand) { opacity: 1; }
+.gr-json-viewer-copy:hover, .gr-json-viewer-expand:hover { background: var(--gr-accent-soft); }
+.gr-json-viewer-copy:focus-visible, .gr-json-viewer-expand:focus-visible { outline: 2px solid var(--gr-accent); outline-offset: 1px; }
+.gr-json-viewer-node[open] > summary > :is(.gr-json-viewer-copy, .gr-json-viewer-expand) { display: none; }
 .gr-json-viewer-status { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
-@media (hover: none) { .gr-json-viewer-copy { opacity: 1; } }
+@media (hover: none) { .gr-json-viewer-copy, .gr-json-viewer-expand { opacity: 1; } }

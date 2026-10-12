@@ -1,7 +1,7 @@
 use serde_json::Value;
 use topcoat::{
     Result,
-    context::Cx,
+    context::{Cx, identity},
     icon::icon,
     runtime::{Event, signal},
     view::{Attributes, View, ViewExt, class, component, view},
@@ -9,7 +9,7 @@ use topcoat::{
 
 use crate::{
     UiLanguage,
-    icons::{CHECK_OUTLINED, COPY_OUTLINED},
+    icons::{CHECK_OUTLINED, COPY_OUTLINED, NODE_EXPAND_OUTLINED},
 };
 
 #[doc = include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/docs/en/components/json-viewer.md"))]
@@ -95,6 +95,7 @@ async fn json_node(
                     <span class="gr-json-viewer-collapsed">"…"<span class="gr-json-viewer-bracket">(end)</span></span>
                     <span class="gr-json-viewer-count">(count)</span>
                     json_copy(value: value, label: label, language: language)
+                    json_expand(label: label, language: language)
                 </summary>
                 <div class="gr-json-viewer-children">
                     #[key(key.clone())] for (key, item) in &entries {
@@ -105,6 +106,22 @@ async fn json_node(
             </details>
         }
     }.boxed())
+}
+
+#[component]
+async fn json_expand(cx: &Cx, label: &str, language: UiLanguage) -> Result<impl View> {
+    let id = format!("gr-json-expand-{}", identity(cx));
+    let expand_label = language.select("Expand all descendants", "展开全部子节点");
+    Ok(view! {
+        <button type="button" id=(id.as_str()) class="gr-json-viewer-expand" aria-label=(format!("{expand_label}: {label}")) title=(expand_label)
+            @click=$(|event: Event| {
+                event.prevent_default();
+                event.stop_propagation();
+                raw!("(() => { const node = document.getElementById(${id}.dehydrate())?.closest('details.gr-json-viewer-node'); if (!node) return; node.open = true; for (const child of node.querySelectorAll('details.gr-json-viewer-node')) child.open = true; node.querySelector(':scope > summary')?.focus({ preventScroll: true }); })()", ());
+            })>
+            icon(data: NODE_EXPAND_OUTLINED, size: 13)
+        </button>
+    })
 }
 
 #[component]
