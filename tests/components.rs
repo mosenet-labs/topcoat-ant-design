@@ -55,7 +55,13 @@ async fn json_tree_escapes_text_and_preserves_types_and_empty_containers() {
         3,
         "{html}"
     );
+    assert_eq!(
+        html.matches("class=\"gr-json-viewer-expand\"").count(),
+        3,
+        "{html}"
+    );
     assert!(html.contains("复制节点 JSON"), "{html}");
+    assert!(html.contains("展开全部子节点"), "{html}");
 }
 
 #[tokio::test]
@@ -71,6 +77,7 @@ async fn json_tree_can_start_collapsed_and_display_a_primitive_root() {
     assert!(!html.contains(" open"), "{html}");
     assert!(html.contains("response"), "{html}");
     assert!(html.contains("Copy node JSON"), "{html}");
+    assert!(html.contains("Expand all descendants"), "{html}");
     let value = serde_json::json!("plain text");
     let html = view! { cx => json_viewer(value: &value) }
         .single()
@@ -78,6 +85,7 @@ async fn json_tree_can_start_collapsed_and_display_a_primitive_root() {
         .unwrap()
         .render(cx);
     assert!(!html.contains("<details"), "{html}");
+    assert!(!html.contains("gr-json-viewer-expand"), "{html}");
     assert!(html.contains("plain text"), "{html}");
 }
 

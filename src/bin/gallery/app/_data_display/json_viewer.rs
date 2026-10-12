@@ -33,10 +33,10 @@ pub(in crate::app) async fn json_viewer_page(cx: &Cx) -> Result<impl View> {
     });
     Ok(view! {
         page_header(eyebrow: "DATA DISPLAY", title: "JSONViewer",
-            description: locale.select("Explore JSON trees and copy collapsed nodes.", "折叠浏览 JSON，悬停或聚焦未展开节点即可复制。"))
+            description: locale.select("Explore JSON trees, copy collapsed nodes, or expand an entire branch.", "折叠浏览 JSON，复制未展开节点或一键展开整个分支。"))
         <div class="grid gap-6">
             component_example(id: "json-viewer-preview", title: locale.select("JSON tree", "JSON 树"),
-                description: locale.select("Expand an object or array. Copy a collapsed node without changing its state.", "展开对象或数组；复制未展开节点时保持折叠状态。"), source: rust_code_block(document, 0),
+                description: locale.select("Hover or focus a collapsed node to copy its JSON or expand all descendants. Other branches stay unchanged.", "悬停或聚焦折叠节点，可复制 JSON 或展开全部子节点，其他分支保持原状。"), source: rust_code_block(document, 0),
                 json_viewer(value: &data, language: locale.ui())
             )
             markdown_document(source: document)

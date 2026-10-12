@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Add a collapsed-node icon to JSONViewer that expands the current node and all descendants, with keyboard focus handling, bilingual labels, and shared light/dark styling.
+
 ## 0.3.1
 
 - 新增通用 `json_viewer`：对象与数组折叠、类型展示、未展开节点悬停或聚焦复制、亮暗主题和中英文提示。

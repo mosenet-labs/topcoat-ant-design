@@ -18,6 +18,9 @@ view! {
 | `language` | `UiLanguage` | English by default; supports Simplified Chinese. |
 | `attrs` | `Attributes` | Root attributes, including classes and accessible name. |
 
-Hover or focus a collapsed nonempty object or array to reveal its copy button; touch devices always show it. Copying writes that node's complete, pretty-printed JSON without expanding it and reports success or failure. The Clipboard API has a fallback that also works inside native dialogs.
+Hover or focus a collapsed nonempty object or array to reveal its copy and expand-all icon buttons; touch devices always show both.
+
+- **Copy node JSON** writes that node's complete, pretty-printed JSON without expanding it and reports success or failure. The Clipboard API has a fallback that also works inside native dialogs.
+- **Expand all descendants** opens the current node and every descendant object or array, leaving other branches unchanged. Focus moves to the current node's summary for continued keyboard navigation. Clicking the summary or its arrow still toggles only the current node.
 
 Empty objects, empty arrays, and primitives display directly. The viewer preserves all fields. Domain-specific filtering, such as removing Kubernetes `metadata.managedFields`, belongs to the host. Expansion is owned by the current DOM; `expanded_depth` is an initial setting.
