@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.3.2
 
 - Add a collapsed-node icon to JSONViewer that expands the current node and all descendants, with keyboard focus handling, bilingual labels, and shared light/dark styling.
 
