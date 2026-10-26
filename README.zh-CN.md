@@ -47,6 +47,8 @@ AI 组件覆盖消息、输入、会话导航、Markdown、过程详情、来源
 
 `0.4.0` 面向 Topcoat 0.11.0，需要 Rust 1.99 或更新版本。从 0.3.x 升级时，请按 [Dropdown Menu 文档](docs/components/dropdown-menu.md) 迁移 `target`/`id`/`close` API。
 
+本仓库通过 [rust-toolchain.toml](rust-toolchain.toml) 固定使用 Rust 1.99.1，并包含 `rustfmt` 和 `clippy`。引用本库的应用也需要在自己的仓库和构建环境中选择兼容版本，依赖库的 toolchain 文件不会被继承。配置方式见[工具链说明](docs/getting-started.md#rust-工具链)。
+
 在应用中添加已发布版本：
 
 ```toml

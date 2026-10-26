@@ -1,3 +1,24 @@
+## Rust toolchain
+
+Topcoat 0.11.0 and this library's 0.4.0 release require Rust 1.99 or newer. This repository pins 1.99.1 in its root `rust-toolchain.toml`:
+
+```toml
+[toolchain]
+channel = "1.99.1"
+profile = "minimal"
+components = ["rustfmt", "clippy"]
+```
+
+Applications using this library also need a compatible toolchain; Cargo does not inherit toolchain files from dependencies. With rustup, install the pinned version and then verify the compiler from your project directory:
+
+```sh
+rustup toolchain install 1.99.1 --profile minimal --component rustfmt --component clippy
+rustup show active-toolchain
+rustc --version
+```
+
+The `rust-version` field in `Cargo.toml` declares a minimum version; it does not switch compilers. If a build still uses 1.98.1, check explicit `cargo +1.98.1` commands, the `RUSTUP_TOOLCHAIN` environment variable, and rustup directory overrides. CI toolchain settings and Docker Rust base images also need a compatible version.
+
 ## 1. Add the Cargo dependency
 
 Add this to your application's `Cargo.toml`:

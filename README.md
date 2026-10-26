@@ -21,6 +21,8 @@ See the [0.11 feature audit](docs/topcoat-0.11-audit.md) for component coverage 
 
 Version `0.4.0` targets Topcoat 0.11.0 and requires Rust 1.99 or newer. When upgrading from 0.3.x, follow the [Dropdown Menu guide](docs/en/components/dropdown-menu.md) for the updated `target`/`id`/`close` API.
 
+Repository development uses Rust 1.99.1, pinned in [rust-toolchain.toml](rust-toolchain.toml), with `rustfmt` and `clippy`. Applications using this library must select a compatible toolchain in their own repository and build environment; dependency toolchain files are not inherited. See [toolchain setup](docs/en/getting-started.md#rust-toolchain).
+
 For the published version:
 
 ```toml
