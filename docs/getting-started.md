@@ -1,3 +1,24 @@
+## Rust 工具链
+
+Topcoat 0.11.0 和本库 0.4.0 最低需要 Rust 1.99；本仓库通过根目录的 `rust-toolchain.toml` 固定使用 1.99.1：
+
+```toml
+[toolchain]
+channel = "1.99.1"
+profile = "minimal"
+components = ["rustfmt", "clippy"]
+```
+
+在使用本库的应用项目中也应配置兼容的工具链；Cargo 不会继承依赖库的 toolchain 文件。使用 rustup 时，可先安装上述版本，再进入项目目录确认实际生效的编译器：
+
+```sh
+rustup toolchain install 1.99.1 --profile minimal --component rustfmt --component clippy
+rustup show active-toolchain
+rustc --version
+```
+
+`Cargo.toml` 的 `rust-version` 只声明最低版本，不会自动切换编译器。如果构建仍使用 1.98.1，请检查显式的 `cargo +1.98.1`、`RUSTUP_TOOLCHAIN` 环境变量或 rustup 目录 override；CI 的 toolchain 配置和 Docker 的 Rust 基础镜像也需要使用兼容版本。
+
 ## 1. 添加 Cargo 依赖
 
 在应用的 `Cargo.toml` 中添加：
