@@ -6,11 +6,11 @@ UI 库使用 Topcoat 的 `icon` 与 `icon-iconify` 能力提供统一图标。�
 
 应用需要直接依赖 Topcoat，并启用图标与视图能力：
 
-0.4.0 对应 Topcoat 0.11.0，需要 Rust 1.99+。
+0.11.0 对应 Topcoat 0.11.0，需要 Rust 1.99+。
 
 ```toml
 [dependencies]
-topcoat-ant-design = "=0.4.0"
+topcoat-ant-design = "=0.11.0"
 topcoat = { version = "=0.11.0", default-features = false, features = ["icon", "view"] }
 ```
 

@@ -1,6 +1,6 @@
 ## Rust 工具链
 
-Topcoat 0.11.0 和本库 0.4.0 最低需要 Rust 1.99；本仓库通过根目录的 `rust-toolchain.toml` 固定使用 1.99.1：
+Topcoat 0.11.0 和本库 0.11.0 最低需要 Rust 1.99；本仓库通过根目录的 `rust-toolchain.toml` 固定使用 1.99.1：
 
 ```toml
 [toolchain]
@@ -25,10 +25,10 @@ rustc --version
 
 ```toml
 [dependencies]
-topcoat-ant-design = { version = "=0.4.0", features = ["router"] }
+topcoat-ant-design = { version = "=0.11.0", features = ["router"] }
 ```
 
-0.4.0 使用 Topcoat 0.11.0，需要 Rust 1.99+。从 0.3.x 升级时，请同步迁移官方 Dropdown Menu 的 `target`/`id`/`close` API。本地开发组件库时，也可以使用路径依赖：
+0.11.0 使用 Topcoat 0.11.0，需要 Rust 1.99+。从 0.3.x 升级时，请同步迁移官方 Dropdown Menu 的 `target`/`id`/`close` API。本地开发组件库时，也可以使用路径依赖：
 
 ```toml
 [dependencies]

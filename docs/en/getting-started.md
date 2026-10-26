@@ -1,6 +1,6 @@
 ## Rust toolchain
 
-Topcoat 0.11.0 and this library's 0.4.0 release require Rust 1.99 or newer. This repository pins 1.99.1 in its root `rust-toolchain.toml`:
+Topcoat 0.11.0 and this library's 0.11.0 release require Rust 1.99 or newer. This repository pins 1.99.1 in its root `rust-toolchain.toml`:
 
 ```toml
 [toolchain]
@@ -25,10 +25,10 @@ Add this to your application's `Cargo.toml`:
 
 ```toml
 [dependencies]
-topcoat-ant-design = { version = "=0.4.0", features = ["router"] }
+topcoat-ant-design = { version = "=0.11.0", features = ["router"] }
 ```
 
-Version 0.4.0 uses Topcoat 0.11.0 and requires Rust 1.99+. When upgrading from 0.3.x, migrate the official Dropdown Menu `target`/`id`/`close` API as well. For local component development, you can also use a path dependency:
+Version 0.11.0 uses Topcoat 0.11.0 and requires Rust 1.99+. When upgrading from 0.3.x, migrate the official Dropdown Menu `target`/`id`/`close` API as well. For local component development, you can also use a path dependency:
 
 ```toml
 [dependencies]
