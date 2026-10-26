@@ -45,16 +45,16 @@ AI 组件覆盖消息、输入、会话导航、Markdown、过程详情、来源
 
 ## 添加依赖
 
-当前已发布的 `0.3.2` 面向 Topcoat 0.10.0；本开发分支已升级到 0.11.0。在新 crate 发布前，请使用下方的本地路径依赖体验升级。
+`0.4.0` 面向 Topcoat 0.11.0，需要 Rust 1.99 或更新版本。从 0.3.x 升级时，请按 [Dropdown Menu 文档](docs/components/dropdown-menu.md) 迁移 `target`/`id`/`close` API。
 
 在应用中添加已发布版本：
 
 ```toml
 [dependencies]
-topcoat-ant-design = "=0.3.2"
+topcoat-ant-design = "=0.4.0"
 ```
 
-在发布前或开发组件库时，可以使用本地路径：
+开发组件库时，可以使用本地路径：
 
 ```toml
 [dependencies]
@@ -64,7 +64,7 @@ topcoat-ant-design = { path = "../topcoat-ant-design" }
 默认 feature 已足够渲染组件。只有宿主采用选择性路由发现并需要显式注册字体时，才启用 `router`：
 
 ```toml
-topcoat-ant-design = { version = "=0.3.2", features = ["router"] }
+topcoat-ant-design = { version = "=0.4.0", features = ["router"] }
 ```
 
 ## 接入样式与字体
@@ -84,7 +84,7 @@ Ok(view! {
 使用完整 `.discover()` 的应用会同时发现 Fontsource 字体路由，不需要额外注册。只发现部分路由的应用可启用 `router` feature，并调用一次扩展：
 
 ```toml
-topcoat-ant-design = { version = "=0.3.2", features = ["router"] }
+topcoat-ant-design = { version = "=0.4.0", features = ["router"] }
 ```
 
 ```rust,ignore

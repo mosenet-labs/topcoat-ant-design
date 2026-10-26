@@ -19,13 +19,13 @@ See the [0.11 feature audit](docs/topcoat-0.11-audit.md) for component coverage 
 
 ## Add the dependency
 
-The latest published version, `0.3.2`, targets Topcoat 0.10.0. This development branch targets 0.11.0; use the local path dependency below to try it before the next crate release.
+Version `0.4.0` targets Topcoat 0.11.0 and requires Rust 1.99 or newer. When upgrading from 0.3.x, follow the [Dropdown Menu guide](docs/en/components/dropdown-menu.md) for the updated `target`/`id`/`close` API.
 
 For the published version:
 
 ```toml
 [dependencies]
-topcoat-ant-design = "=0.3.2"
+topcoat-ant-design = "=0.4.0"
 ```
 
 For local component development:
@@ -38,7 +38,7 @@ topcoat-ant-design = { path = "../topcoat-ant-design" }
 The default feature is sufficient to render components. Enable `router` only when the host uses selective route discovery and must explicitly register font routes:
 
 ```toml
-topcoat-ant-design = { version = "=0.3.2", features = ["router"] }
+topcoat-ant-design = { version = "=0.4.0", features = ["router"] }
 ```
 
 ## CSS, fonts, and assets

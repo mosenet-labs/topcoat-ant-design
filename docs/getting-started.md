@@ -4,10 +4,10 @@
 
 ```toml
 [dependencies]
-topcoat-ant-design = { version = "=0.3.2", features = ["router"] }
+topcoat-ant-design = { version = "=0.4.0", features = ["router"] }
 ```
 
-当前开发分支已升级到 Topcoat 0.11.0（需要 Rust 1.99+）。已发布的 0.3.2 使用 Topcoat 0.10；在下一版 crate 发布之前，请使用下面的路径依赖来体验本文的 0.11 功能：
+0.4.0 使用 Topcoat 0.11.0，需要 Rust 1.99+。从 0.3.x 升级时，请同步迁移官方 Dropdown Menu 的 `target`/`id`/`close` API。本地开发组件库时，也可以使用路径依赖：
 
 ```toml
 [dependencies]

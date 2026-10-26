@@ -4,10 +4,10 @@ Add this to your application's `Cargo.toml`:
 
 ```toml
 [dependencies]
-topcoat-ant-design = { version = "=0.3.2", features = ["router"] }
+topcoat-ant-design = { version = "=0.4.0", features = ["router"] }
 ```
 
-This development branch targets Topcoat 0.11.0 (Rust 1.99+). Published version 0.3.2 uses Topcoat 0.10. Until the next crate release, use the following path dependency for the 0.11 features documented here:
+Version 0.4.0 uses Topcoat 0.11.0 and requires Rust 1.99+. When upgrading from 0.3.x, migrate the official Dropdown Menu `target`/`id`/`close` API as well. For local component development, you can also use a path dependency:
 
 ```toml
 [dependencies]
