@@ -1,10 +1,11 @@
+use crate::language::t;
 use serde_json::Value;
 use topcoat::{
     Result,
-    context::{Cx, identity},
+    context::Cx,
     icon::icon,
     runtime::{Event, signal},
-    view::{Attributes, View, ViewExt, class, component, view},
+    view::{Attributes, View, ViewExt, class, component, element_id, view},
 };
 
 use crate::{
@@ -24,18 +25,21 @@ pub async fn json_viewer(
 ) -> Result<impl View> {
     let caller_class = attrs.remove("class");
     if !attrs.contains_key("aria-label") {
-        attrs.insert(
-            cx,
-            "aria-label",
-            language.select("JSON data", "JSON 原始数据"),
-        );
+        attrs.insert(cx, "aria-label", &language.resolve(t!(json_data)));
     }
     let root = serde_json::to_string(root_label).unwrap();
     Ok(view! {
         <div class=(class!("gr-json-viewer", caller_class)) (attrs)>
-            json_node(label: root.as_str(), value: value, depth: 0, expanded_depth: expanded_depth, language: language)
+            json_node(
+                label: root.as_str(),
+                value: value,
+                depth: 0,
+                expanded_depth: expanded_depth,
+                language: language
+            )
         </div>
-    }.boxed())
+    }
+    .boxed())
 }
 
 #[component]
@@ -75,50 +79,72 @@ async fn json_node(
     } else {
         String::new()
     };
-    let count = format!(
-        "{} {}",
-        entries.len(),
-        language.select(if entries.len() == 1 { "item" } else { "items" }, "项")
-    );
+    let count = language.resolve(t!(json_items, count = entries.len()));
     Ok(view! {
         if entries.is_empty() {
             <div class="gr-json-viewer-leaf">
-                <span class="gr-json-viewer-key">(label)</span>": "
-                if !kind.is_empty() { <span class="gr-json-viewer-type">(kind)</span> }
+                <span class="gr-json-viewer-key">(label)</span>
+                ": "
+                if !kind.is_empty() {
+                    <span class="gr-json-viewer-type">(kind)</span>
+                }
                 <span class=(class)>(literal.as_str())</span>
             </div>
         } else {
             <details class="gr-json-viewer-node" open=(depth < expanded_depth)>
                 <summary>
-                    <span class="gr-json-viewer-key">(label)</span>": "
+                    <span class="gr-json-viewer-key">(label)</span>
+                    ": "
                     <span class="gr-json-viewer-bracket">(start)</span>
-                    <span class="gr-json-viewer-collapsed">"…"<span class="gr-json-viewer-bracket">(end)</span></span>
+                    <span class="gr-json-viewer-collapsed">
+                        "…"
+                        <span class="gr-json-viewer-bracket">(end)</span>
+                    </span>
                     <span class="gr-json-viewer-count">(count)</span>
                     json_copy(value: value, label: label, language: language)
                     json_expand(label: label, language: language)
                 </summary>
                 <div class="gr-json-viewer-children">
-                    #[key(key.clone())] for (key, item) in &entries {
-                        json_node(label: key.as_str(), value: item, depth: depth + 1, expanded_depth: expanded_depth, language: language)
+                    #[key(key.clone())]
+                    for (key, item) in &entries {
+                        json_node(
+                            label: key.as_str(),
+                            value: item,
+                            depth: depth + 1,
+                            expanded_depth: expanded_depth,
+                            language: language
+                        )
                     }
                 </div>
-                <div class="gr-json-viewer-end"><span class="gr-json-viewer-bracket">(end)</span></div>
+                <div class="gr-json-viewer-end">
+                    <span class="gr-json-viewer-bracket">(end)</span>
+                </div>
             </details>
         }
-    }.boxed())
+    }
+    .boxed())
 }
 
 #[component]
 async fn json_expand(cx: &Cx, label: &str, language: UiLanguage) -> Result<impl View> {
-    let id = format!("gr-json-expand-{}", identity(cx));
-    let expand_label = language.select("Expand all descendants", "展开全部子节点");
+    let id = element_id(cx);
+    let expand_label = language.resolve(t!(expand_all_descendants));
     Ok(view! {
-        <button type="button" id=(id.as_str()) class="gr-json-viewer-expand" aria-label=(format!("{expand_label}: {label}")) title=(expand_label)
+        <button
+            type="button"
+            id=(id.as_str())
+            class="gr-json-viewer-expand"
+            aria-label=(format!("{expand_label}: {label}"))
+            title=(expand_label)
             @click=$(|event: Event| {
                 event.prevent_default();
                 event.stop_propagation();
-                raw!("(() => { const node = document.getElementById(${id}.dehydrate())?.closest('details.gr-json-viewer-node'); if (!node) return; node.open = true; for (const child of node.querySelectorAll('details.gr-json-viewer-node')) child.open = true; node.querySelector(':scope > summary')?.focus({ preventScroll: true }); })()", ());
-            })>
+                raw!(
+                    "(() => { const node = document.getElementById(${id}.dehydrate())?.closest('details.gr-json-viewer-node'); if (!node) return; node.open = true; for (const child of node.querySelectorAll('details.gr-json-viewer-node')) child.open = true; node.querySelector(':scope > summary')?.focus({ preventScroll: true }); })()",
+                    (),
+                );
+            })
+        >
             icon(data: NODE_EXPAND_OUTLINED, size: 13)
         </button>
     })
@@ -127,22 +153,36 @@ async fn json_expand(cx: &Cx, label: &str, language: UiLanguage) -> Result<impl 
 #[component]
 async fn json_copy(cx: &Cx, value: &Value, label: &str, language: UiLanguage) -> Result<impl View> {
     let payload = serde_json::to_string_pretty(value).unwrap();
-    let copy_label = language.select("Copy node JSON", "复制节点 JSON");
-    let success = language.select("Copied", "已复制");
-    let failure = language.select("Copy failed; try again", "复制失败，请重试");
-    let status = signal(cx, || copy_label.to_owned());
+    let copy_label = language.resolve(t!(copy_node_json));
+    let success = language.resolve(t!(copied));
+    let failure = language.resolve(t!(copy_failed_try_again));
+    let status = signal(cx, || 0usize);
     Ok(view! {
-        <button type="button" class="gr-json-viewer-copy" aria-label=(format!("{copy_label}: {label}")) :title=$(status.get())
+        <button
+            type="button"
+            class="gr-json-viewer-copy"
+            aria-label=(format!("{copy_label}: {label}"))
+            :title=$(if status.get() == 1usize { success.clone() } else if status.get() == 2usize { failure.clone() } else { copy_label.clone() })
             @click=$(async move |event: Event| {
                 event.prevent_default();
                 event.stop_propagation();
                 let _value = payload.clone();
-                let copied = raw!("cx.hydrate(await (async () => { const value = ${_value}.dehydrate(); try { if (globalThis.navigator?.clipboard?.writeText) { await globalThis.navigator.clipboard.writeText(value); return true; } } catch (_error) {} const active = document.activeElement; const field = document.createElement('textarea'); field.value = value; field.setAttribute('readonly', ''); field.style.cssText = 'position:fixed;left:-9999px;top:0;opacity:0;pointer-events:none'; (active?.closest('dialog') ?? document.body).appendChild(field); field.focus(); field.select(); field.setSelectionRange(0, field.value.length); let result = false; try { result = document.execCommand('copy'); } catch (_error) {} finally { field.remove(); if (active instanceof HTMLElement) active.focus({ preventScroll: true }); } return result; })())", false);
-                status.set(if copied { success.to_owned() } else { failure.to_owned() });
-            })>
-            <span :hidden=$(status.get() == success)>icon(data: COPY_OUTLINED, size: 13)</span>
-            <span :hidden=$(status.get() != success)>icon(data: CHECK_OUTLINED, size: 13)</span>
-            <span class="gr-json-viewer-status" role="status">$(status.get())</span>
+                let copied = raw!(
+                    "cx.hydrate(await (async () => { const value = ${_value}.dehydrate(); try { if (globalThis.navigator?.clipboard?.writeText) { await globalThis.navigator.clipboard.writeText(value); return true; } } catch (_error) {} const active = document.activeElement; const field = document.createElement('textarea'); field.value = value; field.setAttribute('readonly', ''); field.style.cssText = 'position:fixed;left:-9999px;top:0;opacity:0;pointer-events:none'; (active?.closest('dialog') ?? document.body).appendChild(field); field.focus(); field.select(); field.setSelectionRange(0, field.value.length); let result = false; try { result = document.execCommand('copy'); } catch (_error) {} finally { field.remove(); if (active instanceof HTMLElement) active.focus({ preventScroll: true }); } return result; })())",
+                    false,
+                );
+                status.set(if copied { 1usize } else { 2usize });
+            })
+        >
+            <span :hidden=$(status.get() == 1usize)>
+                icon(data: COPY_OUTLINED, size: 13)
+            </span>
+            <span :hidden=$(status.get() != 1usize)>
+                icon(data: CHECK_OUTLINED, size: 13)
+            </span>
+            <span class="gr-json-viewer-status" role="status">
+                $(if status.get() == 1usize { success.clone() } else if status.get() == 2usize { failure.clone() } else { copy_label.clone() })
+            </span>
         </button>
     })
 }

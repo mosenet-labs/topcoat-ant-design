@@ -52,6 +52,7 @@ fn main() {
     println!("cargo:rerun-if-changed=icons/ant-design.json");
     println!("cargo:rerun-if-changed=styles.css");
     println!("cargo:rerun-if-changed=src/components");
+    println!("cargo:rerun-if-changed=src/l10n");
     println!("cargo:rerun-if-changed=assets/topcoat-ant-design-theme.css");
     println!("cargo:rerun-if-changed=src/ui");
     #[cfg(feature = "gallery")]

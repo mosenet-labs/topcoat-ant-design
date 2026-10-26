@@ -56,6 +56,19 @@
 }
 
 @layer base {
+  /* Official 0.11 menus assume Preflight. Keep these resets scoped to their roots. */
+  nav > ul:has(> [class~="group/navigation-item"]) {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  :is([class~="group/navigation-item"] > button, [class~="group/dropdown-menu"] button, [class~="group/popover"] > button) {
+    border: 0 solid;
+    background-color: transparent;
+    cursor: pointer;
+  }
+
   :is(nav[aria-label="pagination"] ul, nav[aria-label="breadcrumb"] ol, [data-sidebar="menu"], [data-sidebar="menu-sub"]) {
     list-style: none;
     margin: 0;

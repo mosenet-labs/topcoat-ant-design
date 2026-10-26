@@ -51,3 +51,5 @@ async fn save_example(cx: &Cx) -> Result<impl View> {
 ## 可访问性
 
 `Success`、`Info` 和 `Warning` 使用 `role="status"` 与 `aria-live="polite"`。`Error` 使用 `role="alert"` 与 `aria-live="assertive"`，适合需要立即关注的失败结果。
+
+自动生成的面板 ID 使用 `element_id(cx)`，同一组件重渲染时保持稳定。循环渲染多个通知时，为循环添加 `#[key(...)]`。

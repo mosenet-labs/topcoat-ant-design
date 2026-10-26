@@ -437,11 +437,10 @@
   transform: translateY(0);
 }
 
-/* 锚点定位和 fallback 状态查询暂时没有等价的稳定 Tailwind 工具类。 */
-.gr-popconfirm {
-  position-area: bottom;
-  position-try-fallbacks: flip-block;
-}
+/* Shared official Floating handles positioning; custom rules retain library sizing. */
+.gr-popconfirm { width: min(300px, calc(100vw - 32px)); }
+.gr-anchored-menu { width: max-content; max-width: calc(100vw - 32px); }
+
 
 .gr-popconfirm-arrow {
   position: absolute;
@@ -483,10 +482,7 @@
   animation: gr-dialog-backdrop-enter 180ms ease-out;
 }
 
-.gr-anchored-menu {
-  position-area: bottom span-left;
-  position-try-fallbacks: flip-block, flip-inline;
-}
+
 
 .gr-anchored-menu form {
   @apply m-0 block w-full;
@@ -518,8 +514,6 @@
 }
 
 .gr-date-range-panel {
-  position-area: bottom span-left;
-  position-try-fallbacks: flip-block, flip-inline;
   @apply fixed inset-auto z-[1250] mt-2 w-[min(560px,calc(100vw_-_32px))] rounded-lg border border-[var(--gr-border-subtle)] bg-[var(--gr-surface)] p-4 font-mono text-[var(--gr-fg)] shadow-lg;
 }
 
@@ -689,7 +683,7 @@
 /* Composable table column settings. */
 .gr-table-column-settings { display: inline-block; }
 .gr-table-columns-trigger { @apply inline-flex h-9 w-9 items-center justify-center rounded-md border-0 bg-transparent p-0 text-[var(--gr-accent)] hover:bg-[var(--gr-accent-soft)]; cursor: pointer; }
-.gr-table-columns-panel { position-area: bottom span-left; position-try-fallbacks: flip-block, flip-inline; @apply fixed inset-auto m-0 mt-2 w-60 max-w-[calc(100vw_-_32px)] rounded-lg border border-[var(--gr-border-subtle)] bg-[var(--gr-surface)] p-0 font-mono text-[13px] text-[var(--gr-fg)] shadow-lg; }
+.gr-table-columns-panel { @apply fixed inset-auto m-0 mt-2 w-60 max-w-[calc(100vw_-_32px)] rounded-lg border border-[var(--gr-border-subtle)] bg-[var(--gr-surface)] p-0 font-mono text-[13px] text-[var(--gr-fg)] shadow-lg; }
 .gr-table-columns-heading { @apply flex items-center justify-between border-b border-[var(--gr-border-subtle)] px-3 py-2.5; }
 .gr-table-columns-reset { @apply rounded border-0 bg-transparent px-1 py-0.5 text-xs text-[var(--gr-accent)] hover:bg-[var(--gr-accent-soft)]; cursor: pointer; }
 .gr-table-columns-options { max-height: min(320px, 55vh); overflow-y: auto; padding: 6px; }

@@ -1,3 +1,5 @@
+topcoat::l10n::fluent::messages!(pub(crate) "./l10n/{locale}.ftl");
+
 use topcoat::{context::Cx, router::request::uri};
 use topcoat_ant_design::UiLanguage;
 
@@ -9,6 +11,13 @@ pub(crate) enum Locale {
 
 impl Locale {
     pub(crate) fn current(cx: &Cx) -> Self {
+        if let Some(locale) = topcoat::l10n::try_locale(cx) {
+            return if locale.id().language().as_str() == "zh" {
+                Self::Zh
+            } else {
+                Self::En
+            };
+        }
         if uri(cx)
             .query()
             .is_some_and(|query| query.split('&').any(|pair| pair == "lang=zh"))

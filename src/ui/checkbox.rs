@@ -6,11 +6,11 @@ use topcoat::{
 
 /// Classes for the native checkbox input and its checked state.
 const CHECKBOX: StaticClass = class!(
-    "peer size-4 shrink-0 appearance-none rounded-[4px] border border-border \
-     bg-background transition-colors outline-none \
-     checked:border-primary checked:bg-primary \
-     focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 \
-     focus-visible:ring-offset-background disabled:pointer-events-none",
+    "peer size-4 shrink-0 appearance-none rounded-[4px] border border-border",
+    "bg-background transition-colors outline-none",
+    "checked:border-primary checked:bg-primary",
+    "focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+    "focus-visible:ring-offset-background disabled:pointer-events-none",
 );
 
 /// A styled native checkbox.
@@ -23,8 +23,9 @@ const CHECKBOX: StaticClass = class!(
 /// ```ignore
 /// view! {
 ///     <div class="flex items-center gap-2">
-///         checkbox(attrs: attributes! { id="terms" name="terms" checked="" })
-///         label(attrs: attributes! { for="terms" }, "Accept terms")
+///         let terms = element_id(cx);
+///         checkbox(attrs: attributes! { id=(&terms) name="terms" checked="" })
+///         label(attrs: attributes! { for=(&terms) }, "Accept terms")
 ///     </div>
 /// }
 /// ```

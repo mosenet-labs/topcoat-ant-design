@@ -1,3 +1,4 @@
+use crate::language::t;
 use topcoat::{
     Result,
     context::Cx,
@@ -8,7 +9,7 @@ use topcoat::{
 
 use crate::icons::CALENDAR_OUTLINED;
 use crate::{
-    UiLanguage,
+    FloatingAlign, UiLanguage, popover_content,
     ui::{button, input, label},
 };
 
@@ -61,8 +62,6 @@ pub async fn date_time_range_filter(
     } = config;
     let from_id = format!("{id}-from");
     let to_id = format!("{id}-to");
-    let anchor = format!("anchor-name: --gr-{id}");
-    let panel_anchor = format!("position-anchor: --gr-{id}");
     let caller_class = attrs.remove("class");
     let root_class = class!("gr-date-range", caller_class);
     attrs.extend(attributes! { cx => class=(root_class) });
@@ -81,41 +80,111 @@ pub async fn date_time_range_filter(
 
     Ok(view! {
         <span (attrs)>
-            button::button(variant: button::ButtonVariant::Outline, attrs: attributes! { class="gr-date-range-trigger" type="button" popovertarget=(id) popovertargetaction="toggle" aria-haspopup="dialog" aria-controls=(id) style=(anchor) },
-                <span class="gr-date-range-calendar" aria-hidden="true">icon(data: CALENDAR_OUTLINED, size: 16)</span><span>(label)</span>
+            button::button(
+                variant: button::ButtonVariant::Outline,
+                attrs: attributes! {
+                    class="gr-date-range-trigger"
+                    type="button"
+                    popovertarget=(id)
+                    popovertargetaction="toggle"
+                    aria-haspopup="dialog"
+                    aria-controls=(id)
+                },
+                <span class="gr-date-range-calendar" aria-hidden="true">
+                    icon(data: CALENDAR_OUTLINED, size: 16)
+                </span>
+                <span>(label)</span>
             )
-            <aside id=(id) class="gr-date-range-panel" popover="auto" role="dialog" aria-label=(language.select("Select date range", "选择时间范围")) style=(panel_anchor)>
+            popover_content(
+                id: id,
+                align: FloatingAlign::End,
+                attrs: attributes! {
+                    class="gr-date-range-panel"
+                    role="dialog"
+                    aria-label=(language.resolve(t!(select_date_range)))
+                },
                 <div class="gr-date-range-fields">
-                    label::label(attrs: attributes! { for=(from_id.as_str()) },
-                        <span>(language.select("Start time", "开始时间"))</span>
-                        input::input(attrs: attributes! { (from_attrs) id=(from_id.as_str()) name=(from_name) type="datetime-local" value=(from) })
+                    label::label(
+                        attrs: attributes! { for=(from_id.as_str()) },
+                        <span>(language.resolve(t!(start_time)))</span>
+                        input::input(
+                            attrs: attributes! {
+                                (from_attrs)
+                                id=(from_id.as_str())
+                                name=(from_name)
+                                type="datetime-local"
+                                value=(from)
+                            }
+                        )
                     )
-                    <span class="gr-date-range-separator" aria-hidden="true">"→"</span>
-                    label::label(attrs: attributes! { for=(to_id.as_str()) },
-                        <span>(language.select("End time", "结束时间"))</span>
-                        input::input(attrs: attributes! { (to_attrs) id=(to_id.as_str()) name=(to_name) type="datetime-local" value=(to) })
+                    <span class="gr-date-range-separator" aria-hidden="true">
+                        "→"
+                    </span>
+                    label::label(
+                        attrs: attributes! { for=(to_id.as_str()) },
+                        <span>(language.resolve(t!(end_time)))</span>
+                        input::input(
+                            attrs: attributes! {
+                                (to_attrs)
+                                id=(to_id.as_str())
+                                name=(to_name)
+                                type="datetime-local"
+                                value=(to)
+                            }
+                        )
                     )
                 </div>
-                <div class="gr-date-range-quick" aria-label=(language.select("Quick date ranges", "快捷时间范围"))>
-                    button::button(variant: button::ButtonVariant::Ghost, attrs: attributes! { type="button" (quick_day) }, (language.select("Last 24 hours", "最近 24 小时")))
-                    button::button(variant: button::ButtonVariant::Ghost, attrs: attributes! { type="button" (quick_week) }, (language.select("Last 7 days", "最近 7 天")))
-                    button::button(variant: button::ButtonVariant::Ghost, attrs: attributes! { type="button" (quick_month) }, (language.select("Last 30 days", "最近 30 天")))
+                <div
+                    class="gr-date-range-quick"
+                    aria-label=(language.resolve(t!(quick_date_ranges)))
+                >
+                    button::button(
+                        variant: button::ButtonVariant::Ghost,
+                        attrs: attributes! { type="button" (quick_day) },
+                        (language.resolve(t!(last_24_hours)))
+                    )
+                    button::button(
+                        variant: button::ButtonVariant::Ghost,
+                        attrs: attributes! { type="button" (quick_week) },
+                        (language.resolve(t!(last_7_days)))
+                    )
+                    button::button(
+                        variant: button::ButtonVariant::Ghost,
+                        attrs: attributes! { type="button" (quick_month) },
+                        (language.resolve(t!(last_30_days)))
+                    )
                 </div>
                 <footer class="gr-date-range-actions">
-                    button::button(variant: button::ButtonVariant::Outline, attrs: attributes! { cx => class="gr-button gr-button-default" type="button" @click=$(move |_e: Event| {
-                        let _from = clear_from.to_owned(); let _to = clear_to.to_owned();
-                        raw!("(() => { const update = id => { const input = document.getElementById(id); if (!(input instanceof HTMLInputElement)) return; input.value = ''; input.dispatchEvent(new Event('input', { bubbles: true })); input.dispatchEvent(new Event('change', { bubbles: true })); }; update(${_from}.dehydrate()); update(${_to}.dehydrate()); })()", ());
-                    }) }, (language.select("Clear", "清除")))
-                    button::button(attrs: attributes! { class="gr-button gr-button-primary" type="submit" }, (language.select("Apply", "应用")))
+                    button::button(
+                        variant: button::ButtonVariant::Outline,
+                        attrs: attributes! {
+                            cx =>
+                            class="gr-button gr-button-default"
+                            type="button"
+                            @click=$(move |_e: Event| {
+                                let _from = clear_from.to_owned();
+                                let _to = clear_to.to_owned();
+                                raw!(
+                                    "(() => { const update = id => { const input = document.getElementById(id); if (!(input instanceof HTMLInputElement)) return; input.value = ''; input.dispatchEvent(new Event('input', { bubbles: true })); input.dispatchEvent(new Event('change', { bubbles: true })); }; update(${_from}.dehydrate()); update(${_to}.dehydrate()); })()",
+                                    (),
+                                );
+                            })
+                        },
+                        (language.resolve(t!(clear)))
+                    )
+                    button::button(
+                        attrs: attributes! { class="gr-button gr-button-primary" type="submit" },
+                        (language.resolve(t!(apply)))
+                    )
                 </footer>
-            </aside>
+            )
         </span>
     })
 }
 
 fn range_label(from: &str, to: &str, language: UiLanguage) -> String {
     match (from.is_empty(), to.is_empty()) {
-        (true, true) => language.select("All time", "全部时间").to_owned(),
+        (true, true) => language.resolve(t!(all_time)).to_owned(),
         (false, true) => match language {
             UiLanguage::English => format!("From {}", compact_time(from)),
             UiLanguage::ChineseSimplified => format!("{} 起", compact_time(from)),
@@ -133,10 +202,16 @@ fn compact_time(value: &str) -> String {
 }
 
 fn recent_range_attributes(cx: &Cx, from_id: String, to_id: String, days: f64) -> Attributes {
-    attributes! { cx =>
+    attributes! {
+        cx =>
         @click=$(move |_e: Event| {
-            let _from = from_id.to_owned(); let _to = to_id.to_owned(); let _days = days;
-            raw!("(() => { const pad = value => String(value).padStart(2, '0'); const format = date => date.getFullYear() + '-' + pad(date.getMonth()+1) + '-' + pad(date.getDate()) + 'T' + pad(date.getHours()) + ':' + pad(date.getMinutes()); const update = (id, value) => { const input = document.getElementById(id); if (!(input instanceof HTMLInputElement)) return; input.value = value; input.dispatchEvent(new Event('input', { bubbles: true })); input.dispatchEvent(new Event('change', { bubbles: true })); }; const end = new Date(); const start = new Date(end.getTime() - ${_days}.dehydrate() * 86400000); update(${_from}.dehydrate(), format(start)); update(${_to}.dehydrate(), format(end)); })()", ());
+            let _from = from_id.to_owned();
+            let _to = to_id.to_owned();
+            let _days = days;
+            raw!(
+                "(() => { const pad = value => String(value).padStart(2, '0'); const format = date => date.getFullYear() + '-' + pad(date.getMonth()+1) + '-' + pad(date.getDate()) + 'T' + pad(date.getHours()) + ':' + pad(date.getMinutes()); const update = (id, value) => { const input = document.getElementById(id); if (!(input instanceof HTMLInputElement)) return; input.value = value; input.dispatchEvent(new Event('input', { bubbles: true })); input.dispatchEvent(new Event('change', { bubbles: true })); }; const end = new Date(); const start = new Date(end.getTime() - ${_days}.dehydrate() * 86400000); update(${_from}.dehydrate(), format(start)); update(${_to}.dehydrate(), format(end)); })()",
+                (),
+            );
         })
     }
 }

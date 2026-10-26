@@ -1,3 +1,4 @@
+use crate::language::t;
 use topcoat::{
     Result,
     context::Cx,
@@ -18,15 +19,30 @@ pub async fn chat_think(
     #[default] child: Child<'_>,
 ) -> Result<impl View> {
     let open = open.clone();
-    let title = language.select("Thinking process", "思考过程");
+    let title = language.resolve(t!(thinking_process));
     Ok(view! {
-        <section class=(class!("gr-chat-think", attrs.remove("class"))) :data-state=$(if open.get() { "open" } else { "closed" }) (attrs)>
-            button::button(variant: button::ButtonVariant::Ghost, attrs: attributes! { cx => type="button" class="gr-chat-think-trigger" :aria-expanded=$(open.get()) aria-controls=(id) @click=$(|_e: Event| open.toggle()) },
+        <section
+            class=(class!("gr-chat-think", attrs.remove("class")))
+            :data-state=$(if open.get() { "open" } else { "closed" })
+            (attrs)
+        >
+            button::button(
+                variant: button::ButtonVariant::Ghost,
+                attrs: attributes! {
+                    cx =>
+                    type="button"
+                    class="gr-chat-think-trigger"
+                    :aria-expanded=$(open.get())
+                    aria-controls=(id)
+                    @click=$(|_e: Event| open.toggle())
+                },
                 <span class="gr-chat-think-caret" aria-hidden="true">"▶"</span>
                 <span class="gr-chat-think-brain" aria-hidden="true">"🧠"</span>
                 <span>(title)</span>
             )
-            collapse(id: id, open: &open,
+            collapse(
+                id: id,
+                open: &open,
                 <div class="gr-chat-think-detail">(child)</div>
             )
         </section>

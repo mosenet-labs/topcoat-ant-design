@@ -6,10 +6,12 @@ The UI library uses Topcoat's `icon` and `icon-iconify` support for a consistent
 
 Applications depend directly on Topcoat with icon and view support:
 
+Use a path dependency for this 0.11 development branch; published version 0.3.2 still targets Topcoat 0.10.
+
 ```toml
 [dependencies]
-topcoat-ant-design = "=0.3.2"
-topcoat = { version = "=0.10.0", default-features = false, features = ["icon", "view"] }
+topcoat-ant-design = { path = "../topcoat-ant-design" }
+topcoat = { version = "=0.11.0", default-features = false, features = ["icon", "view"] }
 ```
 
 Import a selected icon constant from the UI library and render it with Topcoat's native component:

@@ -90,7 +90,7 @@ data_table(label: "用户列表",
 
 ## 服务端或游标分页
 
-调用方负责构造包含筛选条件和游标的地址。给官方分页链接传入 Topcoat 0.10 的 `link_attrs`，即可使用客户端导航并遵循宿主的预取配置：
+调用方负责构造包含筛选条件和游标的地址。给官方分页链接传入 Topcoat 0.11 的 `link_attrs`，即可使用客户端导航并遵循宿主的预取配置：
 
 ```rust,ignore
 use topcoat::runtime::{link_attrs, prefetch_mode};

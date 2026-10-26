@@ -1,3 +1,4 @@
+use crate::language::t;
 use topcoat::{
     Result,
     view::{Attributes, Child, View, attributes, class, component, view},
@@ -24,12 +25,12 @@ impl ChatThoughtStatus {
         }
     }
 
-    const fn label(self, language: UiLanguage) -> &'static str {
+    fn label(self, language: UiLanguage) -> String {
         match self {
-            Self::Loading => language.select("In progress", "进行中"),
-            Self::Success => language.select("Completed", "已完成"),
-            Self::Error => language.select("Failed", "失败"),
-            Self::Abort => language.select("Stopped", "已中止"),
+            Self::Loading => language.resolve(t!(in_progress)),
+            Self::Success => language.resolve(t!(completed)),
+            Self::Error => language.resolve(t!(failed)),
+            Self::Abort => language.resolve(t!(stopped)),
         }
     }
 }
@@ -41,9 +42,15 @@ pub async fn chat_thought_chain(
     #[default] mut attrs: Attributes,
     #[default] child: Child<'_>,
 ) -> Result<impl View> {
-    Ok(
-        view! { <ol aria-label=(label) class=(class!("gr-chat-thought-chain", attrs.remove("class"))) (attrs)>(child)</ol> },
-    )
+    Ok(view! {
+        <ol
+            aria-label=(label)
+            class=(class!("gr-chat-thought-chain", attrs.remove("class")))
+            (attrs)
+        >
+            (child)
+        </ol>
+    })
 }
 
 /// A single step inside `chat_thought_chain`.
@@ -57,16 +64,34 @@ pub async fn chat_thought_step(
 ) -> Result<impl View> {
     let state = status.map_or("default", ChatThoughtStatus::as_str);
     Ok(view! {
-        <li data-status=(state) class=(class!("gr-chat-thought-step", attrs.remove("class"))) (attrs)>
+        <li
+            data-status=(state)
+            class=(class!("gr-chat-thought-step", attrs.remove("class")))
+            (attrs)
+        >
             <span class="gr-chat-thought-step-marker" aria-hidden="true">
-                if status.is_none() { <span class="gr-chat-thought-step-number"></span> }
-                else if status == Some(ChatThoughtStatus::Loading) { spinner::spinner(label: ChatThoughtStatus::Loading.label(language), attrs: attributes! { class="gr-chat-thought-step-spinner" }) }
-                else if status == Some(ChatThoughtStatus::Success) { "✓" }
-                else if status == Some(ChatThoughtStatus::Error) { "×" }
-                else { "−" }
+                if status.is_none() {
+                    <span class="gr-chat-thought-step-number"></span>
+                } else if status == Some(ChatThoughtStatus::Loading) {
+                    spinner::spinner(
+                        label: &ChatThoughtStatus::Loading.label(language),
+                        attrs: attributes! { class="gr-chat-thought-step-spinner" }
+                    )
+                } else if status == Some(ChatThoughtStatus::Success) {
+                    "✓"
+                } else if status == Some(ChatThoughtStatus::Error) {
+                    "×"
+                } else {
+                    "−"
+                }
             </span>
             <div class="gr-chat-thought-step-body">
-                if let Some(status) = status { <span class="sr-only">(status.label(language)) " · "</span> }
+                if let Some(status) = status {
+                    <span class="sr-only">
+                        (status.label(language))
+                        " · "
+                    </span>
+                }
                 <strong class="gr-chat-thought-step-title">(title)</strong>
                 <div class="gr-chat-thought-step-description">(child)</div>
             </div>

@@ -27,8 +27,14 @@ async fn json_tree_escapes_text_and_preserves_types_and_empty_containers() {
         "<script>": "<img src=x onerror=alert(1)>",
         "nested": {"items": [true, 42, null], "empty": {}, "array": []}
     });
-    let html = view! { cx => json_viewer(value: &value, language: UiLanguage::ChineseSimplified,
-    attrs: attributes! { class="fixture-json" aria-label="测试 JSON" }) }
+    let html = view! {
+        cx =>
+        json_viewer(
+            value: &value,
+            language: UiLanguage::ChineseSimplified,
+            attrs: attributes! { class="fixture-json" aria-label="测试 JSON" }
+        )
+    }
     .single()
     .await
     .unwrap()
@@ -68,12 +74,14 @@ async fn json_tree_escapes_text_and_preserves_types_and_empty_containers() {
 async fn json_tree_can_start_collapsed_and_display_a_primitive_root() {
     let cx = &Cx::default();
     let value = serde_json::json!({"nested": {"ok": true}});
-    let html =
-        view! { cx => json_viewer(value: &value, expanded_depth: 0, root_label: "response") }
-            .single()
-            .await
-            .unwrap()
-            .render(cx);
+    let html = view! {
+        cx =>
+        json_viewer(value: &value, expanded_depth: 0, root_label: "response")
+    }
+    .single()
+    .await
+    .unwrap()
+    .render(cx);
     assert!(!html.contains(" open"), "{html}");
     assert!(html.contains("response"), "{html}");
     assert!(html.contains("Copy node JSON"), "{html}");
@@ -107,11 +115,35 @@ async fn table_columns_fixture(cx: &Cx, preference: &str) -> Result<impl View> {
     ];
     let hidden = signal(cx, || preference.to_owned());
     Ok(view! {
-        table_column_settings(id: "fixture-columns", columns: &columns, hidden: &hidden, language: UiLanguage::ChineseSimplified)
-        data_table(label: "资源",
-            <colgroup>for column in &columns { <col (table_column_attributes(cx, column, &hidden))> }</colgroup>
-            <thead><tr>for column in &columns { <th (table_column_attributes(cx, column, &hidden))>(column.label.as_str())</th> }</tr></thead>
-            <tbody><tr>for column in &columns { <td (table_column_attributes(cx, column, &hidden))>"value"</td> }</tr></tbody>
+        table_column_settings(
+            id: "fixture-columns",
+            columns: &columns,
+            hidden: &hidden,
+            language: UiLanguage::ChineseSimplified
+        )
+        data_table(
+            label: "资源",
+            <colgroup>
+                for column in &columns {
+                    <col (table_column_attributes(cx, column, &hidden))>
+                }
+            </colgroup>
+            <thead>
+                <tr>
+                    for column in &columns {
+                        <th (table_column_attributes(cx, column, &hidden))>
+                            (column.label.as_str())
+                        </th>
+                    }
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    for column in &columns {
+                        <td (table_column_attributes(cx, column, &hidden))>"value"</td>
+                    }
+                </tr>
+            </tbody>
         )
     })
 }
@@ -155,8 +187,16 @@ async fn calendar_month_and_day_keep_dates_and_event_meaning() {
     }];
     let day_events = events.clone();
     let week_events = events.clone();
-    let month = view! { cx => calendar(date: date, today: date, events: &events,
-    mode: CalendarView::Month, language: UiLanguage::ChineseSimplified) }
+    let month = view! {
+        cx =>
+        calendar(
+            date: date,
+            today: date,
+            events: &events,
+            mode: CalendarView::Month,
+            language: UiLanguage::ChineseSimplified
+        )
+    }
     .single()
     .await
     .unwrap()
@@ -165,25 +205,38 @@ async fn calendar_month_and_day_keep_dates_and_event_meaning() {
     assert!(month.contains("data-date=\"2026-03-01\""), "{month}");
     assert!(month.contains("春节 · 放假"), "{month}");
     assert!(month.contains("aria-current=\"date\""), "{month}");
-    let day = view! { cx => calendar(date: date, today: date, events: &day_events,
-    mode: CalendarView::Day, language: UiLanguage::ChineseSimplified) }
+    let day = view! {
+        cx =>
+        calendar(
+            date: date,
+            today: date,
+            events: &day_events,
+            mode: CalendarView::Day,
+            language: UiLanguage::ChineseSimplified
+        )
+    }
     .single()
     .await
     .unwrap()
     .render(cx);
     assert!(day.contains("gr-calendar-day-panel"), "{day}");
     assert!(day.contains("春节 · 放假"), "{day}");
-    let week = view! { cx => calendar(date: date, today: date, events: &week_events,
-    mode: CalendarView::Week, language: UiLanguage::ChineseSimplified) }
+    let week = view! {
+        cx =>
+        calendar(
+            date: date,
+            today: date,
+            events: &week_events,
+            mode: CalendarView::Week,
+            language: UiLanguage::ChineseSimplified
+        )
+    }
     .single()
     .await
     .unwrap()
     .render(cx);
     assert_eq!(week.matches("data-date=").count(), 7, "{week}");
-    assert!(
-        week.contains("2026 年 2 月 9 日 – 2026 年 2 月 15 日"),
-        "{week}"
-    );
+    assert!(week.contains("2026年2月9日 – 2026年2月15日"), "{week}");
 }
 
 #[component]
@@ -194,7 +247,7 @@ async fn notification_fixture(cx: &Cx, tone: NotificationTone) -> Result<impl Vi
             message: &message,
             title: "操作结果",
             tone: tone,
-            attrs: attributes! { class="notification-fixture" data-source="test" },
+            attrs: attributes! { class="notification-fixture" data-source="test" }
         )
     })
 }
@@ -209,7 +262,10 @@ async fn collapse_fixture(cx: &Cx) -> Result<impl View> {
         collapse(
             id: "fixture-content",
             open: &open,
-            attrs: attributes! { class="collapse-fixture" aria-labelledby="fixture-trigger" },
+            attrs: attributes! {
+                class="collapse-fixture"
+                aria-labelledby="fixture-trigger"
+            },
             <p>"可折叠内容"</p>
         )
     })
@@ -255,12 +311,9 @@ fn custom_stylesheet_includes_light_and_dark_theme_tokens() {
 #[tokio::test]
 async fn official_components_render_from_crate_root_with_shared_styles() {
     let cx = &Cx::default();
-    let html = view! { cx =>
-        card(
-            card_content(
-                button(variant: ButtonVariant::Primary, "Save")
-            )
-        )
+    let html = view! {
+        cx =>
+        card(card_content(button(variant: ButtonVariant::Primary, "Save")))
     }
     .single()
     .await
@@ -276,19 +329,46 @@ async fn official_components_render_from_crate_root_with_shared_styles() {
 async fn custom_components_fixture(cx: &Cx) -> Result<impl View> {
     let open = signal(cx, || true);
     Ok(view! {
-        chat_actions(label: "Actions", attrs: attributes! { class="extra-actions" data-audit="actions" },
+        chat_actions(
+            label: "Actions",
+            attrs: attributes! { class="extra-actions" data-audit="actions" },
             <button type="button">"Copy"</button>
         )
-        chat_source(title: "Documentation", href: "https://example.com", attrs: attributes! { class="extra-source" data-audit="source" })
-        chat_prompt(title: "Try this", attrs: attributes! { class="extra-prompt" data-audit="prompt" })
-        chat_think(id: "audit-think", open: &open, attrs: attributes! { class="extra-think" }, "Reasoning")
-        chat_conversation_item(title: "Draft", href: "/chat/new", active: expr!(open.get()), attrs: attributes! { class="extra-conversation" })
-        tabs_trigger(active: expr!(open.get()), attrs: attributes! { href="/details" class="extra-tab" }, "Details")
-        tooltip(attrs: attributes! { class="extra-tooltip" }, <span>"Hint trigger"</span> tooltip_content(attrs: attributes! { id="audit-tooltip" }, "Hint"))
+        chat_source(
+            title: "Documentation",
+            href: "https://example.com",
+            attrs: attributes! { class="extra-source" data-audit="source" }
+        )
+        chat_prompt(
+            title: "Try this",
+            attrs: attributes! { class="extra-prompt" data-audit="prompt" }
+        )
+        chat_think(
+            id: "audit-think",
+            open: &open,
+            attrs: attributes! { class="extra-think" },
+            "Reasoning"
+        )
+        chat_conversation_item(
+            title: "Draft",
+            href: "/chat/new",
+            active: expr!(open.get()),
+            attrs: attributes! { class="extra-conversation" }
+        )
+        tabs_trigger(
+            active: expr!(open.get()),
+            attrs: attributes! { href="/details" class="extra-tab" },
+            "Details"
+        )
+        tooltip(
+            attrs: attributes! { class="extra-tooltip" },
+            <span>"Hint trigger"</span>
+            tooltip_content(attrs: attributes! { id="audit-tooltip" }, "Hint")
+        )
         date_time_range_filter(
             config: DateTimeRangeConfig::new("audit-range", "", ""),
             from_attrs: attributes! { data-audit="from" },
-            to_attrs: attributes! { data-audit="to" },
+            to_attrs: attributes! { data-audit="to" }
         )
     })
 }
@@ -322,7 +402,11 @@ async fn custom_components_forward_attributes_and_accept_reactive_active_state()
 async fn routed_drawer_fixture(cx: &Cx) -> Result<impl View> {
     let open = signal(cx, || true);
     Ok(view! {
-        drawer(config: DrawerConfig::new("audit-drawer", "Details").with_close_href("/events"), open: &open,
+        drawer(
+            config: DrawerConfig::new("audit-drawer", "Details").with_close_href(
+                "/events",
+            ),
+            open: &open,
             <p>"Event details"</p>
         )
     })
@@ -391,7 +475,8 @@ async fn notification_renders_assertive_error_semantics() {
 async fn popconfirm_connects_trigger_dialog_and_confirm_action() {
     let cx = &Cx::default();
     let trigger = popconfirm_trigger_attributes(cx, "remove-project");
-    let html = view! { cx =>
+    let html = view! {
+        cx =>
         <button type="button" (trigger)>"停用"</button>
         popconfirm(
             id: "remove-project",
@@ -417,9 +502,9 @@ async fn popconfirm_connects_trigger_dialog_and_confirm_action() {
         html.contains("aria-describedby=\"remove-project-description\""),
         "{html}"
     );
-    assert!(html.contains("anchor-name: --gr-remove-project"), "{html}");
+    assert!(html.contains("[position-anchor:auto]"), "{html}");
     assert!(
-        html.contains("position-anchor: --gr-remove-project"),
+        html.contains("[position-try-fallbacks:flip-block,flip-inline,flip-block_flip-inline]"),
         "{html}"
     );
     assert!(html.contains("gr-popconfirm-arrow"), "{html}");
@@ -434,11 +519,16 @@ async fn popconfirm_connects_trigger_dialog_and_confirm_action() {
 #[tokio::test]
 async fn date_time_range_keeps_native_form_and_popover_semantics() {
     let cx = &Cx::default();
-    let html = view! { cx =>
+    let html = view! {
+        cx =>
         <form>
             date_time_range_filter(
-                config: DateTimeRangeConfig::new("run-range", "2026-09-20T10:00", "2026-09-21T10:00"),
-                attrs: attributes! { data-source="test" },
+                config: DateTimeRangeConfig::new(
+                    "run-range",
+                    "2026-09-20T10:00",
+                    "2026-09-21T10:00",
+                ),
+                attrs: attributes! { data-source="test" }
             )
         </form>
     }
@@ -479,12 +569,16 @@ async fn collapse_connects_trigger_state_content_and_forwarded_attributes() {
 #[tokio::test]
 async fn table_pagination_supports_a_reusable_page_size_selector() {
     let cx = &Cx::default();
-    let html = view! { cx =>
-        data_table(label: "审计事件",
+    let html = view! {
+        cx =>
+        data_table(
+            label: "审计事件",
             <thead><tr><th>"操作"</th></tr></thead>
             <tbody><tr><td>"登录"</td></tr></tbody>
         )
-        table_pagination(summary: "共 1 条事件", label: "审计日志分页",
+        table_pagination(
+            summary: "共 1 条事件",
+            label: "审计日志分页",
             table_page_size_select(
                 id: "audit-page-size",
                 label: "每页记录",
@@ -511,4 +605,90 @@ async fn table_pagination_supports_a_reusable_page_size_selector() {
     assert!(html.contains("data-source=\"test\""), "{html}");
     assert!(html.contains("上一页"), "{html}");
     assert!(html.contains("下一页"), "{html}");
+}
+
+#[component]
+async fn official_popover_fixture(cx: &Cx) -> Result<impl View> {
+    use topcoat::view::element_id;
+    use topcoat_ant_design::{
+        FloatingAlign, FloatingAnchor, FloatingSide, floating_variants, navigation_menu,
+        navigation_menu_item, navigation_menu_link, navigation_menu_list, popover, popover_content,
+        popover_trigger,
+    };
+    let panel = element_id(cx);
+    Ok(view! {
+        popover(
+            popover_trigger(target: &panel, "Filters")
+            popover_content(id: &panel, align: FloatingAlign::End, "Filter content")
+        )
+        navigation_menu(
+            attrs: attributes! { aria-label="Guides" },
+            navigation_menu_list(
+                navigation_menu_item(
+                    navigation_menu_link(
+                        active: true,
+                        attrs: attributes! { href="/docs" },
+                        "Docs"
+                    )
+                )
+            )
+        )
+        <div
+            class=(floating_variants(
+                FloatingAnchor::Invoker,
+                FloatingSide::Left,
+                FloatingAlign::Start,
+            ))
+        ></div>
+    })
+}
+
+#[tokio::test]
+async fn official_011_modules_are_exported_and_connect_unique_stable_ids() {
+    let cx = &Cx::default();
+    let render = || async {
+        view! {
+            cx =>
+            official_popover_fixture()
+            official_popover_fixture()
+        }
+        .single()
+        .await
+        .unwrap()
+        .render(cx)
+    };
+    let first = render().await;
+    let second = render().await;
+    let panels: Vec<&str> = first
+        .split("popovertarget=\"")
+        .skip(1)
+        .map(|tail| tail.split('"').next().unwrap())
+        .collect();
+    assert_eq!(panels.len(), 2);
+    assert_ne!(panels[0], panels[1]);
+    for id in panels {
+        assert!(first.contains(&format!("id=\"{id}\"")));
+        assert!(second.contains(&format!("id=\"{id}\"")));
+    }
+    assert!(first.contains("popover=\"auto\""));
+    assert!(first.contains("aria-current=\"page\""));
+    assert!(first.contains("[position-area:left_span-bottom]"));
+}
+
+#[tokio::test]
+async fn component_language_can_follow_the_host_context_and_still_be_overridden() {
+    let cx = &Cx::default().with(topcoat::l10n::locale!("zh-CN"));
+    assert_eq!(UiLanguage::current(cx), UiLanguage::ChineseSimplified);
+    let value = serde_json::json!({"ok":true});
+    let html = view! {
+        cx =>
+        json_viewer(value: &value, language: UiLanguage::current(cx))
+        json_viewer(value: &value, language: UiLanguage::English)
+    }
+    .single()
+    .await
+    .unwrap()
+    .render(cx);
+    assert!(html.contains("复制节点 JSON"));
+    assert!(html.contains("Copy node JSON"));
 }

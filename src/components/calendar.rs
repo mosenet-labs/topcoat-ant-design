@@ -1,7 +1,9 @@
+use crate::language::t;
 use chrono::{Datelike, Duration, NaiveDate};
 use topcoat::{
     Result,
     context::Cx,
+    l10n::{DateTime, DateTimeStyle},
     view::{Attributes, View, attributes, class, component, view},
 };
 
@@ -59,32 +61,23 @@ pub async fn calendar(
             month - Duration::days(month.weekday().num_days_from_monday().into())
         }
     };
-    let title = match (language, mode) {
-        (UiLanguage::English, CalendarView::Month) => date.format("%B %Y").to_string(),
-        (UiLanguage::English, CalendarView::Week) => format!(
+    let format_day = |day: NaiveDate| {
+        DateTime::date(day.year(), day.month() as u8, day.day() as u8)
+            .expect("valid calendar date")
+            .date_style(DateTimeStyle::Long)
+            .resolve_in(&language.locale())
+    };
+    let title = match mode {
+        CalendarView::Month => match language {
+            UiLanguage::English => date.format("%B %Y").to_string(),
+            UiLanguage::ChineseSimplified => format!("{} 年 {} 月", date.year(), date.month()),
+        },
+        CalendarView::Week => format!(
             "{} – {}",
-            first.format("%b %-d, %Y"),
-            (first + Duration::days(6)).format("%b %-d, %Y")
+            format_day(first),
+            format_day(first + Duration::days(6))
         ),
-        (UiLanguage::English, CalendarView::Day) => date.format("%B %-d, %Y").to_string(),
-        (UiLanguage::ChineseSimplified, CalendarView::Month) => {
-            format!("{} 年 {} 月", date.year(), date.month())
-        }
-        (UiLanguage::ChineseSimplified, CalendarView::Week) => {
-            let end = first + Duration::days(6);
-            format!(
-                "{} 年 {} 月 {} 日 – {} 年 {} 月 {} 日",
-                first.year(),
-                first.month(),
-                first.day(),
-                end.year(),
-                end.month(),
-                end.day()
-            )
-        }
-        (UiLanguage::ChineseSimplified, CalendarView::Day) => {
-            format!("{} 年 {} 月 {} 日", date.year(), date.month(), date.day())
-        }
+        CalendarView::Day => format_day(date),
     };
     let count = match mode {
         CalendarView::Day => 1,
@@ -119,7 +112,8 @@ pub async fn calendar(
         UiLanguage::ChineseSimplified => ["周一", "周二", "周三", "周四", "周五", "周六", "周日"],
     };
     let caller_class = attrs.remove("class");
-    attrs.extend(attributes! { cx =>
+    attrs.extend(attributes! {
+        cx =>
         class=(class!("gr-calendar", caller_class))
         aria-label=(title.as_str())
     });
@@ -129,26 +123,76 @@ pub async fn calendar(
             <h2 class="gr-calendar-title">(title)</h2>
             if mode == CalendarView::Day {
                 for cell in &cells {
-                    <div class="gr-calendar-day-panel" data-date=(cell.date.to_string())>
-                        <div class="gr-calendar-day-heading"><span>(weekdays[cell.date.weekday().num_days_from_monday() as usize])</span><strong aria-current=(if cell.today { Some("date") } else { None })>(cell.date.day())</strong></div>
-                        if cell.events.is_empty() { <p class="gr-calendar-empty">(language.select("No entries", "当天没有日程"))</p> }
+                    <div
+                        class="gr-calendar-day-panel"
+                        data-date=(cell.date.to_string())
+                    >
+                        <div class="gr-calendar-day-heading">
+                            <span>
+                                (weekdays[cell.date.weekday().num_days_from_monday() as usize
+                                ])
+                            </span>
+                            <strong
+                                aria-current=(if cell.today { Some("date") } else { None })
+                            >
+                                (cell.date.day())
+                            </strong>
+                        </div>
+                        if cell.events.is_empty() {
+                            <p class="gr-calendar-empty">
+                                (language.resolve(t!(no_entries)))
+                            </p>
+                        }
                         for event in &cell.events {
-                            <div class=(event_class(event.kind))><span class="gr-calendar-event-dot" aria-hidden="true"></span><span>(event.title.as_str())</span></div>
+                            <div class=(event_class(event.kind))>
+                                <span class="gr-calendar-event-dot" aria-hidden="true"></span>
+                                <span>(event.title.as_str())</span>
+                            </div>
                         }
                     </div>
                 }
             } else {
                 <div class="gr-calendar-scroll">
-                    <table class=(if mode == CalendarView::Week { "gr-calendar-grid gr-calendar-week" } else { "gr-calendar-grid gr-calendar-month" })>
-                        <thead><tr>for weekday in weekdays { <th scope="col">(weekday)</th> }</tr></thead>
+                    <table
+                        class=(if mode == CalendarView::Week {
+                            "gr-calendar-grid gr-calendar-week"
+                        } else {
+                            "gr-calendar-grid gr-calendar-month"
+                        })
+                    >
+                        <thead>
+                            <tr>
+                                for weekday in weekdays {
+                                    <th scope="col">(weekday)</th>
+                                }
+                            </tr>
+                        </thead>
                         <tbody>
                             for week in cells.chunks(7) {
                                 <tr>
                                     for cell in week {
-                                        <td data-date=(cell.date.to_string()) class=(class!("gr-calendar-outside" if cell.outside_month, "gr-calendar-today" if cell.today))>
-                                            <span class="gr-calendar-number" aria-label=(cell.date.format("%Y-%m-%d").to_string()) aria-current=(if cell.today { Some("date") } else { None })>(cell.date.day())</span>
+                                        <td
+                                            data-date=(cell.date.to_string())
+                                            class=(class!(
+                                                "gr-calendar-outside" if cell.outside_month,
+                                                "gr-calendar-today" if cell.today,
+                                            ))
+                                        >
+                                            <span
+                                                class="gr-calendar-number"
+                                                aria-label=(cell.date.format("%Y-%m-%d").to_string())
+                                                aria-current=(if cell.today { Some("date") } else { None })
+                                            >
+                                                (cell.date.day())
+                                            </span>
                                             for event in &cell.events {
-                                                <span class=(event_class(event.kind)) title=(event.title.as_str())><span class="gr-calendar-event-dot" aria-hidden="true"></span><span>(event.title.as_str())</span></span>
+                                                <span
+                                                    class=(event_class(event.kind))
+                                                    title=(event.title.as_str())
+                                                >
+                                                    <span class="gr-calendar-event-dot" aria-hidden="true"></span>
+                                                    <span>(event.title.as_str())</span>
+                                                </span>
                                             }
                                         </td>
                                     }

@@ -1,3 +1,4 @@
+use crate::language::t;
 use serde::{Deserialize, Serialize};
 use topcoat::{
     Result,
@@ -32,9 +33,9 @@ pub async fn chat_bubble(
     let is_user = role == ChatBubbleRole::User;
     let role_name = if is_user { "user" } else { "assistant" };
     let role_label = if is_user {
-        language.select("You", "你")
+        language.resolve(t!(you))
     } else {
-        language.select("Assistant", "助手")
+        language.resolve(t!(assistant))
     };
     let caller_class = attrs.remove("class");
     let root_class = class!(
@@ -42,28 +43,54 @@ pub async fn chat_bubble(
         "gr-chat-bubble-user flex-row-reverse" if is_user,
         caller_class,
     );
-    attrs.extend(attributes! { cx =>
+    attrs.extend(attributes! {
+        cx =>
         class=(root_class)
         data-role=(role_name)
-        aria-label=(role_label)
+        aria-label=(role_label.as_str())
     });
     if let Some(status) = status {
-        attrs.extend(attributes! { cx =>
+        attrs.extend(attributes! {
+            cx =>
             data-status=(status.as_str())
-            aria-busy=(matches!(status, ChatMessageStatus::Sending | ChatMessageStatus::Streaming))
+            aria-busy=(matches!(
+                status,
+                ChatMessageStatus::Sending | ChatMessageStatus::Streaming,
+            ))
         });
     }
 
     Ok(view! {
         <article (attrs)>
-            avatar::avatar(size: avatar::AvatarSize::Sm, attrs: attributes! { class="gr-chat-avatar" aria-hidden="true" },
+            avatar::avatar(
+                size: avatar::AvatarSize::Sm,
+                attrs: attributes! { class="gr-chat-avatar" aria-hidden="true" },
                 avatar::avatar_fallback((if is_user { "U" } else { "AI" }))
             )
             <div class="min-w-0 max-w-[min(76ch,88%)]">
-                <p class="gr-chat-role m-0 mb-1 text-[11px] font-semibold tracking-[0.08em] text-[var(--gr-fg-subtle)]">(role_label)</p>
-                <div class="gr-chat-content rounded-[14px] px-4 py-3 text-sm leading-6">(child)</div>
+                <p
+                    class="gr-chat-role m-0 mb-1 text-[11px] font-semibold tracking-[0.08em] text-[var(--gr-fg-subtle)]"
+                >
+                    (role_label)
+                </p>
+                <div class="gr-chat-content rounded-[14px] px-4 py-3 text-sm leading-6">
+                    (child)
+                </div>
                 if let Some(status) = status {
-                    <p class="mb-0 mt-1.5 text-[11px] font-medium text-[var(--gr-fg-muted)]" role="status">(status.label(language))</p>
+                    <p
+                        class="mb-0 mt-1.5 text-[11px] font-medium text-[var(--gr-fg-muted)]"
+                        role="status"
+                    >
+                        (language.resolve(
+                            match status {
+                                ChatMessageStatus::Sending => t!(sending),
+                                ChatMessageStatus::Streaming => t!(streaming),
+                                ChatMessageStatus::Complete => t!(complete),
+                                ChatMessageStatus::Failed => t!(failed),
+                                ChatMessageStatus::Cancelled => t!(cancelled),
+                            },
+                        ))
+                    </p>
                 }
             </div>
         </article>
