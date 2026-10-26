@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.11.0
+
+- Align the library version with its supported Topcoat release, 0.11.0; component APIs remain compatible with 0.4.0.
+- Include the Rust 1.99.1 toolchain configuration with rustfmt and Clippy, and bilingual host/build-environment setup instructions.
+- Update bilingual dependency examples and fix the README license link used by rustdoc.
+
 ## 0.4.0
 
 - Upgrade all Topcoat dependencies to 0.11.0 and require Rust 1.99.

@@ -19,7 +19,9 @@ See the [0.11 feature audit](docs/topcoat-0.11-audit.md) for component coverage 
 
 ## Add the dependency
 
-Version `0.4.0` targets Topcoat 0.11.0 and requires Rust 1.99 or newer. When upgrading from 0.3.x, follow the [Dropdown Menu guide](docs/en/components/dropdown-menu.md) for the updated `target`/`id`/`close` API.
+Starting with 0.11.0, this library uses the same version number as the supported Topcoat release. This release keeps the component APIs from 0.4.0.
+
+Version `0.11.0` targets Topcoat 0.11.0 and requires Rust 1.99 or newer. When upgrading from 0.3.x, follow the [Dropdown Menu guide](docs/en/components/dropdown-menu.md) for the updated `target`/`id`/`close` API.
 
 Repository development uses Rust 1.99.1, pinned in [rust-toolchain.toml](rust-toolchain.toml), with `rustfmt` and `clippy`. Applications using this library must select a compatible toolchain in their own repository and build environment; dependency toolchain files are not inherited. See [toolchain setup](docs/en/getting-started.md#rust-toolchain).
 
@@ -27,7 +29,7 @@ For the published version:
 
 ```toml
 [dependencies]
-topcoat-ant-design = "=0.4.0"
+topcoat-ant-design = "=0.11.0"
 ```
 
 For local component development:
@@ -40,7 +42,7 @@ topcoat-ant-design = { path = "../topcoat-ant-design" }
 The default feature is sufficient to render components. Enable `router` only when the host uses selective route discovery and must explicitly register font routes:
 
 ```toml
-topcoat-ant-design = { version = "=0.4.0", features = ["router"] }
+topcoat-ant-design = { version = "=0.11.0", features = ["router"] }
 ```
 
 ## CSS, fonts, and assets
@@ -147,7 +149,7 @@ Open `http://127.0.0.1:3100/dropdown-menu` for the interactive Dropdown Menu exa
 
 ## License
 
-The project is MIT licensed. See [LICENSE](LICENSE). The Ant Design icon data in `icons/ant-design.json` retains its MIT notice in [LICENSES/ant-design-icons-MIT.txt](LICENSES/ant-design-icons-MIT.txt).
+The project is MIT licensed. See [LICENSE](https://github.com/mosenet-labs/topcoat-ant-design/blob/main/LICENSE). The Ant Design icon data in `icons/ant-design.json` retains its MIT notice in [LICENSES/ant-design-icons-MIT.txt](LICENSES/ant-design-icons-MIT.txt).
 
 ## Additional components in 0.3.1
 

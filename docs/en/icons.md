@@ -6,11 +6,11 @@ The UI library uses Topcoat's `icon` and `icon-iconify` support for a consistent
 
 Applications depend directly on Topcoat with icon and view support:
 
-Version 0.4.0 targets Topcoat 0.11.0 and requires Rust 1.99+.
+Version 0.11.0 targets Topcoat 0.11.0 and requires Rust 1.99+.
 
 ```toml
 [dependencies]
-topcoat-ant-design = "=0.4.0"
+topcoat-ant-design = "=0.11.0"
 topcoat = { version = "=0.11.0", default-features = false, features = ["icon", "view"] }
 ```
 
