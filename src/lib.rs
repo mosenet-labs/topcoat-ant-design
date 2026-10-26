@@ -4,15 +4,15 @@ mod components;
 pub mod icons;
 mod language;
 mod theme;
-/// Official Topcoat UI components, vendored from its registry (unchanged in 0.10.0).
+/// Official Topcoat UI components, vendored from its v0.11.0 registry.
 pub mod ui;
 
 pub use ui::{
     accordion::*, alert::*, alert_dialog::*, avatar::*, badge::*, breadcrumb::*, button::*,
-    card::*, checkbox::*, dialog::*, dropdown_menu::*, field::*, hover_card::*, input::*, kbd::*,
-    label::*, pagination::*, progress::*, radio_group::*, select::*, separator::*, sheet::*,
-    sidebar::*, skeleton::*, spinner::*, switch::*, table::*, tabs::*, textarea::*, toggle::*,
-    tooltip::*,
+    card::*, checkbox::*, dialog::*, dropdown_menu::*, field::*, floating::*, hover_card::*,
+    input::*, kbd::*, label::*, navigation_menu::*, pagination::*, popover::*, progress::*,
+    radio_group::*, select::*, separator::*, sheet::*, sidebar::*, skeleton::*, spinner::*,
+    switch::*, table::*, tabs::*, textarea::*, toggle::*, tooltip::*,
 };
 
 pub use components::anchored_menu::{anchored_menu, anchored_menu_trigger_attributes};

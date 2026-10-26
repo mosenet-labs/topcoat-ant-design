@@ -69,7 +69,7 @@ const EXAMPLE_SOURCE: &str = r#"// The page owns a JSON-encoded Vec<ChatMessage>
 let messages = signal(cx, || serde_json::to_string(&initial_messages).unwrap());
 let draft = signal(cx, String::new);
 let busy = signal(cx, || false);
-// Inside each keyed assistant message, a Topcoat 0.10 ReplyPreview record
+// Inside each keyed assistant message, a Topcoat 0.11 ReplyPreview record
 // keeps local response content and streaming status in one typed signal.
 view! {
     message_region(messages: $(messages), draft: $(draft), busy: $(busy), language: "en".to_owned())
@@ -121,12 +121,14 @@ pub(super) async fn chat_flow(cx: &Cx, session: &str) -> Result<impl View> {
     let notes_url = locale.link("/chat/notes");
     let new_url = locale.link("/chat/new");
     let live_url = locale.link("/chat/live");
-    let submit = attributes! { cx =>
+    let submit = attributes! {
+        cx =>
         @submit=$(|event: Event| {
             event.prevent_default();
             let text = draft.get();
             if !text.trim().is_empty() {
-                raw!(r#"(() => {
+                raw!(
+                    r#"(() => {
                     const items = JSON.parse(${messages}.get().dehydrate());
                     const text = ${text}.dehydrate().trim();
                     items.push({ id: crypto.randomUUID(), role: 'user', status: 'complete', content: text });
@@ -139,7 +141,9 @@ pub(super) async fn chat_flow(cx: &Cx, session: &str) -> Result<impl View> {
                         setTimeout(() => observer.disconnect(), 1500);
                     }
                     document.getElementById('gallery-chat-draft')?.focus();
-                })();"#, ());
+                })();"#,
+                    (),
+                );
                 draft.set("".to_owned());
                 busy.set(true);
             }
@@ -153,47 +157,173 @@ pub(super) async fn chat_flow(cx: &Cx, session: &str) -> Result<impl View> {
             description: locale.select(
                 "Compose conversations, message states, and reusable content components. This is a local interaction preview.",
                 "组合会话、消息状态与可复用内容组件。这里是浏览器本地交互预览。",
-            ),
+            )
         )
         component_example(
             id: "chat-preview",
             title: locale.select("Chat composition", "聊天界面组合"),
-            description: locale.select("Send several messages, then advance, finish, fail, cancel, or retry a local reply.", "连续发送消息，再通过本地按钮推进、完成、失败、取消或重试回复。"),
+            description: locale.select(
+                "Send several messages, then advance, finish, fail, cancel, or retry a local reply.",
+                "连续发送消息，再通过本地按钮推进、完成、失败、取消或重试回复。",
+            ),
             source: EXAMPLE_SOURCE,
-            <div class="grid min-h-[650px] grid-cols-[210px_minmax(0,1fr)] bg-background max-[720px]:grid-cols-1">
-                <aside class="flex flex-col border-r border-border bg-background p-4 max-[720px]:border-b max-[720px]:border-r-0" aria-label=(locale.select("Conversations", "会话"))>
-                    <div class="mb-5 flex items-center gap-2 px-2 py-1"><span class="grid size-8 place-items-center rounded-[9px] bg-primary text-[11px] font-bold text-primary-foreground">"AI"</span><span class="text-sm font-bold text-foreground">"Topcoat X"</span></div>
-                    <p class="mb-2 mt-0 px-2 text-[10px] font-bold uppercase tracking-[0.13em] text-muted-foreground">(locale.select("Workspace", "工作区"))</p>
-                    chat_conversation_list(label: locale.select("Demo conversations", "示例会话"),
-                        chat_conversation_item(title: locale.select("Designing a Chat interface", "设计 Chat 界面"), href: design_url.as_str(), active: session == "design")
-                        chat_conversation_item(title: locale.select("Component boundaries", "组件边界"), href: notes_url.as_str(), active: session == "notes")
-                        chat_conversation_item(title: locale.select("New conversation", "新建会话"), href: new_url.as_str(), active: session == "new")
-                        chat_conversation_item(title: locale.select("Live shared room", "实时共享会话"), href: live_url.as_str(), active: false)
-                    )
-                    <p class="mt-auto border-t border-border px-2 pt-4 text-[11px] leading-5 text-muted-foreground max-[720px]:hidden">(locale.select("Routes select sample conversations. Messages on this page stay in browser memory.", "路由切换示例会话；本页新消息仅保留在浏览器内存中。"))</p>
-                </aside>
-                <section class="flex min-h-[650px] min-w-0 flex-col max-[720px]:min-h-[560px]" aria-label=(locale.select("Chat preview", "聊天预览"))>
-                    <header class="flex min-h-[70px] items-center justify-between gap-4 border-b border-border bg-card/90 px-6 max-[520px]:px-4">
-                        <div><p class="m-0 text-[11px] font-bold uppercase tracking-[0.12em] text-primary">"CHAT / 01"</p><h2 class="m-0 mt-1 text-base font-semibold text-foreground">(match session { "notes" => locale.select("Component boundaries", "组件边界"), "new" => locale.select("New conversation", "新建会话"), _ => locale.select("Designing a Chat interface", "设计 Chat 界面") })</h2></div>
-                        <span class="rounded-full border border-border bg-background px-3 py-1 text-[11px] font-medium text-muted-foreground">(locale.select("Local preview", "本地预览"))</span>
-                    </header>
-                    <div class="min-h-0 flex-1 overflow-y-auto px-6 py-7 max-[520px]:px-4" id="gallery-chat-scroll">
-                        message_region(messages: $(messages), draft: $(draft), busy: $(busy), language: $(language.clone()))
+            <div
+                class="grid min-h-[650px] grid-cols-[210px_minmax(0,1fr)] bg-background max-[720px]:grid-cols-1"
+            >
+                <aside
+                    class="flex flex-col border-r border-border bg-background p-4 max-[720px]:border-b max-[720px]:border-r-0"
+                    aria-label=(locale.select("Conversations", "会话"))
+                >
+                    <div class="mb-5 flex items-center gap-2 px-2 py-1">
+                        <span
+                            class="grid size-8 place-items-center rounded-[9px] bg-primary text-[11px] font-bold text-primary-foreground"
+                        >
+                            "AI"
+                        </span>
+                        <span class="text-sm font-bold text-foreground">
+                            "Topcoat X"
+                        </span>
                     </div>
-                    <div class="border-t border-border bg-card/80 px-5 pb-5 pt-4 max-[520px]:px-4">
-                        chat_sender(id: "gallery-chat-draft", draft: &draft, submit_attrs: submit, busy: Some(&busy), max_length: Some(2000), language: locale.ui(),
+                    <p
+                        class="mb-2 mt-0 px-2 text-[10px] font-bold uppercase tracking-[0.13em] text-muted-foreground"
+                    >
+                        (locale.select("Workspace", "工作区"))
+                    </p>
+                    chat_conversation_list(
+                        label: locale.select("Demo conversations", "示例会话"),
+                        chat_conversation_item(
+                            title: locale.select(
+                                "Designing a Chat interface",
+                                "设计 Chat 界面",
+                            ),
+                            href: design_url.as_str(),
+                            active: session == "design"
+                        )
+                        chat_conversation_item(
+                            title: locale.select("Component boundaries", "组件边界"),
+                            href: notes_url.as_str(),
+                            active: session == "notes"
+                        )
+                        chat_conversation_item(
+                            title: locale.select("New conversation", "新建会话"),
+                            href: new_url.as_str(),
+                            active: session == "new"
+                        )
+                        chat_conversation_item(
+                            title: locale.select(
+                                "Live shared room",
+                                "实时共享会话",
+                            ),
+                            href: live_url.as_str(),
+                            active: false
+                        )
+                    )
+                    <p
+                        class="mt-auto border-t border-border px-2 pt-4 text-[11px] leading-5 text-muted-foreground max-[720px]:hidden"
+                    >
+                        (locale.select(
+                            "Routes select sample conversations. Messages on this page stay in browser memory.",
+                            "路由切换示例会话；本页新消息仅保留在浏览器内存中。",
+                        ))
+                    </p>
+                </aside>
+                <section
+                    class="flex min-h-[650px] min-w-0 flex-col max-[720px]:min-h-[560px]"
+                    aria-label=(locale.select("Chat preview", "聊天预览"))
+                >
+                    <header
+                        class="flex min-h-[70px] items-center justify-between gap-4 border-b border-border bg-card/90 px-6 max-[520px]:px-4"
+                    >
+                        <div>
+                            <p
+                                class="m-0 text-[11px] font-bold uppercase tracking-[0.12em] text-primary"
+                            >
+                                "CHAT / 01"
+                            </p>
+                            <h2
+                                class="m-0 mt-1 text-base font-semibold text-foreground"
+                            >
+                                (match session {
+                                    "notes" => locale.select(
+                                        "Component boundaries",
+                                        "组件边界",
+                                    ),
+                                    "new" => locale.select("New conversation", "新建会话"),
+                                    _ => locale.select(
+                                        "Designing a Chat interface",
+                                        "设计 Chat 界面",
+                                    ),
+                                })
+                            </h2>
+                        </div>
+                        <span
+                            class="rounded-full border border-border bg-background px-3 py-1 text-[11px] font-medium text-muted-foreground"
+                        >
+                            (locale.select("Local preview", "本地预览"))
+                        </span>
+                    </header>
+                    <div
+                        class="min-h-0 flex-1 overflow-y-auto px-6 py-7 max-[520px]:px-4"
+                        id="gallery-chat-scroll"
+                    >
+                        message_region(
+                            messages: $(messages),
+                            draft: $(draft),
+                            busy: $(busy),
+                            language: $(language.clone())
+                        )
+                    </div>
+                    <div
+                        class="border-t border-border bg-card/80 px-5 pb-5 pt-4 max-[520px]:px-4"
+                    >
+                        chat_sender(
+                            id: "gallery-chat-draft",
+                            draft: &draft,
+                            submit_attrs: submit,
+                            busy: Some(&busy),
+                            max_length: Some(2000),
+                            language: locale.ui(),
                             <div class="flex items-center gap-2 px-4 pt-3">
-                                <button type="button" class="rounded-md border border-border bg-background px-2 py-1 text-xs text-primary" @click=$(|_e| attached.toggle())>(locale.select("Attach sample file", "添加示例文件"))</button>
+                                <button
+                                    type="button"
+                                    class="rounded-md border border-border bg-background px-2 py-1 text-xs text-primary"
+                                    @click=$(|_e| attached.toggle())
+                                >
+                                    (locale.select("Attach sample file", "添加示例文件"))
+                                </button>
                                 <div :hidden=$(!attached.get())>
-                                    chat_attachment_tray(label: locale.select("Selected attachments", "已选附件"),
-                                        chat_file(name: "example.txt", detail: locale.select("Local example · no upload", "本地示例 · 未上传"),
-                                            <button type="button" class="text-xs text-[var(--gr-error)]" aria-label=(locale.select("Remove example file", "移除示例文件")) @click=$(|_e| attached.set(false))>"×"</button>
+                                    chat_attachment_tray(
+                                        label: locale.select("Selected attachments", "已选附件"),
+                                        chat_file(
+                                            name: "example.txt",
+                                            detail: locale.select(
+                                                "Local example · no upload",
+                                                "本地示例 · 未上传",
+                                            ),
+                                            <button
+                                                type="button"
+                                                class="text-xs text-[var(--gr-error)]"
+                                                aria-label=(locale.select(
+                                                    "Remove example file",
+                                                    "移除示例文件",
+                                                ))
+                                                @click=$(|_e| attached.set(false))
+                                            >
+                                                "×"
+                                            </button>
                                         )
                                     )
                                 </div>
                             </div>
                         )
-                        <p class="mb-0 mt-2.5 text-center text-[11px] text-muted-foreground">(locale.select("Demo procedure · no model or file service", "示例过程函数 · 不连接模型或文件服务"))</p>
+                        <p
+                            class="mb-0 mt-2.5 text-center text-[11px] text-muted-foreground"
+                        >
+                            (locale.select(
+                                "Demo procedure · no model or file service",
+                                "示例过程函数 · 不连接模型或文件服务",
+                            ))
+                        </p>
                     </div>
                 </section>
             </div>
@@ -234,20 +364,43 @@ pub(in crate::app) async fn message_region(
         .collect::<Vec<_>>();
     Ok(view! {
         if rendered.is_empty() {
-            <div class="mx-auto flex min-h-[340px] max-w-[620px] flex-col justify-center py-6">
-                <span class="mb-5 grid size-12 place-items-center rounded-2xl bg-[var(--gr-accent-soft)] text-lg font-bold text-primary">"AI"</span>
-                <h3 class="m-0 text-[25px] font-semibold tracking-[-0.03em] text-foreground">(locale.select("What shall we explore?", "今天想探索什么？"))</h3>
-                <p class="mb-7 mt-2 text-sm leading-6 text-muted-foreground">(locale.select("Choose a starting point or write your own message below.", "选择一个起点，或在下方输入自己的消息。"))</p>
-                chat_prompts(label: locale.select("Suggested prompts", "建议输入"),
+            <div
+                class="mx-auto flex min-h-[340px] max-w-[620px] flex-col justify-center py-6"
+            >
+                <span
+                    class="mb-5 grid size-12 place-items-center rounded-2xl bg-[var(--gr-accent-soft)] text-lg font-bold text-primary"
+                >
+                    "AI"
+                </span>
+                <h3
+                    class="m-0 text-[25px] font-semibold tracking-[-0.03em] text-foreground"
+                >
+                    (locale.select("What shall we explore?", "今天想探索什么？"))
+                </h3>
+                <p class="mb-7 mt-2 text-sm leading-6 text-muted-foreground">
+                    (locale.select(
+                        "Choose a starting point or write your own message below.",
+                        "选择一个起点，或在下方输入自己的消息。",
+                    ))
+                </p>
+                chat_prompts(
+                    label: locale.select("Suggested prompts", "建议输入"),
                     chat_prompt(title: first_prompt.as_str(), attrs: first_attrs)
                     chat_prompt(title: second_prompt.as_str(), attrs: second_attrs)
                 )
             </div>
         } else {
-            chat_message_list(label: locale.select("Conversation messages", "会话消息"),
+            chat_message_list(
+                label: locale.select("Conversation messages", "会话消息"),
                 #[key(message.id.clone())]
                 for (message, prompt) in rendered {
-                    demo_message(message: message, prompt: prompt, messages: messages.clone(), busy: busy.clone(), language: language.clone())
+                    demo_message(
+                        message: message,
+                        prompt: prompt,
+                        messages: messages.clone(),
+                        busy: busy.clone(),
+                        language: language.clone()
+                    )
                 }
             )
         }
@@ -319,7 +472,12 @@ async fn demo_message(
     );
     let bubble_attrs = if pending {
         let reply = live_reply.clone();
-        attributes! { cx => id=(message_id.as_str()) :data-status=$(if reply.get().streaming { "streaming" } else { "sending" }) aria-busy="true" }
+        attributes! {
+            cx =>
+            id=(message_id.as_str())
+            :data-status=$(if reply.get().streaming { "streaming" } else { "sending" })
+            aria-busy="true"
+        }
     } else {
         attributes! { cx => id=(message_id.as_str()) }
     };
@@ -332,30 +490,75 @@ async fn demo_message(
 
     Ok(view! {
         <div class="gr-chat-message-entry">
-        chat_bubble(role: message.role, status: if pending { None } else { Some(message.status) }, language: locale.ui(), attrs: bubble_attrs,
-            if has_sources {
-                chat_think(id: "gallery-design-thinking", open: &think_open, language: locale.ui(),
-                    chat_thought_chain(label: locale.select("Design steps", "设计步骤"),
-                        chat_thought_step(title: locale.select("Split", "拆分"), (locale.select("Identify reusable message and input pieces.", "识别可复用的消息和输入部分。")))
-                        chat_thought_step(title: locale.select("Compose", "组合"), (locale.select("Keep conversation state in the page.", "在页面管理会话状态。")))
+            chat_bubble(
+                role: message.role,
+                status: if pending { None } else { Some(message.status) },
+                language: locale.ui(),
+                attrs: bubble_attrs,
+                if has_sources {
+                    chat_think(
+                        id: "gallery-design-thinking",
+                        open: &think_open,
+                        language: locale.ui(),
+                        chat_thought_chain(
+                            label: locale.select("Design steps", "设计步骤"),
+                            chat_thought_step(
+                                title: locale.select("Split", "拆分"),
+                                (locale.select(
+                                    "Identify reusable message and input pieces.",
+                                    "识别可复用的消息和输入部分。",
+                                ))
+                            )
+                            chat_thought_step(
+                                title: locale.select("Compose", "组合"),
+                                (locale.select(
+                                    "Keep conversation state in the page.",
+                                    "在页面管理会话状态。",
+                                ))
+                            )
+                        )
                     )
-                )
-            }
-            if pending {
-                <p class="m-0" :hidden=$(live_reply.read().content.is_empty())>$(live_reply.read().content.to_owned())</p>
-                <p class="m-0 text-muted-foreground" :hidden=$(!live_reply.read().content.is_empty())>(waiting_label.as_str())</p>
-                <p class="mb-0 mt-2 text-[11px] font-medium text-muted-foreground" role="status">$(if live_reply.get().streaming { streaming_label.clone() } else { sending_label.clone() })</p>
-            } else if message.content.is_empty() {
-                <p class="m-0 text-muted-foreground">(waiting_label.as_str())</p>
-            } else {
-                chat_markdown(source: message.content.as_str())
-            }
-            if message.role == ChatBubbleRole::Assistant {
-                chat_actions(label: locale.select("Message actions", "消息操作"),
-                    if message.status == ChatMessageStatus::Sending || message.status == ChatMessageStatus::Streaming {
-                        <button type="button" class="gr-chat-action" @click=$(async |_e: Event| {
-                            let _answer = gallery_reply(service_prompt.clone(), service_language.clone()).await;
-                            raw!(r#"(() => {
+                }
+                if pending {
+                    <p class="m-0" :hidden=$(live_reply.read().content.is_empty())>
+                        $(live_reply.read().content.to_owned())
+                    </p>
+                    <p
+                        class="m-0 text-muted-foreground"
+                        :hidden=$(!live_reply.read().content.is_empty())
+                    >
+                        (waiting_label.as_str())
+                    </p>
+                    <p
+                        class="mb-0 mt-2 text-[11px] font-medium text-muted-foreground"
+                        role="status"
+                    >
+                        $(if live_reply.get().streaming {
+                            streaming_label.clone()
+                        } else {
+                            sending_label.clone()
+                        })
+                    </p>
+                } else if message.content.is_empty() {
+                    <p class="m-0 text-muted-foreground">(waiting_label.as_str())</p>
+                } else {
+                    chat_markdown(source: message.content.as_str())
+                }
+                if message.role == ChatBubbleRole::Assistant {
+                    chat_actions(
+                        label: locale.select("Message actions", "消息操作"),
+                        if message.status == ChatMessageStatus::Sending
+                            || message.status == ChatMessageStatus::Streaming {
+                            <button
+                                type="button"
+                                class="gr-chat-action"
+                                @click=$(async |_e: Event| {
+                                    let _answer = gallery_reply(
+                                        service_prompt.clone(),
+                                        service_language.clone(),
+                                    ).await;
+                                    raw!(
+                                        r#"(() => {
                                     const items = JSON.parse(${service_state}.get().dehydrate());
                                     const item = items.find(value => value.id === ${service_id}.dehydrate());
                                     if (!item || (item.status !== 'sending' && item.status !== 'streaming')) return;
@@ -363,25 +566,43 @@ async fn demo_message(
                                     item.status = 'complete';
                                     ${service_state}.set(cx.hydrate(JSON.stringify(items)));
                                     ${busy_for_service}.set(cx.hydrate(false));
-                                })();"#, ());
-                        })>(locale.select("Demo service", "示例服务"))</button>
-                        <button type="button" class="gr-chat-action" @click=$(|_e| {
-                            let content = next_reply.get().content;
-                            let next = if !content.contains(first_chunk) {
-                                first_chunk
-                            } else if !content.contains(second_chunk) {
-                                second_chunk
-                            } else if !content.contains(third_chunk) {
-                                third_chunk
-                            } else {
-                                ""
-                            };
-                            let content = raw!("cx.hydrate(${content}.dehydrate() + ${next}.dehydrate())", format!("{content}{next}"));
-                            next_reply.set(ReplyPreview { content, streaming: true });
-                        })>(locale.select("Next chunk", "下一段"))</button>
-                        <button type="button" class="gr-chat-action" @click=$(|_e| {
-                            let _content = finish_reply.get().content;
-                            raw!(r#"(() => {
+                                })();"#,
+                                        (),
+                                    );
+                                })
+                            >
+                                (locale.select("Demo service", "示例服务"))
+                            </button>
+                            <button
+                                type="button"
+                                class="gr-chat-action"
+                                @click=$(|_e| {
+                                    let content = next_reply.get().content;
+                                    let next = if !content.contains(first_chunk) {
+                                        first_chunk
+                                    } else if !content.contains(second_chunk) {
+                                        second_chunk
+                                    } else if !content.contains(third_chunk) {
+                                        third_chunk
+                                    } else {
+                                        ""
+                                    };
+                                    let content = raw!(
+                                        "cx.hydrate(${content}.dehydrate() + ${next}.dehydrate())",
+                                        format!("{content}{next}"),
+                                    );
+                                    next_reply.set(ReplyPreview { content, streaming: true });
+                                })
+                            >
+                                (locale.select("Next chunk", "下一段"))
+                            </button>
+                            <button
+                                type="button"
+                                class="gr-chat-action"
+                                @click=$(|_e| {
+                                    let _content = finish_reply.get().content;
+                                    raw!(
+                                        r#"(() => {
                                 const items = JSON.parse(${finish_state}.get().dehydrate());
                                 const item = items.find(value => value.id === ${finish_id}.dehydrate());
                                 if (!item) return;
@@ -389,44 +610,122 @@ async fn demo_message(
                                 item.status = 'complete';
                                 ${finish_state}.set(cx.hydrate(JSON.stringify(items)));
                                 ${busy_for_finish}.set(cx.hydrate(false));
-                            })()"#, ());
-                        })>(locale.select("Finish", "完成"))</button>
-                        <button type="button" class="gr-chat-action" @click=$(|_e| {
-                            let _content = fail_reply.get().content;
-                            raw!(r#"(() => { const items = JSON.parse(${fail_state}.get().dehydrate()); const item = items.find(value => value.id === ${fail_id}.dehydrate()); if (item) { item.content = ${_content}.dehydrate(); item.status = 'failed'; ${fail_state}.set(cx.hydrate(JSON.stringify(items))); ${busy_for_fail}.set(cx.hydrate(false)); } })()"#, ());
-                        })>(locale.select("Fail", "失败"))</button>
-                        <button type="button" class="gr-chat-action" @click=$(async |_e: Event| {
-                            let _ack = gallery_action("cancel".to_owned(), cancel_id.clone()).await;
-                            let _content = cancel_reply.get().content;
-                            raw!(r#"(() => { const items = JSON.parse(${cancel_state}.get().dehydrate()); const item = items.find(value => value.id === ${cancel_id}.dehydrate()); if (item) { item.content = ${_content}.dehydrate(); item.status = 'cancelled'; ${cancel_state}.set(cx.hydrate(JSON.stringify(items))); ${busy_for_cancel}.set(cx.hydrate(false)); } })()"#, ());
-                        })>(locale.select("Cancel", "取消"))</button>
-                    }
-                    if message.status == ChatMessageStatus::Failed || message.status == ChatMessageStatus::Cancelled {
-                        <button type="button" class="gr-chat-action" @click=$(async |_e: Event| {
-                            let _ack = gallery_action("retry".to_owned(), retry_id.clone()).await;
-                            retry_reply.set(ReplyPreview { content: "".to_owned(), streaming: false });
-                            raw!(r#"(() => { const items = JSON.parse(${retry_state}.get().dehydrate()); const item = items.find(value => value.id === ${retry_id}.dehydrate()); if (item) { item.content = ''; item.status = 'sending'; ${retry_state}.set(cx.hydrate(JSON.stringify(items))); ${busy_for_retry}.set(cx.hydrate(true)); } })()"#, ());
-                        })>(locale.select("Retry", "重试"))</button>
-                    }
-                    if message.status == ChatMessageStatus::Complete {
-                        <button type="button" class="gr-chat-action gr-chat-action-copy" :aria-label=$(if copied.get() { copied_label } else { copy_label }) :title=$(if copied.get() { copied_label } else { copy_label }) @click=$(|_e| {
-                            raw!("navigator.clipboard?.writeText(${copy_content}.dehydrate()).then(() => ${copied_state}.set(cx.hydrate(true)))", ());
-                        })>icon(data: COPY_OUTLINED, size: 14)<span>(locale.select("Copy reply", "复制回复"))</span></button>
-                        <span class="gr-chat-copy-feedback" role="status" :hidden=$(!copied.get())>(copied_label)</span>
-                    }
+                            })()"#,
+                                        (),
+                                    );
+                                })
+                            >
+                                (locale.select("Finish", "完成"))
+                            </button>
+                            <button
+                                type="button"
+                                class="gr-chat-action"
+                                @click=$(|_e| {
+                                    let _content = fail_reply.get().content;
+                                    raw!(
+                                        r#"(() => { const items = JSON.parse(${fail_state}.get().dehydrate()); const item = items.find(value => value.id === ${fail_id}.dehydrate()); if (item) { item.content = ${_content}.dehydrate(); item.status = 'failed'; ${fail_state}.set(cx.hydrate(JSON.stringify(items))); ${busy_for_fail}.set(cx.hydrate(false)); } })()"#,
+                                        (),
+                                    );
+                                })
+                            >
+                                (locale.select("Fail", "失败"))
+                            </button>
+                            <button
+                                type="button"
+                                class="gr-chat-action"
+                                @click=$(async |_e: Event| {
+                                    let _ack = gallery_action(
+                                        "cancel".to_owned(),
+                                        cancel_id.clone(),
+                                    ).await;
+                                    let _content = cancel_reply.get().content;
+                                    raw!(
+                                        r#"(() => { const items = JSON.parse(${cancel_state}.get().dehydrate()); const item = items.find(value => value.id === ${cancel_id}.dehydrate()); if (item) { item.content = ${_content}.dehydrate(); item.status = 'cancelled'; ${cancel_state}.set(cx.hydrate(JSON.stringify(items))); ${busy_for_cancel}.set(cx.hydrate(false)); } })()"#,
+                                        (),
+                                    );
+                                })
+                            >
+                                (locale.select("Cancel", "取消"))
+                            </button>
+                        }
+                        if message.status == ChatMessageStatus::Failed
+                            || message.status == ChatMessageStatus::Cancelled {
+                            <button
+                                type="button"
+                                class="gr-chat-action"
+                                @click=$(async |_e: Event| {
+                                    let _ack = gallery_action(
+                                        "retry".to_owned(),
+                                        retry_id.clone(),
+                                    ).await;
+                                    retry_reply.set(
+                                        ReplyPreview { content: "".to_owned(), streaming: false },
+                                    );
+                                    raw!(
+                                        r#"(() => { const items = JSON.parse(${retry_state}.get().dehydrate()); const item = items.find(value => value.id === ${retry_id}.dehydrate()); if (item) { item.content = ''; item.status = 'sending'; ${retry_state}.set(cx.hydrate(JSON.stringify(items))); ${busy_for_retry}.set(cx.hydrate(true)); } })()"#,
+                                        (),
+                                    );
+                                })
+                            >
+                                (locale.select("Retry", "重试"))
+                            </button>
+                        }
+                        if message.status == ChatMessageStatus::Complete {
+                            <button
+                                type="button"
+                                class="gr-chat-action gr-chat-action-copy"
+                                :aria-label=$(if copied.get() {
+                                    copied_label
+                                } else {
+                                    copy_label
+                                })
+                                :title=$(if copied.get() {
+                                    copied_label
+                                } else {
+                                    copy_label
+                                })
+                                @click=$(|_e| {
+                                    raw!(
+                                        "navigator.clipboard?.writeText(${copy_content}.dehydrate()).then(() => ${copied_state}.set(cx.hydrate(true)))",
+                                        (),
+                                    );
+                                })
+                            >
+                                icon(data: COPY_OUTLINED, size: 14)
+                                <span>(locale.select("Copy reply", "复制回复"))</span>
+                            </button>
+                            <span
+                                class="gr-chat-copy-feedback"
+                                role="status"
+                                :hidden=$(!copied.get())
+                            >
+                                (copied_label)
+                            </span>
+                        }
+                    )
+                }
+            )
+            if has_sources {
+                chat_sources(
+                    label: locale.select("Searched the web", "已搜索网页"),
+                    chat_source(
+                        title: locale.select(
+                            "Topcoat component documentation",
+                            "Topcoat 组件文档",
+                        ),
+                        href: "https://docs.rs/topcoat",
+                        summary: Some(
+                            locale.select(
+                                "Reviewed the component API used in this reply.",
+                                "查看了本条回复所用组件的 API 文档。",
+                            ),
+                        ),
+                        activity: Some(
+                            locale.select("Searched the web", "已搜索网页"),
+                        )
+                    )
                 )
             }
-        )
-        if has_sources {
-            chat_sources(label: locale.select("Searched the web", "已搜索网页"),
-                chat_source(
-                    title: locale.select("Topcoat component documentation", "Topcoat 组件文档"),
-                    href: "https://docs.rs/topcoat",
-                    summary: Some(locale.select("Reviewed the component API used in this reply.", "查看了本条回复所用组件的 API 文档。")),
-                    activity: Some(locale.select("Searched the web", "已搜索网页")),
-                )
-            )
-        }
         </div>
     })
 }

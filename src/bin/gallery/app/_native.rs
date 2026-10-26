@@ -1,6 +1,10 @@
 use topcoat_ant_design::ui as components;
 
-use crate::{app::page_header, demo::component_example, locale::Locale};
+use crate::{
+    app::page_header,
+    demo::component_example,
+    locale::{Locale, t},
+};
 use components::{
     accordion::{accordion, accordion_content, accordion_item, accordion_trigger},
     alert::{AlertVariant, alert, alert_description, alert_title},
@@ -26,13 +30,19 @@ use components::{
         FieldLegendVariant, FieldOrientation, field, field_content, field_description, field_error,
         field_group, field_label, field_legend, field_separator, field_set,
     },
+    floating::{FloatingAlign, FloatingAnchor, FloatingSide, floating_variants},
     hover_card::{hover_card, hover_card_content},
     input::input,
     kbd::{kbd, kbd_group},
+    navigation_menu::{
+        NavigationMenuLinkVariant, navigation_menu, navigation_menu_content, navigation_menu_item,
+        navigation_menu_link, navigation_menu_list, navigation_menu_trigger,
+    },
     pagination::{
         pagination, pagination_content, pagination_ellipsis, pagination_item, pagination_link,
         pagination_next, pagination_previous,
     },
+    popover::{popover, popover_content, popover_trigger},
     progress::progress,
     radio_group::{radio_group, radio_group_item},
     select::select,
@@ -60,8 +70,8 @@ use topcoat::{
     context::Cx,
     icon::{icon, iconify::iconify_icon},
     router::page,
-    runtime::{Event, expr, link, shard, signal},
-    view::{Child, View, attributes, component, view},
+    runtime::{Event, Expr, expr, link, link_attrs, prefetch_mode, shard, signal},
+    view::{Child, View, attributes, component, element_id, view},
 };
 
 /// A stand-in portrait for the workspace's owner, served from the example's
@@ -71,7 +81,7 @@ const PORTRAIT: &str = "/assets/topcoat-ui-portrait.svg";
 const DOCS: &str = "https://docs.rs/topcoat";
 const REGISTRY: &str = "https://github.com/tokio-rs/topcoat/tree/main/crates/topcoat-ui/registry";
 
-pub(in crate::app) const REGISTRY_COMPONENTS: [&str; 31] = [
+pub(in crate::app) const REGISTRY_COMPONENTS: [&str; 34] = [
     "accordion",
     "alert",
     "alert-dialog",
@@ -84,11 +94,14 @@ pub(in crate::app) const REGISTRY_COMPONENTS: [&str; 31] = [
     "dialog",
     "dropdown-menu",
     "field",
+    "floating",
     "hover-card",
     "input",
     "kbd",
     "label",
+    "navigation-menu",
     "pagination",
+    "popover",
     "progress",
     "radio-group",
     "select",
@@ -127,53 +140,310 @@ pub(in crate::app) async fn native_ui_page(cx: &Cx) -> Result<impl View> {
 
     Ok(view! {
         page_header(
-            eyebrow: "TOPCOAT 0.10.0 / OFFICIAL UI",
+            eyebrow: "TOPCOAT 0.11.0 / OFFICIAL UI",
             title: locale.select("Official Topcoat components", "Topcoat 官方组件"),
             description: locale.select(
-                "Explore all 31 official modules in the same Gallery as our own components. Open any example to inspect the Rust source.",
-                "在同一个组件 Gallery 中查看全部 31 个官方模块。展开任意示例即可查看对应的 Rust 代码。",
-            ),
+                "Explore all 34 official modules in the same Gallery as our own components. Open any example to inspect the Rust source.",
+                "在同一个组件 Gallery 中查看全部 34 个官方模块。展开任意示例即可查看对应的 Rust 代码。",
+            )
         )
-        <section class="mb-8 rounded-xl border border-border bg-card p-6 shadow-sm" aria-labelledby="native-registry-heading">
+        <section
+            class="mb-8 rounded-xl border border-border bg-card p-6 shadow-sm"
+            aria-labelledby="native-registry-heading"
+        >
             <div class="flex flex-wrap items-baseline justify-between gap-3">
-                <h2 id="native-registry-heading" class="m-0 text-lg font-semibold">(locale.select("Component index", "组件索引"))</h2>
-                <span class="text-xs text-muted-foreground">"Topcoat 0.10.0 · 31 / 31"</span>
+                <h2 id="native-registry-heading" class="m-0 text-lg font-semibold">
+                    (locale.select("Component index", "组件索引"))
+                </h2>
+                <span class="text-xs text-muted-foreground">
+                    "Topcoat 0.11.0 · 34 / 34"
+                </span>
             </div>
-            <p class="mb-4 mt-2 text-sm leading-6 text-muted-foreground">(locale.select(
-                "Each module links to a live example. Composite examples show related primitives together.",
-                "每个模块都可以跳转到交互示例；复合示例会一起展示相关基础组件。",
-            ))</p>
-            <nav class="flex flex-wrap gap-2" aria-label=(locale.select("Official component index", "官方组件索引"))>
+            <p class="mb-4 mt-2 text-sm leading-6 text-muted-foreground">
+                (locale.select(
+                    "Each module links to a live example. Composite examples show related primitives together.",
+                    "每个模块都可以跳转到交互示例；复合示例会一起展示相关基础组件。",
+                ))
+            </p>
+            <nav
+                class="flex flex-wrap gap-2"
+                aria-label=(locale.select(
+                    "Official component index",
+                    "官方组件索引",
+                ))
+            >
                 for name in REGISTRY_COMPONENTS {
-                    let target = format!("{}#{}", locale.link("/topcoat-ui"), registry_target(name));
-                    link(href: target.as_str(), attrs: attributes! { class="rounded-md border border-border bg-background px-2.5 py-1 font-mono text-xs text-foreground no-underline transition-colors hover:border-primary hover:text-primary focus-visible:outline-2 focus-visible:outline-ring" }, (name))
+                    let target = format!(
+                        "{}#{}",
+                        locale.link("/topcoat-ui"),
+                        registry_target(name),
+                    );
+                    link(
+                        href: target.as_str(),
+                        attrs: attributes! {
+                            class="rounded-md border border-border bg-background px-2.5 py-1 font-mono text-xs text-foreground no-underline transition-colors hover:border-primary hover:text-primary focus-visible:outline-2 focus-visible:outline-ring"
+                        },
+                        (name)
+                    )
                 }
             </nav>
         </section>
         <div id="components" class="grid min-w-0 gap-6 xl:grid-cols-2">
-            demo(name: "buttons_card", title: locale.select("Buttons", "按钮"), description: locale.select("Variants, sizes, and disabled states.", "展示按钮样式、尺寸与禁用状态。"), buttons_card())
-            demo(name: "notices", title: locale.select("Alerts", "警告提示"), description: locale.select("Information and destructive messages.", "展示信息提示与危险提示。"), notices())
-            demo(name: "team_card", title: locale.select("Avatars and separator", "头像与分隔线"), description: locale.select("Images, initials, roles, and a divider.", "头像、姓名缩写、角色标记和分隔线。"), team_card())
-            demo(name: "status_card", title: locale.select("Badges", "徽标"), description: locale.select("Status badges in all variants.", "不同状态与样式的徽标。"), status_card())
-            demo(name: "progress_card", title: locale.select("Progress", "进度条"), description: locale.select("Known and indeterminate progress.", "确定进度与不确定进度。"), progress_card())
-            demo(name: "form_card", title: locale.select("Fields and form controls", "字段与表单控件"), description: locale.select("Labels, input, select, textarea, and validation.", "标签、输入框、选择框、多行文本与校验。"), form_card())
-            demo(name: "checks_card", title: locale.select("Checkboxes", "复选框"), description: locale.select("Checked, unchecked, and disabled states.", "选中、未选中与禁用状态。"), checks_card())
-            demo(name: "switches_card", title: locale.select("Switches", "开关"), description: locale.select("Independent reactive switches.", "独立响应的开关控件。"), switches_card())
-            demo(name: "radios_card", title: locale.select("Radio group", "单选组"), description: locale.select("Select one option from a group.", "从一组选项中选择一项。"), radios_card())
-            demo(name: "overview_card", title: locale.select("Tabs", "标签页"), description: locale.select("Switch panels without reloading.", "无需刷新即可切换内容面板。"), overview_card())
-            demo(name: "faq_card", title: locale.select("Accordion", "手风琴"), description: locale.select("Expand an answer in place.", "原地展开和收起内容。"), faq_card())
-            demo(name: "branches_card", title: locale.select("Dropdown menu", "下拉菜单"), description: locale.select("Select branches and tags.", "选择分支与标签。"), branches_card())
-            demo(name: "toolbar_card", title: locale.select("Toggle controls", "切换控件"), description: locale.select("Segmented and independent toggles.", "分段选择与独立切换。"), toolbar_card())
-            demo(name: "tooltip_card", title: locale.select("Tooltip", "文字提示"), description: locale.select("A short hint on hover or focus.", "悬停或聚焦时显示简短提示。"), tooltip_card())
-            demo(name: "hover_card_demo", title: locale.select("Hover card", "悬停卡片"), description: locale.select("A richer preview on hover or focus.", "悬停或聚焦时显示详细预览。"), hover_card_demo())
-            demo(name: "dialogs_card", title: locale.select("Dialog and alert dialog", "对话框与确认对话框"), description: locale.select("Focused content and explicit confirmation.", "聚焦内容与明确的确认操作。"), dialogs_card())
-            demo(name: "sheet_card", title: locale.select("Sheet", "侧边抽屉"), description: locale.select("An overlay panel from the page edge.", "从页面边缘滑出的叠层面板。"), sheet_card())
-            demo(name: "deployments_card", title: locale.select("Table and pagination", "表格与分页"), description: locale.select("Structured rows with page controls.", "展示结构化数据与分页操作。"), deployments_card())
-            demo(name: "breadcrumbs_card", title: locale.select("Breadcrumbs", "面包屑"), description: locale.select("A trail through related pages.", "展示页面的层级路径。"), breadcrumbs_card())
-            demo(name: "keyboard_card", title: locale.select("Keyboard keys", "键盘按键"), description: locale.select("Single keys and key combinations.", "展示单个按键和组合键。"), keyboard_card())
-            demo(name: "skeletons_card", title: locale.select("Skeletons", "骨架屏"), description: locale.select("Placeholders before content loads.", "内容加载前的占位状态。"), skeletons_card())
-            demo(name: "spinner_card", title: locale.select("Spinner", "加载指示器"), description: locale.select("A live loading indicator.", "展示动态加载状态。"), spinner_card())
-            demo(name: "sidebar_card", title: locale.select("Sidebar", "侧边栏"), description: locale.select("The official sidebar in a compact preview.", "在紧凑预览中体验官方侧边栏。"), sidebar_card())
+            demo(
+                name: "buttons_card",
+                title: locale.select("Buttons", "按钮"),
+                description: locale.select(
+                    "Variants, sizes, and disabled states.",
+                    "展示按钮样式、尺寸与禁用状态。",
+                ),
+                buttons_card()
+            )
+            demo(
+                name: "notices",
+                title: locale.select("Alerts", "警告提示"),
+                description: locale.select(
+                    "Information and destructive messages.",
+                    "展示信息提示与危险提示。",
+                ),
+                notices()
+            )
+            demo(
+                name: "team_card",
+                title: locale.select("Avatars and separator", "头像与分隔线"),
+                description: locale.select(
+                    "Images, initials, roles, and a divider.",
+                    "头像、姓名缩写、角色标记和分隔线。",
+                ),
+                team_card()
+            )
+            demo(
+                name: "status_card",
+                title: locale.select("Badges", "徽标"),
+                description: locale.select(
+                    "Status badges in all variants.",
+                    "不同状态与样式的徽标。",
+                ),
+                status_card()
+            )
+            demo(
+                name: "progress_card",
+                title: locale.select("Progress", "进度条"),
+                description: locale.select(
+                    "Known and indeterminate progress.",
+                    "确定进度与不确定进度。",
+                ),
+                progress_card()
+            )
+            demo(
+                name: "form_card",
+                title: locale.select("Fields and form controls", "字段与表单控件"),
+                description: locale.select(
+                    "Labels, input, select, textarea, and validation.",
+                    "标签、输入框、选择框、多行文本与校验。",
+                ),
+                form_card()
+            )
+            demo(
+                name: "checks_card",
+                title: locale.select("Checkboxes", "复选框"),
+                description: locale.select(
+                    "Checked, unchecked, and disabled states.",
+                    "选中、未选中与禁用状态。",
+                ),
+                checks_card()
+            )
+            demo(
+                name: "switches_card",
+                title: locale.select("Switches", "开关"),
+                description: locale.select(
+                    "Independent reactive switches.",
+                    "独立响应的开关控件。",
+                ),
+                switches_card()
+            )
+            demo(
+                name: "radios_card",
+                title: locale.select("Radio group", "单选组"),
+                description: locale.select(
+                    "Select one option from a group.",
+                    "从一组选项中选择一项。",
+                ),
+                radios_card()
+            )
+            demo(
+                name: "overview_card",
+                title: locale.select("Tabs", "标签页"),
+                description: locale.select(
+                    "Switch panels without reloading.",
+                    "无需刷新即可切换内容面板。",
+                ),
+                overview_card()
+            )
+            demo(
+                name: "faq_card",
+                title: locale.select("Accordion", "手风琴"),
+                description: locale.select(
+                    "Expand an answer in place.",
+                    "原地展开和收起内容。",
+                ),
+                faq_card()
+            )
+            demo(
+                name: "branches_card",
+                title: locale.select("Dropdown menu", "下拉菜单"),
+                description: locale.select(
+                    "Select branches and tags.",
+                    "选择分支与标签。",
+                ),
+                branches_card()
+            )
+            demo(
+                name: "popover_card",
+                title: locale.select("Popover", "弹出面板"),
+                description: locale.select(
+                    "Native panels with outside-click and Escape dismissal.",
+                    "原生弹出面板，支持点击外部或 Escape 关闭。",
+                ),
+                popover_card()
+            )
+            demo(
+                name: "navigation_menu_card",
+                title: locale.select("Navigation menu", "导航菜单"),
+                description: locale.select(
+                    "Site links and panels with runtime navigation.",
+                    "站点链接、展开面板与无刷新导航。",
+                ),
+                navigation_menu_card()
+            )
+            demo(
+                name: "floating_card",
+                title: locale.select("Floating positioning", "浮层定位"),
+                description: locale.select(
+                    "Directions, alignment, and automatic edge fallback.",
+                    "方向、对齐与视口边缘自动回退。",
+                ),
+                floating_card()
+            )
+            demo(
+                name: "localization_card",
+                title: locale.select("Localization", "本地化"),
+                description: locale.select(
+                    "Fluent messages and locale-aware numbers and dates.",
+                    "Fluent 消息与数字、日期本地化。",
+                ),
+                localization_card()
+            )
+            demo(
+                name: "form_state_card",
+                title: locale.select("Edited inputs", "已编辑输入"),
+                description: locale.select(
+                    "Preserve user edits or explicitly reset controlled fields.",
+                    "保留用户输入，或显式重置受控字段。",
+                ),
+                form_state_card()
+            )
+            demo(
+                name: "toolbar_card",
+                title: locale.select("Toggle controls", "切换控件"),
+                description: locale.select(
+                    "Segmented and independent toggles.",
+                    "分段选择与独立切换。",
+                ),
+                toolbar_card()
+            )
+            demo(
+                name: "tooltip_card",
+                title: locale.select("Tooltip", "文字提示"),
+                description: locale.select(
+                    "A short hint on hover or focus.",
+                    "悬停或聚焦时显示简短提示。",
+                ),
+                tooltip_card()
+            )
+            demo(
+                name: "hover_card_demo",
+                title: locale.select("Hover card", "悬停卡片"),
+                description: locale.select(
+                    "A richer preview on hover or focus.",
+                    "悬停或聚焦时显示详细预览。",
+                ),
+                hover_card_demo()
+            )
+            demo(
+                name: "dialogs_card",
+                title: locale.select(
+                    "Dialog and alert dialog",
+                    "对话框与确认对话框",
+                ),
+                description: locale.select(
+                    "Focused content and explicit confirmation.",
+                    "聚焦内容与明确的确认操作。",
+                ),
+                dialogs_card()
+            )
+            demo(
+                name: "sheet_card",
+                title: locale.select("Sheet", "侧边抽屉"),
+                description: locale.select(
+                    "An overlay panel from the page edge.",
+                    "从页面边缘滑出的叠层面板。",
+                ),
+                sheet_card()
+            )
+            demo(
+                name: "deployments_card",
+                title: locale.select("Table and pagination", "表格与分页"),
+                description: locale.select(
+                    "Structured rows with page controls.",
+                    "展示结构化数据与分页操作。",
+                ),
+                deployments_card()
+            )
+            demo(
+                name: "breadcrumbs_card",
+                title: locale.select("Breadcrumbs", "面包屑"),
+                description: locale.select(
+                    "A trail through related pages.",
+                    "展示页面的层级路径。",
+                ),
+                breadcrumbs_card()
+            )
+            demo(
+                name: "keyboard_card",
+                title: locale.select("Keyboard keys", "键盘按键"),
+                description: locale.select(
+                    "Single keys and key combinations.",
+                    "展示单个按键和组合键。",
+                ),
+                keyboard_card()
+            )
+            demo(
+                name: "skeletons_card",
+                title: locale.select("Skeletons", "骨架屏"),
+                description: locale.select(
+                    "Placeholders before content loads.",
+                    "内容加载前的占位状态。",
+                ),
+                skeletons_card()
+            )
+            demo(
+                name: "spinner_card",
+                title: locale.select("Spinner", "加载指示器"),
+                description: locale.select(
+                    "A live loading indicator.",
+                    "展示动态加载状态。",
+                ),
+                spinner_card()
+            )
+            demo(
+                name: "sidebar_card",
+                title: locale.select("Sidebar", "侧边栏"),
+                description: locale.select(
+                    "The official sidebar in a compact preview.",
+                    "在紧凑预览中体验官方侧边栏。",
+                ),
+                sidebar_card()
+            )
         </div>
     })
 }
@@ -191,6 +461,9 @@ pub(in crate::app) fn registry_target(name: &str) -> &'static str {
         "checkbox" => "checks_card",
         "dropdown-menu" => "branches_card",
         "field" | "input" | "label" | "select" | "textarea" => "form_card",
+        "floating" => "floating_card",
+        "popover" => "popover_card",
+        "navigation-menu" => "navigation_menu_card",
         "hover-card" => "hover_card_demo",
         "kbd" => "keyboard_card",
         "pagination" | "table" => "deployments_card",
@@ -218,7 +491,11 @@ async fn demo(
 ) -> Result<impl View> {
     Ok(view! {
         <div id=(name) class="min-w-0 scroll-mt-24">
-            component_example(id: name, title: title, description: description, source: example_source(name),
+            component_example(
+                id: name,
+                title: title,
+                description: description,
+                source: example_source(name),
                 <div class="native-demo-preview min-w-0 p-6">(child)</div>
             )
         </div>
@@ -408,20 +685,29 @@ fn native_text<'a>(locale: Locale, english: &'a str) -> &'a str {
 async fn buttons_card(cx: &Cx) -> Result<impl View> {
     let locale = Locale::current(cx);
     Ok(view! {
-        card(attrs: attributes! { class="native-card" },
+        card(
+            attrs: attributes! { class="native-card" },
             card_header(
                 card_title((native_text(locale, "Buttons")))
-                card_description((native_text(locale, "Every variant, size, and state.")))
+                card_description(
+                    (native_text(locale, "Every variant, size, and state."))
+                )
             )
             card_content(
                 <div class="flex flex-col gap-3">
                     <div class="flex flex-wrap items-center gap-2">
                         for (variant, name) in [
                             (ButtonVariant::Primary, (native_text(locale, "Primary"))),
-                            (ButtonVariant::Secondary, (native_text(locale, "Secondary"))),
+                            (
+                                ButtonVariant::Secondary,
+                                (native_text(locale, "Secondary")),
+                            ),
                             (ButtonVariant::Outline, (native_text(locale, "Outline"))),
                             (ButtonVariant::Ghost, (native_text(locale, "Ghost"))),
-                            (ButtonVariant::Destructive, (native_text(locale, "Destructive"))),
+                            (
+                                ButtonVariant::Destructive,
+                                (native_text(locale, "Destructive")),
+                            ),
                         ] {
                             button(size: ButtonSize::Sm, variant: variant, (name))
                         }
@@ -433,7 +719,10 @@ async fn buttons_card(cx: &Cx) -> Result<impl View> {
                         button(
                             size: ButtonSize::Icon,
                             variant: ButtonVariant::Outline,
-                            icon(data: iconify_icon!("lucide:plus"), label: native_text(locale, "Add item"))
+                            icon(
+                                data: iconify_icon!("lucide:plus"),
+                                label: native_text(locale, "Add item")
+                            )
                         )
                     </div>
                     <div class="flex flex-wrap items-center gap-2">
@@ -466,7 +755,10 @@ async fn notices(cx: &Cx) -> Result<impl View> {
                 icon(data: iconify_icon!("lucide:info"))
                 alert_title((native_text(locale, "Every control is a link or a form")))
                 alert_description(
-                    (locale.select("This message explains a routine state without interrupting the workflow.", "这条信息说明常规状态，不会中断当前操作。"))
+                    (locale.select(
+                        "This message explains a routine state without interrupting the workflow.",
+                        "这条信息说明常规状态，不会中断当前操作。",
+                    ))
                 )
             )
             alert(
@@ -474,13 +766,19 @@ async fn notices(cx: &Cx) -> Result<impl View> {
                 icon(data: iconify_icon!("lucide:triangle-alert"))
                 alert_title((native_text(locale, "The destructive variant")))
                 alert_description(
-                    (native_text(locale, "For what went wrong, and for what cannot be taken back."))
+                    (native_text(
+                        locale,
+                        "For what went wrong, and for what cannot be taken back.",
+                    ))
                 )
             )
             alert(
                 alert_title((native_text(locale, "Without an icon")))
                 alert_description(
-                    (locale.select("The text fills the available space when no icon is present.", "没有图标时，标题和正文会填满可用空间。"))
+                    (locale.select(
+                        "The text fills the available space when no icon is present.",
+                        "没有图标时，标题和正文会填满可用空间。",
+                    ))
                 )
             )
         </div>
@@ -499,7 +797,8 @@ const MEMBERS: [(&str, &str, &str, &str); 3] = [
 async fn team_card(cx: &Cx) -> Result<impl View> {
     let locale = Locale::current(cx);
     Ok(view! {
-        card(attrs: attributes! { class="native-card" },
+        card(
+            attrs: attributes! { class="native-card" },
             card_header(
                 card_title((native_text(locale, "Avatars")))
                 card_description(
@@ -523,7 +822,10 @@ async fn team_card(cx: &Cx) -> Result<impl View> {
                             "ada@example.com"
                         </p>
                     </div>
-                    badge(variant: BadgeVariant::Secondary, (native_text(locale, "Owner")))
+                    badge(
+                        variant: BadgeVariant::Secondary,
+                        (native_text(locale, "Owner"))
+                    )
                 </div>
                 separator(attrs: attributes! { class="my-5" })
                 <div class="flex flex-col gap-3">
@@ -538,7 +840,10 @@ async fn team_card(cx: &Cx) -> Result<impl View> {
                                     </p>
                                 </div>
                             </div>
-                            badge(variant: BadgeVariant::Outline, (native_text(locale, role)))
+                            badge(
+                                variant: BadgeVariant::Outline,
+                                (native_text(locale, role))
+                            )
                         </div>
                     }
                 </div>
@@ -554,10 +859,13 @@ async fn status_card(cx: &Cx) -> Result<impl View> {
     const CRATE: &str = "https://crates.io/crates/topcoat";
 
     Ok(view! {
-        card(attrs: attributes! { class="native-card" },
+        card(
+            attrs: attributes! { class="native-card" },
             card_header(
                 card_title((native_text(locale, "Badges")))
-                card_description((native_text(locale, "Status badges in every variant.")))
+                card_description(
+                    (native_text(locale, "Status badges in every variant."))
+                )
             )
             card_content(
                 <div class="flex flex-col gap-3">
@@ -577,7 +885,9 @@ async fn status_card(cx: &Cx) -> Result<impl View> {
                 </div>
             )
             card_footer(
-                <p class="text-sm text-muted-foreground">(native_text(locale, "Built with Topcoat"))</p>
+                <p class="text-sm text-muted-foreground">
+                    (native_text(locale, "Built with Topcoat"))
+                </p>
                 // Anything can borrow a badge's looks: `badge_variants`
                 // returns the class string for a variant.
                 <a href=(CRATE) class=(badge_variants(BadgeVariant::Outline))>
@@ -595,11 +905,15 @@ async fn progress_card(cx: &Cx) -> Result<impl View> {
     let completed = signal(cx, || 62usize);
 
     Ok(view! {
-        card(attrs: attributes! { class="native-card" },
+        card(
+            attrs: attributes! { class="native-card" },
             card_header(
                 card_title((native_text(locale, "Progress")))
                 card_description(
-                    (native_text(locale, "With a known value or an indeterminate amount of work."))
+                    (native_text(
+                        locale,
+                        "With a known value or an indeterminate amount of work.",
+                    ))
                 )
             )
             card_content(
@@ -639,7 +953,9 @@ async fn progress_card(cx: &Cx) -> Result<impl View> {
                 </div>
                 separator(attrs: attributes! { class="my-4" })
                 <div class="flex flex-col gap-2">
-                    <p class="text-sm text-muted-foreground">(native_text(locale, "Indeterminate"))</p>
+                    <p class="text-sm text-muted-foreground">
+                        (native_text(locale, "Indeterminate"))
+                    </p>
                     progress(attrs: attributes! { aria-label="Indeterminate progress" })
                 </div>
             )
@@ -665,11 +981,15 @@ async fn form_card(cx: &Cx) -> Result<impl View> {
     });
 
     Ok(view! {
-        card(attrs: attributes! { class="native-card" },
+        card(
+            attrs: attributes! { class="native-card" },
             card_header(
                 card_title((native_text(locale, "Form controls")))
                 card_description(
-                    (native_text(locale, "Grouped fields, helpful descriptions, and inline errors."))
+                    (native_text(
+                        locale,
+                        "Grouped fields, helpful descriptions, and inline errors.",
+                    ))
                 )
             )
             card_content(
@@ -720,7 +1040,10 @@ async fn form_card(cx: &Cx) -> Result<impl View> {
                                 )
                             )
                             field(
-                                field_label(attrs: attributes! { for="region" }, (native_text(locale, "Region")))
+                                field_label(
+                                    attrs: attributes! { for="region" },
+                                    (native_text(locale, "Region"))
+                                )
                                 select(
                                     attrs: attributes! {
                                         id="region"
@@ -742,7 +1065,10 @@ async fn form_card(cx: &Cx) -> Result<impl View> {
                                 )
                                 field_description(
                                     attrs: attributes! { id="region-description" },
-                                    (native_text(locale, "Choose the region closest to your users."))
+                                    (native_text(
+                                        locale,
+                                        "Choose the region closest to your users.",
+                                    ))
                                 )
                             )
                             field(
@@ -763,7 +1089,10 @@ async fn form_card(cx: &Cx) -> Result<impl View> {
                             field_separator()
                             field(
                                 orientation: FieldOrientation::Responsive,
-                                field_label(attrs: attributes! { for="owner" }, (native_text(locale, "Owner")))
+                                field_label(
+                                    attrs: attributes! { for="owner" },
+                                    (native_text(locale, "Owner"))
+                                )
                                 // A disabled field shows a value that is not the
                                 // form's to change.
                                 field_content(
@@ -777,7 +1106,10 @@ async fn form_card(cx: &Cx) -> Result<impl View> {
                                     )
                                     field_description(
                                         attrs: attributes! { id="owner-description" },
-                                        (native_text(locale, "The workspace owner manages this project."))
+                                        (native_text(
+                                            locale,
+                                            "The workspace owner manages this project.",
+                                        ))
                                     )
                                 )
                             )
@@ -789,7 +1121,10 @@ async fn form_card(cx: &Cx) -> Result<impl View> {
                             attrs: attributes! { type="reset" },
                             (native_text(locale, "Reset"))
                         )
-                        button(attrs: attributes! { type="submit" }, (native_text(locale, "Validate")))
+                        button(
+                            attrs: attributes! { type="submit" },
+                            (native_text(locale, "Validate"))
+                        )
                     </div>
                 </form>
             )
@@ -819,10 +1154,13 @@ async fn checks_card(cx: &Cx) -> Result<impl View> {
         .collect();
 
     Ok(view! {
-        card(attrs: attributes! { class="native-card" },
+        card(
+            attrs: attributes! { class="native-card" },
             card_header(
                 card_title((native_text(locale, "Checkboxes")))
-                card_description((native_text(locale, "Checked, unchecked, and disabled.")))
+                card_description(
+                    (native_text(locale, "Checked, unchecked, and disabled."))
+                )
             )
             card_content(
                 field_group(
@@ -838,7 +1176,10 @@ async fn checks_card(cx: &Cx) -> Result<impl View> {
                                     disabled=(disabled)
                                 }
                             )
-                            field_label(attrs: attributes! { for=(id) }, (native_text(locale, text)))
+                            field_label(
+                                attrs: attributes! { for=(id) },
+                                (native_text(locale, text))
+                            )
                         )
                     }
                 )
@@ -866,7 +1207,8 @@ async fn switches_card(cx: &Cx) -> Result<impl View> {
         .collect();
 
     Ok(view! {
-        card(attrs: attributes! { class="native-card" },
+        card(
+            attrs: attributes! { class="native-card" },
             card_header(
                 card_title((native_text(locale, "Switches")))
                 card_description((native_text(locale, "On, off, and disabled.")))
@@ -877,7 +1219,10 @@ async fn switches_card(cx: &Cx) -> Result<impl View> {
                     for (id, text, checked, disabled) in switches {
                         field(
                             orientation: FieldOrientation::Horizontal,
-                            field_label(attrs: attributes! { for=(id) }, (native_text(locale, text)))
+                            field_label(
+                                attrs: attributes! { for=(id) },
+                                (native_text(locale, text))
+                            )
                             switch(
                                 attrs: attributes! {
                                     id=(id)
@@ -899,14 +1244,19 @@ async fn switches_card(cx: &Cx) -> Result<impl View> {
 async fn radios_card(cx: &Cx) -> Result<impl View> {
     let locale = Locale::current(cx);
     Ok(view! {
-        card(attrs: attributes! { class="native-card" },
+        card(
+            attrs: attributes! { class="native-card" },
             card_header(
                 card_title((native_text(locale, "Radio group")))
-                card_description((native_text(locale, "One choice at a time, with a disabled option.")))
+                card_description(
+                    (native_text(locale, "One choice at a time, with a disabled option."))
+                )
             )
             card_content(
                 radio_group(
-                    attrs: attributes! { aria-label=(locale.select("Example options", "选项示例")) },
+                    attrs: attributes! {
+                        aria-label=(locale.select("Example options", "选项示例"))
+                    },
                     for (value, text, checked, disabled) in [
                         ("one", "Option one", true, false),
                         ("two", "Option two", false, false),
@@ -951,7 +1301,8 @@ async fn overview_card(cx: &Cx) -> Result<impl View> {
     let selected = signal(cx, || TABS[0].0.to_owned());
 
     Ok(view! {
-        card(attrs: attributes! { class="native-card" },
+        card(
+            attrs: attributes! { class="native-card" },
             card_header(
                 card_title((native_text(locale, "Tabs")))
                 card_description((native_text(locale, "Switch between panels.")))
@@ -978,9 +1329,18 @@ async fn overview_card(cx: &Cx) -> Result<impl View> {
                             attrs: attributes! { :hidden=$(selected.get() != value) },
                             <p class="text-sm text-muted-foreground">
                                 (match value {
-                                    "activity" => native_text(locale, "Recent activity appears here."),
-                                    "settings" => native_text(locale, "Adjust your preferences here."),
-                                    _ => native_text(locale, "A quick overview of your project."),
+                                    "activity" => native_text(
+                                        locale,
+                                        "Recent activity appears here.",
+                                    ),
+                                    "settings" => native_text(
+                                        locale,
+                                        "Adjust your preferences here.",
+                                    ),
+                                    _ => native_text(
+                                        locale,
+                                        "A quick overview of your project.",
+                                    ),
                                 })
                             </p>
                         )
@@ -996,10 +1356,16 @@ async fn overview_card(cx: &Cx) -> Result<impl View> {
 async fn faq_card(cx: &Cx) -> Result<impl View> {
     let locale = Locale::current(cx);
     Ok(view! {
-        card(attrs: attributes! { class="native-card" },
+        card(
+            attrs: attributes! { class="native-card" },
             card_header(
                 card_title((native_text(locale, "Accordion")))
-                card_description((native_text(locale, "One section open at a time; the rest fold away.")))
+                card_description(
+                    (native_text(
+                        locale,
+                        "One section open at a time; the rest fold away.",
+                    ))
+                )
             )
             card_content(
                 accordion(
@@ -1008,17 +1374,26 @@ async fn faq_card(cx: &Cx) -> Result<impl View> {
                     for (question, answer, open) in [
                         (
                             (native_text(locale, "Where do the components live?")),
-                            locale.select("In your project's component directory.", "位于项目中的组件目录。"),
+                            locale.select(
+                                "In your project's component directory.",
+                                "位于项目中的组件目录。",
+                            ),
                             true,
                         ),
                         (
                             (native_text(locale, "Can I edit them?")),
-                            locale.select("Yes. You can change their styles and behavior like any other source file.", "可以。它们与其他源码一样可以修改样式和行为。"),
+                            locale.select(
+                                "Yes. You can change their styles and behavior like any other source file.",
+                                "可以。它们与其他源码一样可以修改样式和行为。",
+                            ),
                             false,
                         ),
                         (
                             (native_text(locale, "How do updates work?")),
-                            locale.select("Run `topcoat ui list` to see registry changes.", "运行 `topcoat ui list` 查看注册表变更。"),
+                            locale.select(
+                                "Run `topcoat ui list` to see registry changes.",
+                                "运行 `topcoat ui list` 查看注册表变更。",
+                            ),
                             false,
                         ),
                     ] {
@@ -1043,48 +1418,49 @@ async fn branches_card(cx: &Cx) -> Result<impl View> {
     const TAGS: [&str; 3] = ["v1.2.0", "v1.1.0", "v1.0.0"];
 
     let selected = signal(cx, || BRANCHES[0].to_owned());
-    let open = signal(cx, || false);
-    let tags_open = signal(cx, || false);
+    let menu_id = element_id(cx);
+    let tags_id = element_id(cx);
 
     Ok(view! {
-        card(attrs: attributes! { class="native-card" },
+        card(
+            attrs: attributes! { class="native-card" },
             card_header(
                 card_title((native_text(locale, "Dropdown menu")))
-                card_description((native_text(locale, "Pick a branch or tag to update the selection.")))
+                card_description(
+                    (native_text(locale, "Pick a branch or tag to update the selection."))
+                )
             )
             card_content(
                 dropdown_menu(
-                    attrs: attributes! { :open=$(open.get()) },
                     // The trigger takes any content; this one borrows the
                     // outline button's looks and adds a flipping chevron.
                     dropdown_menu_trigger(
+                        target: &menu_id,
                         attrs: attributes! {
                             class=(button_variants(
                                 ButtonVariant::Outline,
                                 ButtonSize::Sm,
                             ))
-                            @click=$(|e: Event| {
-                                e.prevent_default();
-                                open.toggle();
-                                tags_open.set(false);
-                            })
                         },
                         $(selected.get())
                         icon(
                             data: iconify_icon!("lucide:chevron-down"),
-                            attrs: attributes! { class="transition-transform group-open:rotate-180" }
+                            attrs: attributes! {
+                                class="transition-transform group-has-[:popover-open]/dropdown-menu:rotate-180"
+                            }
                         )
                     )
                     dropdown_menu_content(
+                        id: &menu_id,
+                        align: FloatingAlign::Start,
                         dropdown_menu_label((native_text(locale, "Switch branch")))
                         for branch in BRANCHES {
                             dropdown_menu_item(
+                                close: Some(&menu_id),
                                 attrs: attributes! {
                                     type="button"
                                     @click=$(|_e: Event| {
                                         selected.set(branch.to_owned());
-                                        open.set(false);
-                                        tags_open.set(false);
                                     })
                                 },
                                 (branch)
@@ -1093,25 +1469,19 @@ async fn branches_card(cx: &Cx) -> Result<impl View> {
                         dropdown_menu_separator()
                         // A submenu opens its own panel beside this row.
                         dropdown_menu_sub(
-                            attrs: attributes! { :open=$(tags_open.get()) },
                             dropdown_menu_sub_trigger(
-                                attrs: attributes! {
-                                    @click=$(|e: Event| {
-                                        e.prevent_default();
-                                        tags_open.toggle();
-                                    })
-                                },
+                                target: &tags_id,
                                 (native_text(locale, "Checkout tag"))
                             )
                             dropdown_menu_sub_content(
+                                id: &tags_id,
                                 for tag in TAGS {
                                     dropdown_menu_item(
+                                        close: Some(&menu_id),
                                         attrs: attributes! {
                                             type="button"
                                             @click=$(|_e: Event| {
                                                 selected.set(tag.to_owned());
-                                                open.set(false);
-                                                tags_open.set(false);
                                             })
                                         },
                                         (tag)
@@ -1137,7 +1507,8 @@ async fn toolbar_card(cx: &Cx) -> Result<impl View> {
     let live = signal(cx, || true);
 
     Ok(view! {
-        card(attrs: attributes! { class="native-card" },
+        card(
+            attrs: attributes! { class="native-card" },
             card_header(
                 card_title((native_text(locale, "Toggles")))
                 card_description(
@@ -1173,7 +1544,12 @@ async fn toolbar_card(cx: &Cx) -> Result<impl View> {
                         separator(orientation: SeparatorOrientation::Vertical)
                         <div class="flex items-center gap-1">
                             for (name, data, text, pressed) in [
-                                ("bold", iconify_icon!("lucide:bold"), (native_text(locale, "Bold")), &bold),
+                                (
+                                    "bold",
+                                    iconify_icon!("lucide:bold"),
+                                    (native_text(locale, "Bold")),
+                                    &bold,
+                                ),
                                 (
                                     "italic",
                                     iconify_icon!("lucide:italic"),
@@ -1219,14 +1595,19 @@ async fn toolbar_card(cx: &Cx) -> Result<impl View> {
 async fn tooltip_card(cx: &Cx) -> Result<impl View> {
     let locale = Locale::current(cx);
     Ok(view! {
-        card(attrs: attributes! { class="native-card" },
+        card(
+            attrs: attributes! { class="native-card" },
             card_header(
                 card_title((native_text(locale, "Tooltip")))
-                card_description((native_text(locale, "A short hint on hover or focus.")))
+                card_description(
+                    (native_text(locale, "A short hint on hover or focus."))
+                )
             )
             card_content(
                 <div class="flex items-center justify-between gap-4">
-                    <p class="text-sm text-muted-foreground">(native_text(locale, "Hover the button"))</p>
+                    <p class="text-sm text-muted-foreground">
+                        (native_text(locale, "Hover the button"))
+                    </p>
                     tooltip(
                         <a
                             href=(DOCS)
@@ -1253,21 +1634,25 @@ async fn tooltip_card(cx: &Cx) -> Result<impl View> {
 async fn hover_card_demo(cx: &Cx) -> Result<impl View> {
     let locale = Locale::current(cx);
     Ok(view! {
-        card(attrs: attributes! { class="native-card" },
+        card(
+            attrs: attributes! { class="native-card" },
             card_header(
                 card_title((native_text(locale, "Hover card")))
                 card_description((native_text(locale, "A preview on hover or focus.")))
             )
             card_content(
                 <div class="flex items-center gap-2 text-sm">
-                    <p class="text-muted-foreground">(native_text(locale, "Hover the name"))</p>
+                    <p class="text-muted-foreground">
+                        (native_text(locale, "Hover the name"))
+                    </p>
                     hover_card(
                         // The trigger takes focus, so the card comes up for a
                         // reader on the keyboard as well.
                         <button type="button" class="font-medium underline">
                             "@ada"
                         </button>
-                        hover_card_content(attrs: attributes! { class="max-[640px]:left-1/2 max-[640px]:-translate-x-1/2" },
+                        hover_card_content(
+                            align: FloatingAlign::Start,
                             <div class="flex items-center gap-3">
                                 avatar(
                                     size: AvatarSize::Md,
@@ -1282,7 +1667,10 @@ async fn hover_card_demo(cx: &Cx) -> Result<impl View> {
                                 </div>
                             </div>
                             <p class="text-sm text-muted-foreground">
-                                (locale.select("A hover card can show rich content and actions.", "悬停卡片可以展示更丰富的内容与操作。"))
+                                (locale.select(
+                                    "A hover card can show rich content and actions.",
+                                    "悬停卡片可以展示更丰富的内容与操作。",
+                                ))
                             </p>
                         )
                     )
@@ -1300,10 +1688,13 @@ async fn dialogs_card(cx: &Cx) -> Result<impl View> {
     let confirming = signal(cx, || false);
 
     Ok(view! {
-        card(attrs: attributes! { class="native-card" },
+        card(
+            attrs: attributes! { class="native-card" },
             card_header(
                 card_title((native_text(locale, "Dialog")))
-                card_description((native_text(locale, "A content panel or a confirmation prompt.")))
+                card_description(
+                    (native_text(locale, "A content panel or a confirmation prompt."))
+                )
             )
             card_content(
                 <div class="flex flex-wrap gap-2">
@@ -1329,11 +1720,17 @@ async fn dialogs_card(cx: &Cx) -> Result<impl View> {
                 dialog_header(
                     dialog_title((native_text(locale, "Example dialog")))
                     dialog_description(
-                        (native_text(locale, "A dialog brings content into focus above the page."))
+                        (native_text(
+                            locale,
+                            "A dialog brings content into focus above the page.",
+                        ))
                     )
                 )
                 <p class="text-sm">
-                    (native_text(locale, "Put your content here, then close the dialog to return to the page."))
+                    (native_text(
+                        locale,
+                        "Put your content here, then close the dialog to return to the page.",
+                    ))
                 </p>
                 dialog_footer(
                     button(
@@ -1350,7 +1747,10 @@ async fn dialogs_card(cx: &Cx) -> Result<impl View> {
                 dialog_header(
                     dialog_title((native_text(locale, "Continue?")))
                     dialog_description(
-                        (native_text(locale, "An alert dialog asks for an explicit choice before continuing."))
+                        (native_text(
+                            locale,
+                            "An alert dialog asks for an explicit choice before continuing.",
+                        ))
                     )
                 )
                 dialog_footer(
@@ -1382,10 +1782,16 @@ async fn sheet_card(cx: &Cx) -> Result<impl View> {
     let open = signal(cx, || false);
 
     Ok(view! {
-        card(attrs: attributes! { class="native-card" },
+        card(
+            attrs: attributes! { class="native-card" },
             card_header(
                 card_title((native_text(locale, "Sheet")))
-                card_description((native_text(locale, "A panel that slides in from the edge of the page.")))
+                card_description(
+                    (native_text(
+                        locale,
+                        "A panel that slides in from the edge of the page.",
+                    ))
+                )
             )
             card_content(
                 button(
@@ -1402,11 +1808,17 @@ async fn sheet_card(cx: &Cx) -> Result<impl View> {
                 dialog_header(
                     dialog_title((native_text(locale, "Example sheet")))
                     dialog_description(
-                        (native_text(locale, "Use a sheet for content that belongs beside the page."))
+                        (native_text(
+                            locale,
+                            "Use a sheet for content that belongs beside the page.",
+                        ))
                     )
                 )
                 <p class="text-sm">
-                    (native_text(locale, "The rest of the page stays visible behind this panel."))
+                    (native_text(
+                        locale,
+                        "The rest of the page stays visible behind this panel.",
+                    ))
                 </p>
                 dialog_footer(
                     attrs: attributes! { class="mt-auto" },
@@ -1453,10 +1865,13 @@ async fn deployments_card(cx: &Cx) -> Result<impl View> {
     Ok(view! {
         let shown = rows.chunks(PER_PAGE).nth(current - 1).unwrap_or_default();
 
-        card(attrs: attributes! { class="native-card" },
+        card(
+            attrs: attributes! { class="native-card" },
             card_header(
                 card_title((native_text(locale, "Table")))
-                card_description((native_text(locale, "Deployment rows with badges and pagination.")))
+                card_description(
+                    (native_text(locale, "Deployment rows with badges and pagination."))
+                )
             )
             // The card pads its sections rather than itself, so the table can
             // span its full width; the table's own padding lines the cells up
@@ -1479,14 +1894,28 @@ async fn deployments_card(cx: &Cx) -> Result<impl View> {
                                 (commit)
                             )
                             table_cell((env))
-                            table_cell(badge(variant: status_variant(status), (native_text(locale, status))))
+                            table_cell(
+                                badge(
+                                    variant: status_variant(status),
+                                    (native_text(locale, status))
+                                )
+                            )
                         )
                     }
                 )
                 table_footer(
                     table_row(
-                        table_cell(attrs: attributes! { colspan="2" }, (native_text(locale, "Total")))
-                        table_cell((format!("{} {}", rows.len(), native_text(locale, "deployments"))))
+                        table_cell(
+                            attrs: attributes! { colspan="2" },
+                            (native_text(locale, "Total"))
+                        )
+                        table_cell(
+                            (format!(
+                                "{} {}",
+                                rows.len(),
+                                native_text(locale, "deployments"),
+                            ))
+                        )
                     )
                 )
             )
@@ -1524,7 +1953,11 @@ async fn deployments_card(cx: &Cx) -> Result<impl View> {
                             } else if listed(number - 1, current, pages) {
                                 // The first page left out of a run stands for
                                 // the whole run.
-                                pagination_item(pagination_ellipsis(attrs: attributes! { aria-label=(locale.select("More pages", "更多页码")) }))
+                                pagination_item(
+                                    pagination_ellipsis(
+                                        attrs: attributes! { aria-label=(locale.select("More pages", "更多页码")) }
+                                    )
+                                )
                             }
                         }
                         pagination_item(
@@ -1557,20 +1990,30 @@ fn listed(number: usize, page: usize, pages: usize) -> bool {
 async fn breadcrumbs_card(cx: &Cx) -> Result<impl View> {
     let locale = Locale::current(cx);
     Ok(view! {
-        card(attrs: attributes! { class="native-card" },
+        card(
+            attrs: attributes! { class="native-card" },
             card_header(
                 card_title((native_text(locale, "Breadcrumbs")))
-                card_description((native_text(locale, "A trail of links to the current page.")))
+                card_description(
+                    (native_text(locale, "A trail of links to the current page."))
+                )
             )
             card_content(
                 breadcrumb(
                     breadcrumb_list(
                         breadcrumb_item(
-                            breadcrumb_link(attrs: attributes! { href=(DOCS) }, (native_text(locale, "Docs")))
+                            breadcrumb_link(
+                                attrs: attributes! { href=(DOCS) },
+                                (native_text(locale, "Docs"))
+                            )
                         )
                         breadcrumb_separator()
                         // The steps between are collapsed into an ellipsis.
-                        breadcrumb_item(breadcrumb_ellipsis(attrs: attributes! { aria-label=(locale.select("More", "更多")) }))
+                        breadcrumb_item(
+                            breadcrumb_ellipsis(
+                                attrs: attributes! { aria-label=(locale.select("More", "更多")) }
+                            )
+                        )
                         breadcrumb_separator()
                         breadcrumb_item(
                             breadcrumb_link(
@@ -1579,7 +2022,9 @@ async fn breadcrumbs_card(cx: &Cx) -> Result<impl View> {
                             )
                         )
                         breadcrumb_separator()
-                        breadcrumb_item(breadcrumb_page((native_text(locale, "Breadcrumbs"))))
+                        breadcrumb_item(
+                            breadcrumb_page((native_text(locale, "Breadcrumbs")))
+                        )
                     )
                 )
             )
@@ -1599,16 +2044,21 @@ async fn keyboard_card(cx: &Cx) -> Result<impl View> {
     ];
 
     Ok(view! {
-        card(attrs: attributes! { class="native-card" },
+        card(
+            attrs: attributes! { class="native-card" },
             card_header(
                 card_title((native_text(locale, "Keyboard keys")))
-                card_description((native_text(locale, "Keys shown individually or in a group.")))
+                card_description(
+                    (native_text(locale, "Keys shown individually or in a group."))
+                )
             )
             card_content(
                 <div class="flex flex-col gap-3">
                     for (action, keys) in KEYS {
                         <div class="flex items-center justify-between gap-4">
-                            <p class="text-sm text-muted-foreground">(native_text(locale, action))</p>
+                            <p class="text-sm text-muted-foreground">
+                                (native_text(locale, action))
+                            </p>
                             kbd_group(
                                 for key in keys.iter().copied() {
                                     kbd((key))
@@ -1631,10 +2081,13 @@ async fn skeletons_card(cx: &Cx) -> Result<impl View> {
     let loading = signal(cx, || true);
 
     Ok(view! {
-        card(attrs: attributes! { class="native-card" },
+        card(
+            attrs: attributes! { class="native-card" },
             card_header(
                 card_title((native_text(locale, "Skeletons")))
-                card_description((native_text(locale, "Placeholders while content loads.")))
+                card_description(
+                    (native_text(locale, "Placeholders while content loads."))
+                )
             )
             card_content(
                 // The skeletons take the size of what they stand in for, so
@@ -1661,7 +2114,10 @@ async fn skeletons_card(cx: &Cx) -> Result<impl View> {
                                     (email)
                                 </p>
                             </div>
-                            badge(variant: BadgeVariant::Outline, (native_text(locale, role)))
+                            badge(
+                                variant: BadgeVariant::Outline,
+                                (native_text(locale, role))
+                            )
                         </div>
                     }
                 </div>
@@ -1671,7 +2127,11 @@ async fn skeletons_card(cx: &Cx) -> Result<impl View> {
                     variant: ButtonVariant::Outline,
                     size: ButtonSize::Sm,
                     attrs: attributes! { type="button" @click=$(|_e: Event| loading.toggle()) },
-                    $(if loading.get() { show_content_label } else { show_skeletons_label })
+                    $(if loading.get() {
+                        show_content_label
+                    } else {
+                        show_skeletons_label
+                    })
                 )
             )
         )
@@ -1689,10 +2149,13 @@ async fn spinner_card(cx: &Cx) -> Result<impl View> {
     let loading = signal(cx, || true);
 
     Ok(view! {
-        card(attrs: attributes! { class="native-card" },
+        card(
+            attrs: attributes! { class="native-card" },
             card_header(
                 card_title((native_text(locale, "Spinner")))
-                card_description((native_text(locale, "An indicator while work is in progress.")))
+                card_description(
+                    (native_text(locale, "An indicator while work is in progress."))
+                )
             )
             card_content(
                 <div class="flex flex-col gap-2">
@@ -1726,7 +2189,9 @@ async fn sidebar_card(cx: &Cx) -> Result<impl View> {
     let mobile_open = signal(cx, || false);
 
     Ok(view! {
-        <div class="native-sidebar-demo overflow-hidden rounded-lg border border-border">
+        <div
+            class="native-sidebar-demo overflow-hidden rounded-lg border border-border"
+        >
             sidebar_provider(
                 attrs: attributes! { class="native-sidebar-provider" },
                 sidebar(
@@ -1734,20 +2199,27 @@ async fn sidebar_card(cx: &Cx) -> Result<impl View> {
                     mobile_open: $(mobile_open.get()),
                     variant: SidebarVariant::Sidebar,
                     collapsible: SidebarCollapsible::Offcanvas,
-                    sheet_attrs: attributes! { id="native-sidebar-preview" aria-label=(locale.select("Example sidebar", "侧边栏示例")) },
+                    sheet_attrs: attributes! {
+                        id="native-sidebar-preview"
+                        aria-label=(locale.select("Example sidebar", "侧边栏示例"))
+                    },
                     sidebar_header(
-                        <strong class="px-4 py-3 text-sm">(locale.select("Workspace", "工作区"))</strong>
+                        <strong class="px-4 py-3 text-sm">
+                            (locale.select("Workspace", "工作区"))
+                        </strong>
                     )
                     sidebar_content(
                         sidebar_menu(
                             sidebar_menu_item(
-                                sidebar_menu_button(href: Some("#native-registry-heading"),
+                                sidebar_menu_button(
+                                    href: Some("#native-registry-heading"),
                                     icon(data: iconify_icon!("lucide:layout-grid"))
                                     <span>(locale.select("Components", "组件"))</span>
                                 )
                             )
                             sidebar_menu_item(
-                                sidebar_menu_button(href: Some("#components"),
+                                sidebar_menu_button(
+                                    href: Some("#components"),
                                     icon(data: iconify_icon!("lucide:book-open"))
                                     <span>(locale.select("Examples", "示例"))</span>
                                 )
@@ -1755,18 +2227,264 @@ async fn sidebar_card(cx: &Cx) -> Result<impl View> {
                         )
                     )
                     sidebar_footer(
-                        <span class="px-4 py-3 text-xs text-muted-foreground">"Topcoat UI"</span>
+                        <span class="px-4 py-3 text-xs text-muted-foreground">
+                            "Topcoat UI"
+                        </span>
                     )
                 )
                 sidebar_inset(
-                    sidebar_header(attrs: attributes! { class="[&]:h-12 [&]:px-3" },
-                        sidebar_trigger(open: $(open.get()), attrs: attributes! { class="max-md:hidden" aria-label=(locale.select("Toggle sidebar", "切换侧边栏")) aria-controls="native-sidebar-preview" @click=$(|_e: Event| open.toggle()) })
-                        sidebar_trigger(open: $(mobile_open.get()), attrs: attributes! { class="md:hidden" aria-label=(locale.select("Toggle sidebar", "切换侧边栏")) aria-controls="native-sidebar-preview" @click=$(|_e: Event| mobile_open.toggle()) })
-                        <span class="text-xs font-semibold">(locale.select("Project view", "项目视图"))</span>
+                    sidebar_header(
+                        attrs: attributes! { class="[&]:h-12 [&]:px-3" },
+                        sidebar_trigger(
+                            open: $(open.get()),
+                            attrs: attributes! {
+                                class="max-md:hidden"
+                                aria-label=(locale.select(
+                                    "Toggle sidebar",
+                                    "切换侧边栏",
+                                ))
+                                aria-controls="native-sidebar-preview"
+                                @click=$(|_e: Event| open.toggle())
+                            }
+                        )
+                        sidebar_trigger(
+                            open: $(mobile_open.get()),
+                            attrs: attributes! {
+                                class="md:hidden"
+                                aria-label=(locale.select(
+                                    "Toggle sidebar",
+                                    "切换侧边栏",
+                                ))
+                                aria-controls="native-sidebar-preview"
+                                @click=$(|_e: Event| mobile_open.toggle())
+                            }
+                        )
+                        <span class="text-xs font-semibold">
+                            (locale.select("Project view", "项目视图"))
+                        </span>
                     )
-                    <p class="p-4 text-sm text-muted-foreground">(locale.select("The content fills the remaining width as the sidebar opens and closes.", "侧边栏展开或收起时，内容会自动填充剩余宽度。"))</p>
+                    <p class="p-4 text-sm text-muted-foreground">
+                        (locale.select(
+                            "The content fills the remaining width as the sidebar opens and closes.",
+                            "侧边栏展开或收起时，内容会自动填充剩余宽度。",
+                        ))
+                    </p>
                 )
             )
+        </div>
+    })
+}
+
+/// A native panel with stable IDs and localized content.
+#[component]
+async fn popover_card(cx: &Cx) -> Result<impl View> {
+    let panel = element_id(cx);
+    let input_id = element_id(cx);
+    Ok(view! {
+        popover(
+            popover_trigger(
+                target: &panel,
+                attrs: attributes! {
+                    class=(button_variants(ButtonVariant::Outline, ButtonSize::Md))
+                },
+                (t!(edit_profile))
+            )
+            popover_content(
+                id: &panel,
+                align: FloatingAlign::Start,
+                <form
+                    class="grid gap-3"
+                    @submit=$(|event: Event| event.prevent_default())
+                >
+                    <strong>(t!(edit_profile))</strong>
+                    <p class="m-0 text-sm text-muted-foreground">
+                        (t!(profile_description))
+                    </p>
+                    field(
+                        field_label(
+                            attrs: attributes! { for=(&input_id) },
+                            (t!(display_name))
+                        )
+                        input(
+                            attrs: attributes! {
+                                id=(&input_id)
+                                name="display-name"
+                                placeholder=(t!(display_name_placeholder))
+                            }
+                        )
+                    )
+                    button(
+                        attrs: attributes! {
+                            type="button"
+                            popovertarget=(&panel)
+                            popovertargetaction="hide"
+                        },
+                        (t!(done))
+                    )
+                </form>
+            )
+        )
+    })
+}
+
+/// Official site navigation links retain Topcoat client-side navigation.
+#[component]
+async fn navigation_menu_card(cx: &Cx) -> Result<impl View> {
+    let locale = Locale::current(cx);
+    Ok(view! {
+        navigation_menu(
+            attrs: attributes! { aria-label=(t!(guides)) },
+            navigation_menu_list(
+                navigation_menu_item(
+                    navigation_menu_trigger((t!(guides)))
+                    navigation_menu_content(
+                        attrs: attributes! { class="grid w-64 gap-1" },
+                        navigation_menu_link(
+                            attrs: link_attrs(cx, locale.link("/"), prefetch_mode(cx)),
+                            (t!(quick_start))
+                        )
+                        navigation_menu_link(
+                            attrs: link_attrs(
+                                cx,
+                                locale.link("/json-viewer"),
+                                prefetch_mode(cx),
+                            ),
+                            (t!(view_json))
+                        )
+                    )
+                )
+                navigation_menu_item(
+                    navigation_menu_link(
+                        variant: NavigationMenuLinkVariant::Trigger,
+                        active: true,
+                        attrs: link_attrs(
+                            cx,
+                            locale.link("/topcoat-ui"),
+                            prefetch_mode(cx),
+                        ),
+                        (t!(components))
+                    )
+                )
+            )
+        )
+    })
+}
+
+/// The shared positioning primitive, used directly with native popovers.
+#[component]
+async fn floating_card(cx: &Cx) -> Result<impl View> {
+    Ok(view! {
+        <div class="flex flex-wrap gap-3 py-4">
+            #[key(key)]
+            for (key, side, label) in [
+                ("top", FloatingSide::Top, t!(position_top)),
+                ("right", FloatingSide::Right, t!(position_right)),
+                ("bottom", FloatingSide::Bottom, t!(position_bottom)),
+                ("left", FloatingSide::Left, t!(position_left)),
+            ] {
+                let panel = element_id(&cx.keyed(key));
+                <button
+                    type="button"
+                    class=(button_variants(ButtonVariant::Outline, ButtonSize::Sm))
+                    popovertarget=(&panel)
+                >
+                    (label)
+                </button>
+                <div
+                    id=(&panel)
+                    popover="auto"
+                    class=(topcoat::view::class!(
+                        floating_variants(
+                            FloatingAnchor::Invoker,
+                            side,
+                            FloatingAlign::Center,
+                        ),
+                        "w-56 max-w-[calc(100vw-2rem)] rounded-lg border border-border bg-popover p-4 text-sm text-popover-foreground shadow-sm",
+                    ))
+                >
+                    (t!(floating_hint))
+                </div>
+            }
+        </div>
+    })
+}
+
+/// Official number/date formatters and Fluent plural messages use the request locale.
+#[component]
+async fn localization_card() -> Result<impl View> {
+    use topcoat::l10n::{DateTime, DateTimeStyle, Number};
+    let amount = Number::new(1234.5).min_fraction_digits(2);
+    let date = DateTime::date(2026, 10, 24)
+        .expect("valid date")
+        .date_style(DateTimeStyle::Long);
+    Ok(view! {
+        <dl class="m-0 grid grid-cols-[auto_1fr] gap-x-5 gap-y-3 text-sm">
+            <dt class="text-muted-foreground">(t!(number_label))</dt>
+            <dd class="m-0">(amount)</dd>
+            <dt class="text-muted-foreground">(t!(date_label))</dt>
+            <dd class="m-0">(date)</dd>
+            <dt class="text-muted-foreground">(t!(translation_label))</dt>
+            <dd class="m-0">(t!(localized_items, count = 34usize))</dd>
+        </dl>
+    })
+}
+
+/// Contrast preserved user edits with an explicitly dynamic value expression.
+#[component]
+async fn form_state_card(cx: &Cx) -> Result<impl View> {
+    let revision = signal(cx, || 0usize);
+    let language = Locale::current(cx).html_lang().to_owned();
+    Ok(view! {
+        <div class="grid gap-4">
+            form_state_fields(revision: $(revision.get()), language: $(language))
+            button(
+                variant: ButtonVariant::Outline,
+                attrs: attributes! {
+                    type="button"
+                    @click=$(|_event: Event| revision.increment())
+                },
+                (t!(rerender))
+            )
+        </div>
+    })
+}
+
+#[shard("/_gallery/form-state")]
+pub(in crate::app) async fn form_state_fields(
+    revision: usize,
+    language: String,
+) -> Result<impl View> {
+    let language = if language == "zh-CN" {
+        topcoat::l10n::locale!("zh")
+    } else {
+        topcoat::l10n::locale!("en")
+    };
+    let preserved = t!(preserved_input).resolve_in(&language);
+    let reset = t!(reset_input).resolve_in(&language);
+    let placeholder = t!(type_here).resolve_in(&language);
+    let reset_value = Expr::from(String::new()).dynamic();
+    Ok(view! {
+        <div class="grid gap-3" data-render=(revision)>
+            <label class="grid gap-2 text-sm">
+                (preserved.as_ref())
+                input(
+                    attrs: attributes! {
+                        name="preserved-input"
+                        value=""
+                        placeholder=(placeholder.as_ref())
+                    }
+                )
+            </label>
+            <label class="grid gap-2 text-sm">
+                (reset.as_ref())
+                input(
+                    attrs: attributes! {
+                        name="reset-input"
+                        :value=(reset_value)
+                        placeholder=(placeholder.as_ref())
+                    }
+                )
+            </label>
         </div>
     })
 }

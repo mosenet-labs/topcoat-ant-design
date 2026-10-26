@@ -1,3 +1,4 @@
+use crate::language::t;
 use topcoat::{
     Result,
     context::Cx,
@@ -6,7 +7,10 @@ use topcoat::{
     view::{Attributes, View, attributes, class, component, view},
 };
 
-use crate::{UiLanguage, anchored_menu_trigger_attributes, checkbox, icons::SETTING_OUTLINED};
+use crate::{
+    FloatingAlign, UiLanguage, checkbox, icons::SETTING_OUTLINED, popover, popover_content,
+    popover_trigger,
+};
 
 /// Stable identity and initial visibility of a table column.
 #[derive(Clone, Debug)]
@@ -67,10 +71,16 @@ pub fn table_column_attributes(
         .unwrap_or_default()
         .contains(&key);
     let hidden = hidden.clone();
-    attributes! { cx =>
+    attributes! {
+        cx =>
         data-table-column=(key.as_str())
-        :hidden=$(if hidden.get().is_empty() { false } else {
-            raw!("JSON.parse(${hidden}.get().dehydrate()).includes(${key}.dehydrate())", initially_hidden)
+        :hidden=$(if hidden.get().is_empty() {
+            false
+        } else {
+            raw!(
+                "JSON.parse(${hidden}.get().dehydrate()).includes(${key}.dehydrate())",
+                initially_hidden,
+            )
         })
     }
 }
@@ -87,43 +97,81 @@ pub async fn table_column_settings(
 ) -> Result<impl View> {
     let defaults = table_default_hidden_columns(columns);
     let chosen: Vec<String> = serde_json::from_str(&hidden.get_untracked()).unwrap_or_default();
-    let label = language.select("Columns", "列设置");
-    let reset = language.select("Reset", "恢复默认");
+    let label = language.resolve(t!(columns));
+    let reset = language.resolve(t!(reset));
     let caller_class = attrs.remove("class");
-    attrs.extend(attributes! { cx => class=(class!("gr-table-column-settings", caller_class)) });
-    let panel_style = format!("position-anchor: --gr-{id}");
+    attrs.extend(attributes! {
+        cx =>
+        class=(class!("gr-table-column-settings", caller_class))
+    });
     Ok(view! {
-        <div (attrs)>
-            <button type="button" class="gr-table-columns-trigger" aria-label=(label) title=(label) (anchored_menu_trigger_attributes(cx, id))>
+        popover(
+            attrs: attrs,
+            popover_trigger(
+                target: id,
+                attrs: attributes! {
+                    class="gr-table-columns-trigger"
+                    aria-label=(label.as_str())
+                    title=(label.as_str())
+                    aria-controls=(id)
+                },
                 icon(data: SETTING_OUTLINED, size: 16)
-            </button>
-            <div id=(id) class="gr-table-columns-panel" popover="auto" role="group" aria-label=(label) style=(panel_style)>
+            )
+            popover_content(
+                id: id,
+                align: FloatingAlign::End,
+                attrs: attributes! {
+                    class="gr-table-columns-panel"
+                    role="group"
+                    aria-label=(label.as_str())
+                },
                 <div class="gr-table-columns-heading">
                     <strong>(label)</strong>
-                    <button type="button" class="gr-table-columns-reset" @click=$(|_event: Event| hidden.set(defaults.clone()))>(reset)</button>
+                    <button
+                        type="button"
+                        class="gr-table-columns-reset"
+                        @click=$(|_event: Event| hidden.set(defaults.clone()))
+                    >
+                        (reset)
+                    </button>
                 </div>
                 <div class="gr-table-columns-options">
-                    #[key(column.key.clone())] for column in columns {
+                    #[key(column.key.clone())]
+                    for column in columns {
                         let key = column.key.clone();
                         let is_visible = !column.hideable || !chosen.contains(&key);
                         let required = !column.hideable;
                         <label class="gr-table-columns-option">
-                            checkbox(attrs: attributes! {
-                                :checked=$(if required { true } else if hidden.get().is_empty() { true } else {
-                                    raw!("!JSON.parse(${hidden}.get().dehydrate()).includes(${key}.dehydrate())", is_visible)
-                                })
-                                disabled=(required)
-                                @change=$(|_event: Event| {
-                                    let _key = key.clone();
-                                    raw!("(() => { const values = JSON.parse(${hidden}.get().dehydrate()); const key = ${_key}.dehydrate(); ${hidden}.set(cx.hydrate(JSON.stringify(values.includes(key) ? values.filter(value => value !== key) : [...values, key]))); })()", ());
-                                })
-                            })
+                            checkbox(
+                                attrs: attributes! {
+                                    :checked=$(if required {
+                                        true
+                                    } else if hidden.get().is_empty() {
+                                        true
+                                    } else {
+                                        raw!(
+                                            "!JSON.parse(${hidden}.get().dehydrate()).includes(${key}.dehydrate())",
+                                            is_visible,
+                                        )
+                                    })
+                                    disabled=(required)
+                                    @change=$(|_event: Event| {
+                                        let _key = key.clone();
+                                        raw!(
+                                            "(() => { const values = JSON.parse(${hidden}.get().dehydrate()); const key = ${_key}.dehydrate(); ${hidden}.set(cx.hydrate(JSON.stringify(values.includes(key) ? values.filter(value => value !== key) : [...values, key]))); })()",
+                                            (),
+                                        );
+                                    })
+                                }
+                            )
                             <span>(column.label.as_str())</span>
-                            if required { <small>(language.select("Required", "固定"))</small> }
+                            if required {
+                                <small>(language.resolve(t!(required)))</small>
+                            }
                         </label>
                     }
                 </div>
-            </div>
-        </div>
+            )
+        )
     })
 }

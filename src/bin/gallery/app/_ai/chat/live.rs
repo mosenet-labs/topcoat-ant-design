@@ -115,13 +115,27 @@ pub(in crate::app) async fn live_message_region(cx: &Cx, language: String) -> Re
         loop {
             let messages = room.messages();
             let token = emit! {
-                chat_message_list(label: locale.select("Shared conversation messages", "共享会话消息"),
+                chat_message_list(
+                    label: locale.select(
+                        "Shared conversation messages",
+                        "共享会话消息",
+                    ),
                     if messages.is_empty() {
-                        <p class="m-0 rounded-xl border border-dashed border-border bg-card px-5 py-8 text-center text-sm text-muted-foreground">(locale.select("Send a message to see it appear in every open tab.", "发送消息后，所有打开的标签页都会看到更新。"))</p>
+                        <p
+                            class="m-0 rounded-xl border border-dashed border-border bg-card px-5 py-8 text-center text-sm text-muted-foreground"
+                        >
+                            (locale.select(
+                                "Send a message to see it appear in every open tab.",
+                                "发送消息后，所有打开的标签页都会看到更新。",
+                            ))
+                        </p>
                     }
                     #[key(message.id.clone())]
                     for message in messages {
-                        chat_bubble(role: message.role, status: Some(message.status), language: locale.ui(),
+                        chat_bubble(
+                            role: message.role,
+                            status: Some(message.status),
+                            language: locale.ui(),
                             <p class="m-0 whitespace-pre-wrap">(message.content)</p>
                         )
                     }
@@ -164,7 +178,8 @@ pub(in crate::app) async fn chat_live_page(cx: &Cx) -> Result<impl View> {
     let locale = Locale::current(cx);
     let draft = signal(cx, String::new);
     let language = locale.html_lang().to_owned();
-    let submit = attributes! { cx =>
+    let submit = attributes! {
+        cx =>
         @submit=$(async |event: Event| {
             event.prevent_default();
             let message = draft.get();
@@ -180,21 +195,32 @@ pub(in crate::app) async fn chat_live_page(cx: &Cx) -> Result<impl View> {
             eyebrow: "AI COMPONENTS",
             title: locale.select("Live Chat", "实时 Chat"),
             description: locale.select(
-                "Topcoat 0.10 streams this room through its shared shard connection. Open this page in two tabs to see both update.",
-                "Topcoat 0.10 通过共享的 shard 连接推送这个会话。在两个标签页打开此页面即可观察同步更新。",
-            ),
+                "Topcoat 0.11 streams this room through its shared shard connection. Open this page in two tabs to see both update.",
+                "Topcoat 0.11 通过共享的 shard 连接推送这个会话。在两个标签页打开此页面即可观察同步更新。",
+            )
         )
         component_example(
             id: "chat-live-preview",
             title: locale.select("Shared demo room", "共享示例会话"),
-            description: locale.select("Messages are shared with everyone viewing this Gallery process and are cleared when it restarts. Do not enter private information.", "消息会与查看此 Gallery 进程的所有人共享，重启后清空。请勿输入隐私信息。"),
+            description: locale.select(
+                "Messages are shared with everyone viewing this Gallery process and are cleared when it restarts. Do not enter private information.",
+                "消息会与查看此 Gallery 进程的所有人共享，重启后清空。请勿输入隐私信息。",
+            ),
             source: EXAMPLE_SOURCE,
             <div class="flex min-h-[420px] flex-col bg-background">
                 <div class="min-h-0 flex-1 px-6 py-7 max-[520px]:px-4">
                     live_message_region(language: locale.html_lang().to_owned())
                 </div>
-                <div class="border-t border-border bg-card/80 px-5 pb-5 pt-4 max-[520px]:px-4">
-                    chat_sender(id: "gallery-live-chat-draft", draft: &draft, submit_attrs: submit, max_length: Some(2000), language: locale.ui())
+                <div
+                    class="border-t border-border bg-card/80 px-5 pb-5 pt-4 max-[520px]:px-4"
+                >
+                    chat_sender(
+                        id: "gallery-live-chat-draft",
+                        draft: &draft,
+                        submit_attrs: submit,
+                        max_length: Some(2000),
+                        language: locale.ui()
+                    )
                 </div>
             </div>
         )

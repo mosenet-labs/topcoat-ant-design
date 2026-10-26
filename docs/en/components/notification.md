@@ -48,3 +48,5 @@ async fn save_example(cx: &Cx) -> Result<impl View> {
 - Both manual close and timer expiration clear the caller's message.
 - One message signal controls one notification; the component has no queue.
 - `Success`, `Info`, and `Warning` use `role="status"` and `aria-live="polite"`. `Error` uses `role="alert"` and `aria-live="assertive"` for urgent failures.
+
+Automatic panel IDs use `element_id(cx)` and remain stable across rerenders. Add `#[key(...)]` when rendering notification components in a loop.

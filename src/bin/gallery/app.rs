@@ -14,7 +14,9 @@ use topcoat::{
     Result,
     asset::{AssetConfig, RouterBuilderAssetExt},
     context::Cx,
-    router::{Router, Slot, href, layout, page, request::uri},
+    router::{
+        Body, Next, Router, Slot, href, layer, layout, page, request::uri, response::Response,
+    },
     runtime::{Event, RouterBuilderRuntimeExt, link, link_attrs, prefetch_mode, signal},
     view::{View, attributes, class, component, view},
 };
@@ -25,6 +27,14 @@ use topcoat_ant_design::{
 };
 
 use crate::{assets::GALLERY_STYLESHEET, locale::Locale};
+
+/// Choose the request locale before layouts, pages, procedures and shards render.
+/// Keep the Gallery's existing query-string links and English default.
+#[layer]
+async fn language_layer(cx: &Cx, body: Body, next: Next<'_>) -> Result<Response> {
+    let locale = Locale::current(cx).ui().locale();
+    next.run(&cx.with(locale), body).await
+}
 
 const THEME_COOKIE: &str = "topcoat-ant-theme=dark";
 
@@ -50,6 +60,7 @@ pub(crate) fn router(app_assets: AssetConfig) -> Router {
         .route(crate::assets::topcoat_runtime_js)
         .route(crate::assets::native_ui_portrait)
         .page(_native::native_ui_page)
+        .route(_native::form_state_fields)
         .route(_ai::chat::flow::gallery_reply)
         .route(_ai::chat::flow::gallery_action)
         .route(_ai::chat::flow::message_region)
@@ -88,7 +99,13 @@ async fn gallery_nav_link(
     );
 
     Ok(view! {
-        sidebar_menu_button(href: Some(href), active: active, attrs: attributes! { class="min-h-10 gap-3 px-3 py-2 text-sidebar-foreground" (navigation_attrs) },
+        sidebar_menu_button(
+            href: Some(href),
+            active: active,
+            attrs: attributes! {
+                class="min-h-10 gap-3 px-3 py-2 text-sidebar-foreground"
+                (navigation_attrs)
+            },
             <span class=(badge_class) aria-hidden="true">(badge)</span>
             <span>(label)</span>
         )
@@ -104,9 +121,17 @@ pub(in crate::app) async fn page_header(
 ) -> Result<impl View> {
     Ok(view! {
         <header class="mb-8 border-b border-border pb-7">
-            <p class="m-0 text-xs font-bold tracking-[0.12em] text-primary">(eyebrow)</p>
-            <h1 class="mb-3 mt-2 text-[clamp(30px,5vw,42px)] font-bold leading-[1.15] tracking-[-0.025em] text-foreground">(title)</h1>
-            <p class="m-0 max-w-[760px] text-[15px] leading-7 text-muted-foreground">(description)</p>
+            <p class="m-0 text-xs font-bold tracking-[0.12em] text-primary">
+                (eyebrow)
+            </p>
+            <h1
+                class="mb-3 mt-2 text-[clamp(30px,5vw,42px)] font-bold leading-[1.15] tracking-[-0.025em] text-foreground"
+            >
+                (title)
+            </h1>
+            <p class="m-0 max-w-[760px] text-[15px] leading-7 text-muted-foreground">
+                (description)
+            </p>
         </header>
     })
 }
@@ -296,138 +321,465 @@ async fn gallery_layout(cx: &Cx, slot: Slot<'_>) -> Result<impl View> {
                 <meta charset="utf-8">
                 <meta name="viewport" content="width=device-width, initial-scale=1">
                 <meta name="color-scheme" content="light dark">
-                <title>(document_title) " · Topcoat Ant Design"</title>
+                <title>
+                    (document_title)
+                    " · Topcoat Ant Design"
+                </title>
                 head_assets()
                 <link rel="stylesheet" href=(GALLERY_STYLESHEET)>
                 topcoat::runtime::script()
                 topcoat::dev::script(status_indicator: false)
             </head>
-            <body class="m-0 min-w-80 bg-background font-mono text-foreground antialiased">
-                sidebar_provider(attrs: attributes! { class="gallery-shell" },
-                        sidebar(
-                            open: $(sidebar_open.get()),
-                            mobile_open: $(mobile_open.get()),
-                            variant: SidebarVariant::Sidebar,
-                            collapsible: SidebarCollapsible::Offcanvas,
-                            sheet_attrs: attributes! { id="gallery-sidebar" aria-label=(text(locale, "组件导航")) },
-                            sidebar_header(attrs: attributes! { class="[&]:h-auto gap-4 px-5 py-5" },
-                                link(href: getting_started_url.as_str(), attrs: attributes! { class="flex items-center gap-3 text-sidebar-foreground no-underline" },
-                                    <span class="grid size-9 place-items-center rounded-lg bg-primary text-sm font-bold text-primary-foreground shadow-sm">"AD"</span>
-                                    <span><strong class="block text-[15px] font-semibold leading-5">"Topcoat Ant Design"</strong><small class="mt-0.5 block text-xs text-muted-foreground">(locale.select("Topcoat components", "Topcoat 组件"))</small></span>
-                                )
-                                <nav class="flex gap-2" aria-label=(text(locale, "语言"))>
-                                    link(href: english_url, attrs: attributes! { class="rounded-md border border-border px-3 py-1 text-xs text-sidebar-foreground no-underline aria-[current=page]:border-primary aria-[current=page]:bg-sidebar-accent aria-[current=page]:text-sidebar-accent-foreground" data-language-switch="" aria-current=(if locale == Locale::En { Some("page") } else { None }) }, "English")
-                                    link(href: chinese_url.as_str(), attrs: attributes! { class="rounded-md border border-border px-3 py-1 text-xs text-sidebar-foreground no-underline aria-[current=page]:border-primary aria-[current=page]:bg-sidebar-accent aria-[current=page]:text-sidebar-accent-foreground" data-language-switch="" aria-current=(if locale == Locale::Zh { Some("page") } else { None }) }, "中文")
-                                </nav>
-                                button(attrs: attributes! { type="button" class="md:hidden" @click=$(|_e: Event| mobile_open.set(false)) }, (locale.select("Close navigation", "关闭导航")))
+            <body
+                class="m-0 min-w-80 bg-background font-mono text-foreground antialiased"
+            >
+                sidebar_provider(
+                    attrs: attributes! { class="gallery-shell" },
+                    sidebar(
+                        open: $(sidebar_open.get()),
+                        mobile_open: $(mobile_open.get()),
+                        variant: SidebarVariant::Sidebar,
+                        collapsible: SidebarCollapsible::Offcanvas,
+                        sheet_attrs: attributes! {
+                            id="gallery-sidebar"
+                            aria-label=(text(locale, "组件导航"))
+                        },
+                        sidebar_header(
+                            attrs: attributes! { class="[&]:h-auto gap-4 px-5 py-5" },
+                            link(
+                                href: getting_started_url.as_str(),
+                                attrs: attributes! {
+                                    class="flex items-center gap-3 text-sidebar-foreground no-underline"
+                                },
+                                <span
+                                    class="grid size-9 place-items-center rounded-lg bg-primary text-sm font-bold text-primary-foreground shadow-sm"
+                                >
+                                    "AD"
+                                </span>
+                                <span>
+                                    <strong class="block text-[15px] font-semibold leading-5">
+                                        "Topcoat Ant Design"
+                                    </strong>
+                                    <small class="mt-0.5 block text-xs text-muted-foreground">
+                                        (locale.select("Topcoat components", "Topcoat 组件"))
+                                    </small>
+                                </span>
                             )
-                            sidebar_content(
-                                <nav class="grid gap-6 px-4 py-5" aria-label=(text(locale, "组件导航"))>
-                            <section>
-                                <p class="mb-2 mt-0 px-3 text-[11px] font-bold tracking-[0.1em] text-muted-foreground">(text(locale, "开始"))</p>
-                                <div class="grid gap-1">
-                                    gallery_nav_link(href: getting_started_url.as_str(), badge: "→", label: text(locale, "快速开始"), active: getting_started_active)
-                                    gallery_nav_link(href: overview_url.as_str(), badge: "01", label: text(locale, "组件概览"), active: overview_active)
-                                    gallery_nav_link(href: icons_url.as_str(), badge: "I", label: text(locale, "Icons 图标"), active: icons_active)
-                                    gallery_nav_link(href: native_ui_url.as_str(), badge: "UI", label: locale.select("Official Topcoat components", "Topcoat 官方组件"), active: native_ui_active)
-                                </div>
-                            </section>
-                            <section>
-                                <details class="rounded-lg border border-border bg-card open:shadow-sm" open=(native_ui_active)>
-                                    <summary class="cursor-pointer px-3 py-3 text-[11px] font-bold tracking-[0.1em] text-muted-foreground">(locale.select("Official UI · 31 components", "官方 UI · 31 个组件"))</summary>
-                                    <div class="grid grid-cols-2 gap-1 border-t border-border p-2">
-                                        for name in _native::REGISTRY_COMPONENTS {
-                                            let target = format!("{}#{}", native_ui_url, _native::registry_target(name));
-                                            link(href: target.as_str(), attrs: attributes! { class="truncate rounded px-2 py-1.5 font-mono text-[11px] text-sidebar-foreground no-underline hover:bg-sidebar-accent hover:text-primary" }, (name))
-                                        }
-                                    </div>
-                                </details>
-                            </section>
-                            <section class="max-[899px]:hidden">
-                                <p class="mb-2 mt-0 px-3 text-[11px] font-bold tracking-[0.1em] text-muted-foreground">(locale.select("AI Components", "AI 组件"))</p>
-                                <div class="grid gap-1">
-                                    gallery_nav_link(href: chat_url.as_str(), badge: "AI", label: locale.select("Chat interface", "Chat 聊天界面"), active: chat_active)
-                                    gallery_nav_link(href: chat_live_url.as_str(), badge: "↗", label: locale.select("Live Chat", "实时 Chat"), active: chat_live_active)
-                                    gallery_nav_link(href: bubble_url.as_str(), badge: "B", label: "ChatBubble", active: bubble_active)
-                                    gallery_nav_link(href: message_list_url.as_str(), badge: "L", label: "ChatMessageList", active: message_list_active)
-                                    gallery_nav_link(href: sender_url.as_str(), badge: "S", label: "ChatSender", active: sender_active)
-                                    for (url, badge, label, active) in ai_extra_links {
-                                        gallery_nav_link(href: url.as_str(), badge: badge, label: label, active: active)
-                                    }
-                                </div>
-                            </section>
-                            <section class="min-[900px]:hidden">
-                                <details class="rounded-lg border border-border bg-card open:shadow-sm">
-                                    <summary class="cursor-pointer px-3 py-3 text-[11px] font-bold uppercase tracking-[0.1em] text-muted-foreground">(locale.select("AI Components", "AI 组件"))</summary>
-                                    <div class="grid gap-1 border-t border-border p-2">
-                                        gallery_nav_link(href: chat_url.as_str(), badge: "AI", label: locale.select("Chat interface", "Chat 聊天界面"), active: chat_active)
-                                        gallery_nav_link(href: chat_live_url.as_str(), badge: "↗", label: locale.select("Live Chat", "实时 Chat"), active: chat_live_active)
-                                        gallery_nav_link(href: bubble_url.as_str(), badge: "B", label: "ChatBubble", active: bubble_active)
-                                        gallery_nav_link(href: message_list_url.as_str(), badge: "L", label: "ChatMessageList", active: message_list_active)
-                                        gallery_nav_link(href: sender_url.as_str(), badge: "S", label: "ChatSender", active: sender_active)
-                                        for (url, badge, label, active) in ai_extra_mobile_links {
-                                            gallery_nav_link(href: url.as_str(), badge: badge, label: label, active: active)
-                                        }
-                                    </div>
-                                </details>
-                            </section>
-                            <section>
-                                <p class="mb-2 mt-0 px-3 text-[11px] font-bold tracking-[0.1em] text-muted-foreground">(text(locale, "反馈"))</p>
-                                <div class="grid gap-1">
-                                    gallery_nav_link(href: notification_url.as_str(), badge: "N", label: "Notification", active: notification_active)
-                                    gallery_nav_link(href: tag_url.as_str(), badge: "Ta", label: text(locale, "Tag 标签"), active: tag_active)
-                                    gallery_nav_link(href: tooltip_url.as_str(), badge: "T", label: "Tooltip", active: tooltip_active)
-                                    gallery_nav_link(href: popconfirm_url.as_str(), badge: "P", label: "Popconfirm", active: popconfirm_active)
-                                    gallery_nav_link(href: dialog_url.as_str(), badge: "Di", label: "Dialog", active: dialog_active)
-                                    gallery_nav_link(href: drawer_url.as_str(), badge: "D", label: "Drawer", active: drawer_active)
-                                </div>
-                            </section>
-                            <section>
-                                <p class="mb-2 mt-0 px-3 text-[11px] font-bold tracking-[0.1em] text-muted-foreground">(text(locale, "导航"))</p>
-                                gallery_nav_link(href: dropdown_menu_url.as_str(), badge: "Dd", label: locale.select("Dropdown Menu", "Dropdown 下拉菜单"), active: dropdown_menu_active)
-                                gallery_nav_link(href: tabs_url.as_str(), badge: "T", label: "Tabs", active: tabs_active)
-                            </section>
-                            <section>
-                                <p class="mb-2 mt-0 px-3 text-[11px] font-bold tracking-[0.1em] text-muted-foreground">(text(locale, "数据录入"))</p>
-                                gallery_nav_link(href: form_field_url.as_str(), badge: "F", label: "FormField", active: form_field_active)
-                                gallery_nav_link(href: search_multi_select_url.as_str(), badge: "Ms", label: "SearchMultiSelect", active: search_multi_select_active)
-                                gallery_nav_link(href: date_time_range_url.as_str(), badge: "R", label: "DateTimeRange", active: date_time_range_active)
-                            </section>
-                            <section>
-                                <p class="mb-2 mt-0 px-3 text-[11px] font-bold tracking-[0.1em] text-muted-foreground">(text(locale, "数据展示"))</p>
-                                gallery_nav_link(href: calendar_url.as_str(), badge: "Ca", label: "Calendar", active: calendar_active)
-                                gallery_nav_link(href: table_url.as_str(), badge: "Tb", label: "Table", active: table_active)
-                                gallery_nav_link(href: json_viewer_url.as_str(), badge: "Js", label: "JSONViewer", active: json_viewer_active)
-                            </section>
-                            <section>
-                                <p class="mb-2 mt-0 px-3 text-[11px] font-bold tracking-[0.1em] text-muted-foreground">(text(locale, "动效"))</p>
-                                gallery_nav_link(href: collapse_url.as_str(), badge: "C", label: "Collapse", active: collapse_active)
-                                gallery_nav_link(href: accordion_url.as_str(), badge: "A", label: "Accordion", active: accordion_active)
-                            </section>
-                                </nav>
+                            <nav class="flex gap-2" aria-label=(text(locale, "语言"))>
+                                link(
+                                    href: english_url,
+                                    attrs: attributes! {
+                                        class="rounded-md border border-border px-3 py-1 text-xs text-sidebar-foreground no-underline aria-[current=page]:border-primary aria-[current=page]:bg-sidebar-accent aria-[current=page]:text-sidebar-accent-foreground"
+                                        data-language-switch=""
+                                        aria-current=(if locale == Locale::En {
+                                            Some("page")
+                                        } else {
+                                            None
+                                        })
+                                    },
+                                    "English"
+                                )
+                                link(
+                                    href: chinese_url.as_str(),
+                                    attrs: attributes! {
+                                        class="rounded-md border border-border px-3 py-1 text-xs text-sidebar-foreground no-underline aria-[current=page]:border-primary aria-[current=page]:bg-sidebar-accent aria-[current=page]:text-sidebar-accent-foreground"
+                                        data-language-switch=""
+                                        aria-current=(if locale == Locale::Zh {
+                                            Some("page")
+                                        } else {
+                                            None
+                                        })
+                                    },
+                                    "中文"
+                                )
+                            </nav>
+                            button(
+                                attrs: attributes! {
+                                    type="button"
+                                    class="md:hidden"
+                                    @click=$(|_e: Event| mobile_open.set(false))
+                                },
+                                (locale.select("Close navigation", "关闭导航"))
                             )
                         )
-                        sidebar_inset(
-                            sidebar_header(attrs: attributes! { class="[&]:h-16 [&]:bg-card px-6" },
-                                sidebar_trigger(open: $(sidebar_open.get()), attrs: attributes! { class="max-md:hidden" aria-label=(locale.select("Toggle sidebar", "切换侧边栏")) aria-controls="gallery-sidebar" @click=$(|_e: Event| sidebar_open.toggle()) })
-                                sidebar_trigger(open: $(mobile_open.get()), attrs: attributes! { class="md:hidden" aria-label=(locale.select("Toggle sidebar", "切换侧边栏")) aria-controls="gallery-sidebar" @click=$(|_e: Event| mobile_open.toggle()) })
-                                <span class="h-5 w-px bg-border" aria-hidden="true"></span>
-                                <span class="min-w-0 flex-1 truncate text-sm font-semibold text-foreground">(document_title)</span>
-                                button(attrs: attributes! { type="button" class="shrink-0" @click=$(|_e: Event| {
-                                    let next = !dark.get();
-                                    dark.set(next);
-                                    if next {
-                                        raw!("document.cookie = 'topcoat-ant-theme=dark; Path=/; Max-Age=31536000; SameSite=Lax'", ());
-                                    } else {
-                                        raw!("document.cookie = 'topcoat-ant-theme=light; Path=/; Max-Age=31536000; SameSite=Lax'", ());
-                                    }
-                                }) },
-                                    $(if dark.get() { light_theme_label } else { dark_theme_label })
-                                )
-                            )
-                            <div class="mx-auto box-border w-full min-w-0 max-w-[1240px] px-8 pb-24 pt-12 max-[640px]:px-4 max-[640px]:pt-8">(slot)</div>
+                        sidebar_content(
+                            <nav
+                                class="grid gap-6 px-4 py-5"
+                                aria-label=(text(locale, "组件导航"))
+                            >
+                                <section>
+                                    <p
+                                        class="mb-2 mt-0 px-3 text-[11px] font-bold tracking-[0.1em] text-muted-foreground"
+                                    >
+                                        (text(locale, "开始"))
+                                    </p>
+                                    <div class="grid gap-1">
+                                        gallery_nav_link(
+                                            href: getting_started_url.as_str(),
+                                            badge: "→",
+                                            label: text(locale, "快速开始"),
+                                            active: getting_started_active
+                                        )
+                                        gallery_nav_link(
+                                            href: overview_url.as_str(),
+                                            badge: "01",
+                                            label: text(locale, "组件概览"),
+                                            active: overview_active
+                                        )
+                                        gallery_nav_link(
+                                            href: icons_url.as_str(),
+                                            badge: "I",
+                                            label: text(locale, "Icons 图标"),
+                                            active: icons_active
+                                        )
+                                        gallery_nav_link(
+                                            href: native_ui_url.as_str(),
+                                            badge: "UI",
+                                            label: locale.select(
+                                                "Official Topcoat components",
+                                                "Topcoat 官方组件",
+                                            ),
+                                            active: native_ui_active
+                                        )
+                                    </div>
+                                </section>
+                                <section>
+                                    <details
+                                        class="rounded-lg border border-border bg-card open:shadow-sm"
+                                        open=(native_ui_active)
+                                    >
+                                        <summary
+                                            class="cursor-pointer px-3 py-3 text-[11px] font-bold tracking-[0.1em] text-muted-foreground"
+                                        >
+                                            (locale.select(
+                                                "Official UI · 34 components",
+                                                "官方 UI · 34 个组件",
+                                            ))
+                                        </summary>
+                                        <div
+                                            class="grid grid-cols-2 gap-1 border-t border-border p-2"
+                                        >
+                                            for name in _native::REGISTRY_COMPONENTS {
+                                                let target = format!(
+                                                    "{}#{}",
+                                                    native_ui_url,
+                                                    _native::registry_target(name),
+                                                );
+                                                link(
+                                                    href: target.as_str(),
+                                                    attrs: attributes! {
+                                                        class="truncate rounded px-2 py-1.5 font-mono text-[11px] text-sidebar-foreground no-underline hover:bg-sidebar-accent hover:text-primary"
+                                                    },
+                                                    (name)
+                                                )
+                                            }
+                                        </div>
+                                    </details>
+                                </section>
+                                <section class="max-[899px]:hidden">
+                                    <p
+                                        class="mb-2 mt-0 px-3 text-[11px] font-bold tracking-[0.1em] text-muted-foreground"
+                                    >
+                                        (locale.select("AI Components", "AI 组件"))
+                                    </p>
+                                    <div class="grid gap-1">
+                                        gallery_nav_link(
+                                            href: chat_url.as_str(),
+                                            badge: "AI",
+                                            label: locale.select("Chat interface", "Chat 聊天界面"),
+                                            active: chat_active
+                                        )
+                                        gallery_nav_link(
+                                            href: chat_live_url.as_str(),
+                                            badge: "↗",
+                                            label: locale.select("Live Chat", "实时 Chat"),
+                                            active: chat_live_active
+                                        )
+                                        gallery_nav_link(
+                                            href: bubble_url.as_str(),
+                                            badge: "B",
+                                            label: "ChatBubble",
+                                            active: bubble_active
+                                        )
+                                        gallery_nav_link(
+                                            href: message_list_url.as_str(),
+                                            badge: "L",
+                                            label: "ChatMessageList",
+                                            active: message_list_active
+                                        )
+                                        gallery_nav_link(
+                                            href: sender_url.as_str(),
+                                            badge: "S",
+                                            label: "ChatSender",
+                                            active: sender_active
+                                        )
+                                        for (url, badge, label, active) in ai_extra_links {
+                                            gallery_nav_link(
+                                                href: url.as_str(),
+                                                badge: badge,
+                                                label: label,
+                                                active: active
+                                            )
+                                        }
+                                    </div>
+                                </section>
+                                <section class="min-[900px]:hidden">
+                                    <details
+                                        class="rounded-lg border border-border bg-card open:shadow-sm"
+                                    >
+                                        <summary
+                                            class="cursor-pointer px-3 py-3 text-[11px] font-bold uppercase tracking-[0.1em] text-muted-foreground"
+                                        >
+                                            (locale.select("AI Components", "AI 组件"))
+                                        </summary>
+                                        <div class="grid gap-1 border-t border-border p-2">
+                                            gallery_nav_link(
+                                                href: chat_url.as_str(),
+                                                badge: "AI",
+                                                label: locale.select("Chat interface", "Chat 聊天界面"),
+                                                active: chat_active
+                                            )
+                                            gallery_nav_link(
+                                                href: chat_live_url.as_str(),
+                                                badge: "↗",
+                                                label: locale.select("Live Chat", "实时 Chat"),
+                                                active: chat_live_active
+                                            )
+                                            gallery_nav_link(
+                                                href: bubble_url.as_str(),
+                                                badge: "B",
+                                                label: "ChatBubble",
+                                                active: bubble_active
+                                            )
+                                            gallery_nav_link(
+                                                href: message_list_url.as_str(),
+                                                badge: "L",
+                                                label: "ChatMessageList",
+                                                active: message_list_active
+                                            )
+                                            gallery_nav_link(
+                                                href: sender_url.as_str(),
+                                                badge: "S",
+                                                label: "ChatSender",
+                                                active: sender_active
+                                            )
+                                            for (url, badge, label, active) in ai_extra_mobile_links {
+                                                gallery_nav_link(
+                                                    href: url.as_str(),
+                                                    badge: badge,
+                                                    label: label,
+                                                    active: active
+                                                )
+                                            }
+                                        </div>
+                                    </details>
+                                </section>
+                                <section>
+                                    <p
+                                        class="mb-2 mt-0 px-3 text-[11px] font-bold tracking-[0.1em] text-muted-foreground"
+                                    >
+                                        (text(locale, "反馈"))
+                                    </p>
+                                    <div class="grid gap-1">
+                                        gallery_nav_link(
+                                            href: notification_url.as_str(),
+                                            badge: "N",
+                                            label: "Notification",
+                                            active: notification_active
+                                        )
+                                        gallery_nav_link(
+                                            href: tag_url.as_str(),
+                                            badge: "Ta",
+                                            label: text(locale, "Tag 标签"),
+                                            active: tag_active
+                                        )
+                                        gallery_nav_link(
+                                            href: tooltip_url.as_str(),
+                                            badge: "T",
+                                            label: "Tooltip",
+                                            active: tooltip_active
+                                        )
+                                        gallery_nav_link(
+                                            href: popconfirm_url.as_str(),
+                                            badge: "P",
+                                            label: "Popconfirm",
+                                            active: popconfirm_active
+                                        )
+                                        gallery_nav_link(
+                                            href: dialog_url.as_str(),
+                                            badge: "Di",
+                                            label: "Dialog",
+                                            active: dialog_active
+                                        )
+                                        gallery_nav_link(
+                                            href: drawer_url.as_str(),
+                                            badge: "D",
+                                            label: "Drawer",
+                                            active: drawer_active
+                                        )
+                                    </div>
+                                </section>
+                                <section>
+                                    <p
+                                        class="mb-2 mt-0 px-3 text-[11px] font-bold tracking-[0.1em] text-muted-foreground"
+                                    >
+                                        (text(locale, "导航"))
+                                    </p>
+                                    gallery_nav_link(
+                                        href: dropdown_menu_url.as_str(),
+                                        badge: "Dd",
+                                        label: locale.select(
+                                            "Dropdown Menu",
+                                            "Dropdown 下拉菜单",
+                                        ),
+                                        active: dropdown_menu_active
+                                    )
+                                    gallery_nav_link(
+                                        href: tabs_url.as_str(),
+                                        badge: "T",
+                                        label: "Tabs",
+                                        active: tabs_active
+                                    )
+                                </section>
+                                <section>
+                                    <p
+                                        class="mb-2 mt-0 px-3 text-[11px] font-bold tracking-[0.1em] text-muted-foreground"
+                                    >
+                                        (text(locale, "数据录入"))
+                                    </p>
+                                    gallery_nav_link(
+                                        href: form_field_url.as_str(),
+                                        badge: "F",
+                                        label: "FormField",
+                                        active: form_field_active
+                                    )
+                                    gallery_nav_link(
+                                        href: search_multi_select_url.as_str(),
+                                        badge: "Ms",
+                                        label: "SearchMultiSelect",
+                                        active: search_multi_select_active
+                                    )
+                                    gallery_nav_link(
+                                        href: date_time_range_url.as_str(),
+                                        badge: "R",
+                                        label: "DateTimeRange",
+                                        active: date_time_range_active
+                                    )
+                                </section>
+                                <section>
+                                    <p
+                                        class="mb-2 mt-0 px-3 text-[11px] font-bold tracking-[0.1em] text-muted-foreground"
+                                    >
+                                        (text(locale, "数据展示"))
+                                    </p>
+                                    gallery_nav_link(
+                                        href: calendar_url.as_str(),
+                                        badge: "Ca",
+                                        label: "Calendar",
+                                        active: calendar_active
+                                    )
+                                    gallery_nav_link(
+                                        href: table_url.as_str(),
+                                        badge: "Tb",
+                                        label: "Table",
+                                        active: table_active
+                                    )
+                                    gallery_nav_link(
+                                        href: json_viewer_url.as_str(),
+                                        badge: "Js",
+                                        label: "JSONViewer",
+                                        active: json_viewer_active
+                                    )
+                                </section>
+                                <section>
+                                    <p
+                                        class="mb-2 mt-0 px-3 text-[11px] font-bold tracking-[0.1em] text-muted-foreground"
+                                    >
+                                        (text(locale, "动效"))
+                                    </p>
+                                    gallery_nav_link(
+                                        href: collapse_url.as_str(),
+                                        badge: "C",
+                                        label: "Collapse",
+                                        active: collapse_active
+                                    )
+                                    gallery_nav_link(
+                                        href: accordion_url.as_str(),
+                                        badge: "A",
+                                        label: "Accordion",
+                                        active: accordion_active
+                                    )
+                                </section>
+                            </nav>
                         )
                     )
+                    sidebar_inset(
+                        sidebar_header(
+                            attrs: attributes! { class="[&]:h-16 [&]:bg-card px-6" },
+                            sidebar_trigger(
+                                open: $(sidebar_open.get()),
+                                attrs: attributes! {
+                                    class="max-md:hidden"
+                                    aria-label=(locale.select(
+                                        "Toggle sidebar",
+                                        "切换侧边栏",
+                                    ))
+                                    aria-controls="gallery-sidebar"
+                                    @click=$(|_e: Event| sidebar_open.toggle())
+                                }
+                            )
+                            sidebar_trigger(
+                                open: $(mobile_open.get()),
+                                attrs: attributes! {
+                                    class="md:hidden"
+                                    aria-label=(locale.select(
+                                        "Toggle sidebar",
+                                        "切换侧边栏",
+                                    ))
+                                    aria-controls="gallery-sidebar"
+                                    @click=$(|_e: Event| mobile_open.toggle())
+                                }
+                            )
+                            <span class="h-5 w-px bg-border" aria-hidden="true"></span>
+                            <span
+                                class="min-w-0 flex-1 truncate text-sm font-semibold text-foreground"
+                            >
+                                (document_title)
+                            </span>
+                            button(
+                                attrs: attributes! {
+                                    type="button"
+                                    class="shrink-0"
+                                    @click=$(|_e: Event| {
+                                        let next = !dark.get();
+                                        dark.set(next);
+                                        if next {
+                                            raw!(
+                                                "document.cookie = 'topcoat-ant-theme=dark; Path=/; Max-Age=31536000; SameSite=Lax'",
+                                                (),
+                                            );
+                                        } else {
+                                            raw!(
+                                                "document.cookie = 'topcoat-ant-theme=light; Path=/; Max-Age=31536000; SameSite=Lax'",
+                                                (),
+                                            );
+                                        }
+                                    })
+                                },
+                                $(if dark.get() {
+                                    light_theme_label
+                                } else {
+                                    dark_theme_label
+                                })
+                            )
+                        )
+                        <div
+                            class="mx-auto box-border w-full min-w-0 max-w-[1240px] px-8 pb-24 pt-12 max-[640px]:px-4 max-[640px]:pt-8"
+                        >
+                            (slot)
+                        </div>
+                    )
+                )
             </body>
         </html>
     })
@@ -445,6 +797,17 @@ mod tests {
     use topcoat::router::{Body, Route, StatusCode, request::Request, to_bytes};
 
     use super::router;
+
+    #[test]
+    fn fluent_catalogs_cover_the_compiled_gallery_and_component_messages() {
+        let bytes = std::fs::read(std::env::current_exe().unwrap()).unwrap();
+        let check = topcoat_l10n::Check::binary(&bytes);
+        assert_eq!(check.namespaces.len(), 2, "{check:#?}");
+        assert!(!check.has_errors(), "{check:#?}");
+        for namespace in &check.namespaces {
+            assert_eq!(namespace.coverage.len(), 2, "{namespace:#?}");
+        }
+    }
 
     #[tokio::test]
     async fn native_ui_gallery_renders_registry_components_and_theme() {
@@ -464,7 +827,7 @@ mod tests {
             "Topcoat Ant Design",
             "Official Topcoat components",
             "Component index",
-            "Topcoat 0.10.0 · 31 / 31",
+            "Topcoat 0.11.0 · 34 / 34",
             "Show example code",
             "async fn buttons_card",
             "async fn sidebar_card",

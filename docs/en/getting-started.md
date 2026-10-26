@@ -4,10 +4,10 @@ Add this to your application's `Cargo.toml`:
 
 ```toml
 [dependencies]
-topcoat-ant-design = { version = "=0.3.2", features = ["router"] }
+topcoat-ant-design = { version = "=0.4.0", features = ["router"] }
 ```
 
-Use a path dependency while developing the component library locally:
+Version 0.4.0 uses Topcoat 0.11.0 and requires Rust 1.99+. When upgrading from 0.3.x, migrate the official Dropdown Menu `target`/`id`/`close` API as well. For local component development, you can also use a path dependency:
 
 ```toml
 [dependencies]
@@ -135,3 +135,21 @@ Import icon constants from `topcoat_ant_design::icons` and render them with Topc
 | `topcoat-ant-design` | Build Tailwind CSS; declare assets; provide the JetBrains Mono Fontsource, Iconify icons, and component APIs. |
 | Host Topcoat application | Build the module router; load the asset bundle; serve static assets; register fonts; call `head_assets()`. |
 | Business pages | Import components and pass state and actions through signals, bound attributes, and events. |
+
+## Topcoat 0.11 localization
+
+Built-in component labels use Fluent translations. Existing `language` props still default to English; pass `UiLanguage::current(cx)` to follow the host locale. Set that locale in a router `#[layer]` with `cx.with(topcoat::l10n::locale!("zh"))`. A context derived only inside a layout does not reach the page.
+
+```rust,ignore
+use topcoat_ant_design::{UiLanguage, json_viewer};
+
+view! {
+    json_viewer(value: &data, language: UiLanguage::current(cx))
+}
+```
+
+The library requires Rust 1.99 or newer. New official component examples:
+
+- [Popover](components/popover.md)
+- [Navigation Menu](components/navigation-menu.md)
+- [Floating](components/floating.md)

@@ -88,7 +88,7 @@ data_table(label: "Users",
 
 ## Server or cursor pagination
 
-The caller constructs a URL containing filters and the cursor. Topcoat 0.10 `link_attrs` gives the official pagination link client navigation with the host's prefetch setting:
+The caller constructs a URL containing filters and the cursor. Topcoat 0.11 `link_attrs` gives the official pagination link client navigation with the host's prefetch setting:
 
 ```rust,ignore
 use topcoat::runtime::{link_attrs, prefetch_mode};

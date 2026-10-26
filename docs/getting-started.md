@@ -4,10 +4,10 @@
 
 ```toml
 [dependencies]
-topcoat-ant-design = { version = "=0.3.2", features = ["router"] }
+topcoat-ant-design = { version = "=0.4.0", features = ["router"] }
 ```
 
-本地开发组件库时，可以使用路径依赖：
+0.4.0 使用 Topcoat 0.11.0，需要 Rust 1.99+。从 0.3.x 升级时，请同步迁移官方 Dropdown Menu 的 `target`/`id`/`close` API。本地开发组件库时，也可以使用路径依赖：
 
 ```toml
 [dependencies]
@@ -135,3 +135,21 @@ notification(
 | `topcoat-ant-design` | 构建 Tailwind CSS、声明 Asset、提供 JetBrains Mono Fontsource、Iconify 图标和组件 API。 |
 | 宿主 Topcoat 应用 | 使用模块路由、加载 AssetBundle、配置静态资源托管、注册字体并调用 `head_assets()`。 |
 | 业务页面 | 导入所需组件，通过 signal、绑定属性和事件传入状态与业务动作。 |
+
+## Topcoat 0.11 本地化
+
+组件内置标签使用 Fluent 翻译。现有 `language` 属性仍默认英文；要跟随宿主请求语言，请传入 `UiLanguage::current(cx)`。在路由 `#[layer]` 中使用 `cx.with(topcoat::l10n::locale!("zh"))` 设置语言。不要只在 layout 内派生上下文，因为它不会影响页面。
+
+```rust,ignore
+use topcoat_ant_design::{UiLanguage, json_viewer};
+
+view! {
+    json_viewer(value: &data, language: UiLanguage::current(cx))
+}
+```
+
+本库最低需要 Rust 1.99。新增官方组件示例：
+
+- [Popover](components/popover.md)
+- [Navigation Menu](components/navigation-menu.md)
+- [Floating](components/floating.md)

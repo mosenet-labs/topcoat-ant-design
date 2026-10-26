@@ -13,17 +13,19 @@ See the [Chat component guide](docs/en/components/chat.md) for the public API an
 
 See the [complete integration guide](docs/en/getting-started.md) or its [Chinese version](docs/getting-started.md).
 
-This library targets Topcoat 0.10.0. Interactive hosts must enable `.runtime()` on the router and include `topcoat::runtime::script()` in the document head.
+This library targets Topcoat 0.11.0. Interactive hosts must enable `.runtime()` on the router and include `topcoat::runtime::script()` in the document head.
 
-See the [0.10 feature audit](docs/topcoat-0.10-audit.md) for component coverage and adoption decisions.
+See the [0.11 feature audit](docs/topcoat-0.11-audit.md) for component coverage and adoption decisions.
 
 ## Add the dependency
 
-For a published version:
+Version `0.4.0` targets Topcoat 0.11.0 and requires Rust 1.99 or newer. When upgrading from 0.3.x, follow the [Dropdown Menu guide](docs/en/components/dropdown-menu.md) for the updated `target`/`id`/`close` API.
+
+For the published version:
 
 ```toml
 [dependencies]
-topcoat-ant-design = "=0.3.2"
+topcoat-ant-design = "=0.4.0"
 ```
 
 For local component development:
@@ -36,7 +38,7 @@ topcoat-ant-design = { path = "../topcoat-ant-design" }
 The default feature is sufficient to render components. Enable `router` only when the host uses selective route discovery and must explicitly register font routes:
 
 ```toml
-topcoat-ant-design = { version = "=0.3.2", features = ["router"] }
+topcoat-ant-design = { version = "=0.4.0", features = ["router"] }
 ```
 
 ## CSS, fonts, and assets
@@ -107,7 +109,7 @@ Built-in component labels default to English. Pass `language: UiLanguage::Chines
 
 ## Topcoat native UI
 
-All 31 Topcoat 0.10.0 registry components are re-exported directly from `topcoat_ant_design`; their modules also remain available under `topcoat_ant_design::ui`. For example, `use topcoat_ant_design::{button, ButtonVariant, dialog, dialog_content};`. The upstream registry state is recorded in [components.toml](components.toml).
+All 34 Topcoat 0.11.0 registry components are re-exported directly from `topcoat_ant_design`; their modules also remain available under `topcoat_ant_design::ui`. For example, `use topcoat_ant_design::{button, ButtonVariant, dialog, dialog_content};`. The upstream registry state is recorded in [components.toml](components.toml).
 
 This root-level API is available in version `0.2.0` and later.
 
@@ -119,7 +121,7 @@ The Gallery includes an interactive [Topcoat native UI showcase](http://127.0.0.
 
 The [SearchMultiSelect](docs/en/components/search-multi-select.md) component has its own Gallery page at `http://127.0.0.1:3100/search-multi-select`, with searchable options, removable selections, a disabled example, and expandable code.
 
-The sources were copied from the official Topcoat `v0.9.0` registry at commit `96e8f9e0932ea883ced2859d462e9d6d3f52ea59`; every registry file has the same Git blob in `v0.10.0`. See the [upstream license](assets/topcoat-upstream-LICENSE). This project vendors the registry sources directly and does not require Topcoat's `ui` Cargo feature.
+The official sources are synchronized with Topcoat `v0.11.0`. The six existing local changes only adjust paragraph margins and transparent button backgrounds. See the [upstream license](assets/topcoat-upstream-LICENSE). This project vendors the registry sources directly and does not require Topcoat's `ui` Cargo feature.
 
 ## Browse the Gallery
 
@@ -131,7 +133,7 @@ cargo run -p topcoat-ant-design \
 
 Open `http://127.0.0.1:3100/` for the English Quick Start page, or `http://127.0.0.1:3100/overview` for the component overview. Use the **中文** switch for Chinese, or open `http://127.0.0.1:3100/?lang=zh` directly. `HOST` and `PORT` override the listening address. Component pages render interactive previews and examples. Most interactions use browser-side Topcoat signals; Chat also demonstrates validated Gallery-only procedures.
 
-Gallery navigation uses Topcoat 0.10 runtime links. Internal page links navigate without a full document reload and prefetch on hover or focus; normal links still work when JavaScript is unavailable.
+Gallery navigation uses Topcoat 0.11 runtime links. Internal page links navigate without a full document reload and prefetch on hover or focus; normal links still work when JavaScript is unavailable.
 
 Open `http://127.0.0.1:3100/chat` for the Chat interface preview. `/chat/new` demonstrates multiple turns, request states, and a validated demo procedure; it does not contact a model.
 

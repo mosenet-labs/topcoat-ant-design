@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.4.0
+
+- Upgrade all Topcoat dependencies to 0.11.0 and require Rust 1.99.
+- Breaking: the official Dropdown Menu API now connects triggers and panels with `target`/`id`, and uses item `close` targets to dismiss menus. Update callers when upgrading from 0.3.x.
+- Synchronize all 34 official UI modules, exporting Popover, Navigation Menu and Floating directly from the crate root.
+- Move custom component labels to Fluent, expose host-locale helpers, and localize Calendar dates and JSONViewer counts.
+- Reuse official Popover positioning in anchored menus, confirmation panels, date ranges and table column settings.
+- Use stable element IDs for JSONViewer actions, notifications and tooltip associations.
+- Migrate Dropdown Menu examples and add bilingual native-component and input-state demos.
+
 ## 0.3.2
 
 - Add a collapsed-node icon to JSONViewer that expands the current node and all descendants, with keyboard focus handling, bilingual labels, and shared light/dark styling.
